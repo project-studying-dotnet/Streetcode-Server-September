@@ -81,13 +81,18 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
                 randomNewsTitleAndLink.Title = news[newsIndex].Title;
             }
 
-            var newsDTOWithUrls = new NewsDTOWithURLs();
-            newsDTOWithUrls.RandomNews = randomNewsTitleAndLink;
-            newsDTOWithUrls.News = newsDTO;
-            newsDTOWithUrls.NextNewsUrl = nextNewsLink;
-            newsDTOWithUrls.PrevNewsUrl = prevNewsLink;
+            var newsDTOWithUrls = new NewsDTOWithURLs
+            {
+                RandomNews = randomNewsTitleAndLink,
+                News = newsDTO,
+                NextNewsUrl = nextNewsLink,
+                PrevNewsUrl = prevNewsLink
+            };
 
-            if (newsDTOWithUrls is null)
+            if (newsDTOWithUrls.RandomNews is null ||
+                newsDTOWithUrls.News is null ||
+                newsDTOWithUrls.NextNewsUrl is null ||
+                newsDTOWithUrls.PrevNewsUrl is null)
             {
                 string errorMsg = $"No news by entered Url - {url}";
                 _logger.LogError(request, errorMsg);
