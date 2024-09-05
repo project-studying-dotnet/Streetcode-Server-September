@@ -87,7 +87,8 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
-build/_build.csproj.DotSettings
+*.DotSettings
+../build/_build.csproj.DotSettings
 
 # Chutzpah Test files
 _Chutzpah*
