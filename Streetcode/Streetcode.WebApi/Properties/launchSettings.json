@@ -2,7 +2,7 @@
   "profiles": {
     "Streetcode_Local": {
       "commandName": "Project",
-      "launchBrowser": false,
+      "launchBrowser": true,
       "environmentVariables": {
         "STREETCODE_ENVIRONMENT": "Local",
         "ASPNETCORE_ENVIRONMENT": "Local"
