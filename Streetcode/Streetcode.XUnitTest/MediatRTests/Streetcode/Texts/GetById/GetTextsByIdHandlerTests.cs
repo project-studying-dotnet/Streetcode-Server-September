@@ -11,6 +11,7 @@ using Xunit;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace Texts.GetById
 {
     public class GetTextsByIdHandlerTests
@@ -34,13 +35,14 @@ namespace Texts.GetById
             // Arrange
             var text = new Text { Id = 1, TextContent = "Sample text" };
             var textDto = new TextDTO { Id = 1, TextContent = "Sample text" };
+            var query = new GetTextByIdQuery(1);
+
+            // Setting repository for ID search
             _mockRepository.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<Text, bool>>>(),
+                It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(new Text { Id = query.Id })),
                 null)).ReturnsAsync(text);
 
             _mockMapper.Setup(m => m.Map<TextDTO>(text)).Returns(textDto);
-
-            var query = new GetTextByIdQuery(1);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -49,8 +51,9 @@ namespace Texts.GetById
             Assert.True(result.IsSuccess);
             Assert.Equal(textDto, result.ValueOrDefault);
 
+            // Check the call by ID
             _mockRepository.Verify(repo => repo.TextRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<Text, bool>>>(),
+                It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(new Text { Id = query.Id })),
                 null), Times.Once);
 
             _mockMapper.Verify(m => m.Map<TextDTO>(text), Times.Once);
@@ -60,12 +63,12 @@ namespace Texts.GetById
         public async Task Handle_ReturnsFailResult_WhenTextDoesNotExist()
         {
             // Arrange
-            _mockRepository.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<Text, bool>>>(),
-                null)).ReturnsAsync((Text)null);
-
             var query = new GetTextByIdQuery(1);
             string errorMsg = $"Cannot find any text with corresponding id: {query.Id}";
+
+            _mockRepository.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
+                It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(new Text { Id = query.Id })),
+                null)).ReturnsAsync((Text)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -75,7 +78,7 @@ namespace Texts.GetById
             Assert.Equal(errorMsg, result.Errors.First().Message);
 
             _mockRepository.Verify(repo => repo.TextRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<Text, bool>>>(),
+                It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(new Text { Id = query.Id })),
                 null), Times.Once);
 
             _mockLogger.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
