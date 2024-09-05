@@ -34,7 +34,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts.GetAll
         }
 
         [Fact]
-        public async Task Handler_ReturnsMappedFactsDto()
+        public async Task Handle_ReturnsFactsDto_WhenFactsExist()
         {
             // Arrange
             var facts = new List<Fact> { new Fact { Id = 1, Title = "Fact Title", FactContent = "Fact Content" } };
@@ -59,7 +59,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts.GetAll
         }
 
         [Fact]
-        public async Task Handler_ReturnsErrorMsg()
+        public async Task Handler_ReturnsErrorMsg_WhenTermsNotFound()
         {
             // Arrange
             string expectedErrorMsg = $"Cannot find any fact";
