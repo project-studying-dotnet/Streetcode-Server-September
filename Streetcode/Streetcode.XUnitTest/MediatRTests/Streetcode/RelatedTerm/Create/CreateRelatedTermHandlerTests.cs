@@ -103,7 +103,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             var entity = new Entity();
 
 
-            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm));
+            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm)).Returns(entity);
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                     It.IsAny<Expression<Func<Entity, bool>>>(), null))
