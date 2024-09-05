@@ -43,7 +43,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDTO();
             var query = new CreateRelatedTermCommand(relatedTermsDTO);
-            var relatedTerms = new List<Entity>(); // Simulate no existing related terms
+            var relatedTerms = new List<Entity>();
             var entity = new Entity();
 
 
@@ -78,11 +78,11 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDTO();
             var query = new CreateRelatedTermCommand(relatedTermsDTO);
-            var relatedTerms = new List<Entity>(); // Simulate no existing related terms
+            var relatedTerms = new List<Entity>(); 
             var entity = new Entity();
 
 
-            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm))  // Correct setup for mapping
+            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm)) 
                 .Returns((Entity)null);
 
             // Act
@@ -100,12 +100,11 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDTO();
             var query = new CreateRelatedTermCommand(relatedTermsDTO);
-            var relatedTerms = new List<Entity>(); // Simulate no existing related terms
+            var relatedTerms = new List<Entity>(); 
             var entity = new Entity();
 
 
-            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm))  // Correct setup for mapping
-                 .Returns(entity);
+            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm))  
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                     It.IsAny<Expression<Func<Entity, bool>>>(), null))
@@ -158,7 +157,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDTO();
             var query = new CreateRelatedTermCommand(relatedTermsDTO);
-            var relatedTerms = new List<Entity>(); // Simulate no existing related terms
+            var relatedTerms = new List<Entity>(); 
             var entity = new Entity();
 
 
