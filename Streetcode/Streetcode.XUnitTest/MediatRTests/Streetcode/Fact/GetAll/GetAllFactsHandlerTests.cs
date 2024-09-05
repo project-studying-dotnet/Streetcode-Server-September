@@ -59,7 +59,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts.GetAll
         }
 
         [Fact]
-        public async Task Handler_ReturnsErrorMsg_WhenTermsNotFound()
+        public async Task Handle_ReturnsErrorMsg_WhenFactsNotFound()
         {
             // Arrange
             string expectedErrorMsg = $"Cannot find any fact";
