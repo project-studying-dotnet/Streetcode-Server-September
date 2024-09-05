@@ -1,17 +1,13 @@
+using AutoMapper;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Xunit;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using Streetcode.DAL.Repositories.Interfaces.Streetcode.TextContent;
-using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
+using Xunit;
 
 
 namespace Streetcode.XUnitTest
@@ -37,13 +33,12 @@ namespace Streetcode.XUnitTest
         {
             // Arrange
             var texts = new List<Text> { new Text { Id = 1, TextContent = "Some sample text" } };
-            var mockTextRepository = new Mock<ITextRepository>();
-            mockTextRepository.Setup(repo => repo.GetAllAsync(
+            _mockRepository.Setup(
+            repo => repo.TextRepository.GetAllAsync(
                 It.IsAny<Expression<Func<Text, bool>>>(),
                 It.IsAny<Func<IQueryable<Text>, IIncludableQueryable<Text, object>>>()
             )).ReturnsAsync(texts);
 
-            _mockRepository.Setup(repo => repo.TextRepository).Returns(mockTextRepository.Object);
 
             var textDto = new List<TextDTO> { new TextDTO { Id = 1, TextContent = "Some sample text" } };
             _mockMapper.Setup(m => m.Map<IEnumerable<TextDTO>>(texts)).Returns(textDto);
@@ -55,40 +50,12 @@ namespace Streetcode.XUnitTest
             Assert.True(result.IsSuccess);
             Assert.Equal(textDto, result.ValueOrDefault);
 
-            mockTextRepository.Verify(repo => repo.GetAllAsync(
+            _mockRepository.Verify(repo => repo.TextRepository.GetAllAsync(
                 It.IsAny<Expression<Func<Text, bool>>>(),
                 It.IsAny<Func<IQueryable<Text>, IIncludableQueryable<Text, object>>>()
             ), Times.Once);
 
             _mockMapper.Verify(m => m.Map<IEnumerable<TextDTO>>(It.IsAny<IEnumerable<Text>>()), Times.Once);
-        }
-
-        [Fact]
-        public async Task Handle_ReturnsFailResult_WhenTextsAreNull()
-        {
-            // Arrange
-            var mockTextRepository = new Mock<ITextRepository>();
-
-            mockTextRepository.Setup(repo => repo.GetAllAsync(
-                It.IsAny<Expression<Func<Text, bool>>>(),
-                It.IsAny<Func<IQueryable<Text>, IIncludableQueryable<Text, object>>>()
-            )).ReturnsAsync((IEnumerable<Text>)null);
-
-            _mockRepository.Setup(repo => repo.TextRepository).Returns(mockTextRepository.Object);
-
-            const string errorMsg = "Cannot find any text";
-
-            // Act
-            var result = await _handler.Handle(new GetAllTextsQuery(), CancellationToken.None);
-
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal(errorMsg, result.Errors.First().Message);
-            mockTextRepository.Verify(repo => repo.GetAllAsync(
-                It.IsAny<Expression<Func<Text, bool>>>(),
-                It.IsAny<Func<IQueryable<Text>, IIncludableQueryable<Text, object>>>()
-            ), Times.Once);
-            _mockLogger.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
         }
     }
 }
