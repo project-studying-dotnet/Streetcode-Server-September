@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+namespace Texts.GetById;
+
+using AutoMapper;
 using FluentResults;
 using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
@@ -12,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace Texts.GetById;
+
 
     public class GetTextsByIdHandlerTests
     {
