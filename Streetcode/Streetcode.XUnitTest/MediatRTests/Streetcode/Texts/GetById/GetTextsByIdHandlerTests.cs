@@ -37,10 +37,6 @@ namespace Texts.GetById
             var textDto = new TextDTO { Id = 1, TextContent = "Sample text" };
             var query = new GetTextByIdQuery(1);
 
-            // Setting repository for ID search
-            //_mockRepository.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
-            //    It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(new Text { Id = query.Id })),
-            //    null)).ReturnsAsync(text);
 
             _mockRepository.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
             It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(text)),
