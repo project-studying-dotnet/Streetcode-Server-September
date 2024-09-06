@@ -12,8 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace Texts.GetById
-{
+namespace Texts.GetById;
+
     public class GetTextsByIdHandlerTests
     {
         private readonly Mock<IRepositoryWrapper> _mockRepository;
@@ -85,4 +85,3 @@ namespace Texts.GetById
             _mockLogger.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
         }
     }
-}
