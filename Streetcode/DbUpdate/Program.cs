@@ -1,6 +1,7 @@
 ﻿using DbUp;
 using Microsoft.Extensions.Configuration;
 
+namespace DbUpdate;
 public class Program
 {
     static int Main(string[] args)
