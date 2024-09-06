@@ -2,14 +2,14 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Image.GetByStreetcodeId;
 
-public class GetImageByStreetcodeIdHandler : IRequestHandler<GetImageByStreetcodeIdQuery, Result<IEnumerable<ImageDTO>>>
+public class GetImageByStreetcodeIdHandler : IRequestHandler<GetImageByStreetcodeIdQuery, Result<IEnumerable<ImageDto>>>
 {
     private readonly IBlobService _blobService;
     private readonly IMapper _mapper;
@@ -24,7 +24,7 @@ public class GetImageByStreetcodeIdHandler : IRequestHandler<GetImageByStreetcod
         _logger = logger;
     }
 
-    public async Task<Result<IEnumerable<ImageDTO>>> Handle(GetImageByStreetcodeIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<ImageDto>>> Handle(GetImageByStreetcodeIdQuery request, CancellationToken cancellationToken)
     {
         var images = (await _repositoryWrapper.ImageRepository
             .GetAllAsync(
@@ -38,7 +38,7 @@ public class GetImageByStreetcodeIdHandler : IRequestHandler<GetImageByStreetcod
             return Result.Fail(new Error(errorMsg));
         }
 
-        var imageDtos = _mapper.Map<IEnumerable<ImageDTO>>(images);
+        var imageDtos = _mapper.Map<IEnumerable<ImageDto>>(images);
 
         foreach (var image in imageDtos)
         {

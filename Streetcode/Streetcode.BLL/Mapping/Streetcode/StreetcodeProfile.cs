@@ -1,5 +1,5 @@
 using AutoMapper;
-using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Dto.Streetcode;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.Types;
 using Streetcode.DAL.Enums;
@@ -10,11 +10,11 @@ public class StreetcodeProfile : Profile
 {
     public StreetcodeProfile()
     {
-        CreateMap<StreetcodeContent, StreetcodeDTO>()
+        CreateMap<StreetcodeContent, StreetcodeDto>()
             .ForMember(x => x.StreetcodeType, conf => conf.MapFrom(s => GetStreetcodeType(s)))
             .ReverseMap();
-        CreateMap<StreetcodeContent, StreetcodeShortDTO>().ReverseMap();
-        CreateMap<StreetcodeContent, StreetcodeMainPageDTO>()
+        CreateMap<StreetcodeContent, StreetcodeShortDto>().ReverseMap();
+        CreateMap<StreetcodeContent, StreetcodeMainPageDto>()
              .ForPath(dto => dto.Text, conf => conf
                 .MapFrom(e => e.Text.Title))
             .ForPath(dto => dto.ImageId, conf => conf

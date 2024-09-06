@@ -1,6 +1,6 @@
 using AutoMapper;
-using Streetcode.BLL.DTO.Streetcode;
-using Streetcode.BLL.DTO.Streetcode.Types;
+using Streetcode.BLL.Dto.Streetcode;
+using Streetcode.BLL.Dto.Streetcode.Types;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.Types;
 
@@ -10,7 +10,7 @@ public class PersonStreetcodeProfile : Profile
 {
     public PersonStreetcodeProfile()
     {
-        CreateMap<PersonStreetcode, PersonStreetcodeDTO>()
-            .IncludeBase<StreetcodeContent, StreetcodeDTO>().ReverseMap();
+        CreateMap<PersonStreetcode, PersonStreetcodeDto>()
+            .IncludeBase<StreetcodeContent, StreetcodeDto>().ReverseMap();
     }
 }

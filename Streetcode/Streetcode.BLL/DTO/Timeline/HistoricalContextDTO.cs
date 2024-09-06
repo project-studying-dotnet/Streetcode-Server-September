@@ -1,6 +1,6 @@
-namespace Streetcode.BLL.DTO.Timeline;
+namespace Streetcode.BLL.Dto.Timeline;
 
-public class HistoricalContextDTO
+public class HistoricalContextDto
 {
     public int Id { get; set; }
     public string Title { get; set; }

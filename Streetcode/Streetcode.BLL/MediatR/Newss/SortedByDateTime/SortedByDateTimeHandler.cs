@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.News;
+using Streetcode.BLL.Dto.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
+using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 
 namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
 {
-    public class SortedByDateTimeHandler : IRequestHandler<SortedByDateTimeQuery, Result<List<NewsDTO>>>
+    public class SortedByDateTimeHandler : IRequestHandler<SortedByDateTimeQuery, Result<List<NewsDto>>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
@@ -25,7 +25,7 @@ namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
             _logger = logger;
         }
 
-        public async Task<Result<List<NewsDTO>>> Handle(SortedByDateTimeQuery request, CancellationToken cancellationToken)
+        public async Task<Result<List<NewsDto>>> Handle(SortedByDateTimeQuery request, CancellationToken cancellationToken)
         {
             var news = await _repositoryWrapper.NewsRepository.GetAllAsync(
                 include: cat => cat.Include(img => img.Image));
@@ -36,9 +36,9 @@ namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
                 return Result.Fail(errorMsg);
             }
 
-            var newsDTOs = _mapper.Map<IEnumerable<NewsDTO>>(news).OrderByDescending(x => x.CreationDate).ToList();
+            var newsDtos = _mapper.Map<IEnumerable<NewsDto>>(news).OrderByDescending(x => x.CreationDate).ToList();
 
-            foreach (var dto in newsDTOs)
+            foreach (var dto in newsDtos)
             {
                 if (dto.Image is not null)
                 {
@@ -46,7 +46,7 @@ namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
                 }
             }
 
-            return Result.Ok(newsDTOs);
+            return Result.Ok(newsDtos);
         }
     }
 }

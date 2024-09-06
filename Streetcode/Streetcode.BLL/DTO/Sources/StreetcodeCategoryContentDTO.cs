@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Streetcode.BLL.DTO.Sources
+namespace Streetcode.BLL.Dto.Sources
 {
-    public class StreetcodeCategoryContentDTO
+    public class StreetcodeCategoryContentDto
     {
         [Required]
         [MaxLength(1000)]

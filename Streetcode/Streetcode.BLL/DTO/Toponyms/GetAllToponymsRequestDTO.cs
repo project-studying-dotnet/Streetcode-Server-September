@@ -1,6 +1,6 @@
-﻿namespace Streetcode.BLL.DTO.Toponyms;
+﻿namespace Streetcode.BLL.Dto.Toponyms;
 
-public class GetAllToponymsRequestDTO
+public class GetAllToponymsRequestDto
 {
     public int Page { get; set; } = 1;
     public int Amount { get; set; } = 10;

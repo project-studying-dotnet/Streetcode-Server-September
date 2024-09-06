@@ -3,7 +3,7 @@ using FluentResults;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Org.BouncyCastle.Asn1.Ocsp;
-using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
 using Streetcode.DAL.Entities.Streetcode.TextContent;

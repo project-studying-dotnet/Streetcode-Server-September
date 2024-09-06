@@ -5,11 +5,11 @@ using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.DTO.Media.Art;
+using Streetcode.BLL.Dto.Media.Art;
 
 namespace Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId
 {
-  public class GetArtsByStreetcodeIdHandler : IRequestHandler<GetArtsByStreetcodeIdQuery, Result<IEnumerable<ArtDTO>>>
+  public class GetArtsByStreetcodeIdHandler : IRequestHandler<GetArtsByStreetcodeIdQuery, Result<IEnumerable<ArtDto>>>
     {
         private readonly IBlobService _blobService;
         private readonly IMapper _mapper;
@@ -28,7 +28,7 @@ namespace Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId
             _logger = logger;
         }
 
-        public async Task<Result<IEnumerable<ArtDTO>>> Handle(GetArtsByStreetcodeIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<ArtDto>>> Handle(GetArtsByStreetcodeIdQuery request, CancellationToken cancellationToken)
         {
             /*
             if ((await _repositoryWrapper.StreetcodeRepository.GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId)) is null)
@@ -52,7 +52,7 @@ namespace Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId
 
             var imageIds = arts.Where(a => a.Image != null).Select(a => a.Image!.Id);
 
-            var artsDto = _mapper.Map<IEnumerable<ArtDTO>>(arts);
+            var artsDto = _mapper.Map<IEnumerable<ArtDto>>(arts);
             foreach (var artDto in artsDto)
             {
                 if (artDto.Image != null && artDto.Image.BlobName != null)

@@ -1,8 +1,8 @@
-using Streetcode.BLL.DTO.AdditionalContent;
+using Streetcode.BLL.Dto.AdditionalContent;
 
-namespace Streetcode.BLL.DTO.Media.Video;
+namespace Streetcode.BLL.Dto.Media.Video;
 
-public class VideoDTO
+public class VideoDto
 {
   public int Id { get; set; }
   public string? Description { get; set; }

@@ -1,8 +1,8 @@
-using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Dto.Streetcode;
 
-namespace Streetcode.BLL.DTO.Media.Images;
+namespace Streetcode.BLL.Dto.Media.Images;
 
-public class ImageDTO
+public class ImageDto
 {
     public int Id { get; set; }
 

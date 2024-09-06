@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
@@ -40,8 +40,8 @@ namespace Streetcode.XUnitTest
             )).ReturnsAsync(texts);
 
 
-            var textDto = new List<TextDTO> { new TextDTO { Id = 1, TextContent = "Some sample text" } };
-            _mockMapper.Setup(m => m.Map<IEnumerable<TextDTO>>(texts)).Returns(textDto);
+            var textDto = new List<TextDto> { new TextDto { Id = 1, TextContent = "Some sample text" } };
+            _mockMapper.Setup(m => m.Map<IEnumerable<TextDto>>(texts)).Returns(textDto);
 
             // Act
             var result = await _handler.Handle(new GetAllTextsQuery(), CancellationToken.None);
@@ -55,7 +55,7 @@ namespace Streetcode.XUnitTest
                 It.IsAny<Func<IQueryable<Text>, IIncludableQueryable<Text, object>>>()
             ), Times.Once);
 
-            _mockMapper.Verify(m => m.Map<IEnumerable<TextDTO>>(It.IsAny<IEnumerable<Text>>()), Times.Once);
+            _mockMapper.Verify(m => m.Map<IEnumerable<TextDto>>(It.IsAny<IEnumerable<Text>>()), Times.Once);
         }
     }
 }

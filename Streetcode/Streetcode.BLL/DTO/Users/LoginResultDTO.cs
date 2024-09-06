@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Streetcode.BLL.DTO.Users
+namespace Streetcode.BLL.Dto.Users
 {
-    public class LoginResultDTO
+    public class LoginResultDto
     {
-        public UserDTO User { get; set; }
+        public UserDto User { get; set; }
         public string Token { get; set; }
         public DateTime ExpireAt { get; set; }
     }

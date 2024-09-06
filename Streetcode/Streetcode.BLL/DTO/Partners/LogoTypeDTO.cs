@@ -1,6 +1,6 @@
-﻿namespace Streetcode.BLL.DTO.Partners;
+﻿namespace Streetcode.BLL.Dto.Partners;
 
-public enum LogoTypeDTO : byte
+public enum LogoTypeDto : byte
 {
     Twitter,
     Instagram,

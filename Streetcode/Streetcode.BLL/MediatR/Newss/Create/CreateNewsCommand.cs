@@ -1,8 +1,8 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.News;
+using Streetcode.BLL.Dto.News;
 
 namespace Streetcode.BLL.MediatR.Newss.Create
 {
-    public record CreateNewsCommand(NewsDTO newNews) : IRequest<Result<NewsDTO>>;
+    public record CreateNewsCommand(NewsDto newNews) : IRequest<Result<NewsDto>>;
 }

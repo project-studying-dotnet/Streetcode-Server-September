@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.DTO.Team;
+using Streetcode.BLL.Dto.Team;
 using Streetcode.BLL.MediatR.Team.Create;
 using Streetcode.BLL.MediatR.Team.Position.GetAll;
 
@@ -15,7 +15,7 @@ namespace Streetcode.WebApi.Controllers.Team
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] PositionDTO position)
+        public async Task<IActionResult> Create([FromBody] PositionDto position)
         {
             return HandleResult(await Mediator.Send(new CreatePositionQuery(position)));
         }

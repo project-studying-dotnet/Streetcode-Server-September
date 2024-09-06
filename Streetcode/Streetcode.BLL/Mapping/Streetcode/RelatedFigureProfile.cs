@@ -1,5 +1,5 @@
 using AutoMapper;
-using Streetcode.BLL.DTO.Streetcode.RelatedFigure;
+using Streetcode.BLL.Dto.Streetcode.RelatedFigure;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.Types;
 
@@ -9,7 +9,7 @@ public class RelatedFigureProfile : Profile
 {
     public RelatedFigureProfile()
     {
-        CreateMap<EventStreetcode, RelatedFigureDTO>()
+        CreateMap<EventStreetcode, RelatedFigureDto>()
             .ForPath(dto => dto.Title, conf => conf
                 .MapFrom(e => e.Title))
             .ForPath(dto => dto.Url, conf => conf
@@ -17,12 +17,12 @@ public class RelatedFigureProfile : Profile
             .ForPath(dto => dto.ImageId, conf => conf
                 .MapFrom(e => e.Images.Select(i => i.Id).LastOrDefault()));
 
-        CreateMap<PersonStreetcode, RelatedFigureDTO>()
+        CreateMap<PersonStreetcode, RelatedFigureDto>()
             .ForPath(dto => dto.Url, conf => conf
                 .MapFrom(e => e.TransliterationUrl))
             .ForPath(dto => dto.ImageId, conf => conf
                 .MapFrom(e => e.Images.Select(i => i.Id).LastOrDefault()));
 
-        CreateMap<StreetcodeContent, RelatedFigureShortDTO>();
+        CreateMap<StreetcodeContent, RelatedFigureShortDto>();
     }
 }

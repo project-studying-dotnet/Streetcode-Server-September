@@ -1,9 +1,9 @@
-using Streetcode.BLL.DTO.AdditionalContent;
-using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Dto.AdditionalContent;
+using Streetcode.BLL.Dto.Streetcode;
 
-namespace Streetcode.BLL.DTO.Partners;
+namespace Streetcode.BLL.Dto.Partners;
 
-public class PartnerDTO
+public class PartnerDto
 {
     public int Id { get; set; }
     public bool IsKeyPartner { get; set; }
@@ -11,7 +11,7 @@ public class PartnerDTO
     public string Title { get; set; }
     public string? Description { get; set; }
     public int LogoId { get; set; }
-    public UrlDTO? TargetUrl { get; set; }
-    public List<PartnerSourceLinkDTO>? PartnerSourceLinks { get; set; }
-    public List<StreetcodeShortDTO>? Streetcodes { get; set; }
+    public UrlDto? TargetUrl { get; set; }
+    public List<PartnerSourceLinkDto>? PartnerSourceLinks { get; set; }
+    public List<StreetcodeShortDto>? Streetcodes { get; set; }
 }

@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Sources;
+using Streetcode.BLL.Dto.Sources;
 
 namespace Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoryById;
 
-public record GetCategoryByIdQuery(int Id) : IRequest<Result<SourceLinkCategoryDTO>>;
+public record GetCategoryByIdQuery(int Id) : IRequest<Result<SourceLinkCategoryDto>>;

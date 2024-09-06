@@ -1,6 +1,6 @@
-﻿namespace Streetcode.BLL.DTO.Media.Images;
+﻿namespace Streetcode.BLL.Dto.Media.Images;
 
-public class ImageFileBaseCreateDTO : FileBaseCreateDTO
+public class ImageFileBaseCreateDto : FileBaseCreateDto
 {
     public string? Alt { get; set; }
 }

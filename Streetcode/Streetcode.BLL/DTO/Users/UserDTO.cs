@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Streetcode.DAL.Enums;
 
-namespace Streetcode.BLL.DTO.Users
+namespace Streetcode.BLL.Dto.Users
 {
-    public class UserDTO
+    public class UserDto
     {
         public int Id { get; set; }
         [Required]

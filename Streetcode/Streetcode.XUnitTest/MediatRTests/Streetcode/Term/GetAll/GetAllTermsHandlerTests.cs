@@ -7,7 +7,7 @@ using FluentResults;
 using Streetcode.BLL.MediatR.Streetcode.Term.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using System.Collections.Generic;
 using MediatR;
@@ -41,9 +41,9 @@ public class GetAllTermsHandlerTests
         .ReturnsAsync(terms);
 
 
-        var termDTOs = new List<TermDTO> { new TermDTO { Id = 1, Title = "Test Term" } };
-        _mockMapper.Setup(mapper => mapper.Map<IEnumerable<TermDTO>>(terms))
-            .Returns(termDTOs);
+        var termDtos = new List<TermDto> { new TermDto { Id = 1, Title = "Test Term" } };
+        _mockMapper.Setup(mapper => mapper.Map<IEnumerable<TermDto>>(terms))
+            .Returns(termDtos);
 
         // Act
         var result = await _handler.Handle(new GetAllTermsQuery(), CancellationToken.None);
