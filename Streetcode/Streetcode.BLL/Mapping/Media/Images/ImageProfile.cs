@@ -1,5 +1,5 @@
 using AutoMapper;
-using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
 
@@ -9,8 +9,8 @@ public class ImageProfile : Profile
 {
     public ImageProfile()
     {
-        CreateMap<Image, ImageDTO>().ReverseMap();
+        CreateMap<Image, ImageDto>().ReverseMap();
 
-        CreateMap<ImageFileBaseCreateDTO, Image>();
+        CreateMap<ImageFileBaseCreateDto, Image>();
 	}
 }

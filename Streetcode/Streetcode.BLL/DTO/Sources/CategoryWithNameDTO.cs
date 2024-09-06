@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Streetcode.BLL.DTO.Sources
+namespace Streetcode.BLL.Dto.Sources
 {
-    public class CategoryWithNameDTO
+    public class CategoryWithNameDto
     {
         public int Id { get; set; }
         public string Title { get; set; }

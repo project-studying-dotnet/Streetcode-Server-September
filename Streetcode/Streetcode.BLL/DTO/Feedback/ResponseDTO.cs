@@ -1,6 +1,6 @@
-namespace Streetcode.BLL.DTO.Feedback;
+namespace Streetcode.BLL.Dto.Feedback;
 
-public class ResponseDTO
+public class ResponseDto
 {
     public int Id { get; set; }
     public string? Name { get; set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Dto.Streetcode;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllShort;
 using Streetcode.DAL.Repositories.Interfaces.Base;

@@ -1,10 +1,10 @@
-﻿using Streetcode.BLL.DTO.AdditionalContent;
+﻿using Streetcode.BLL.Dto.AdditionalContent;
 
-namespace Streetcode.BLL.DTO.Partners;
+namespace Streetcode.BLL.Dto.Partners;
 
-public class PartnerSourceLinkDTO
+public class PartnerSourceLinkDto
 {
     public int Id { get; set; }
-    public LogoTypeDTO LogoType { get; set; }
-    public UrlDTO TargetUrl { get; set; }
+    public LogoTypeDto LogoType { get; set; }
+    public UrlDto TargetUrl { get; set; }
 }

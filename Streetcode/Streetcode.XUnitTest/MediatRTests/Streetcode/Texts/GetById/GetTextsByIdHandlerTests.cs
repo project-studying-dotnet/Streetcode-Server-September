@@ -2,7 +2,7 @@ namespace Texts.GetById;
 using AutoMapper;
 using FluentResults;
 using Moq;
-using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetById;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
@@ -32,7 +32,7 @@ public async Task Handle_ReturnsOkResult_WhenTextExists()
 {
     // Arrange
     var text = new Text { Id = 1, TextContent = "Sample text" };
-    var textDto = new TextDTO { Id = 1, TextContent = "Sample text" };
+    var textDto = new TextDto { Id = 1, TextContent = "Sample text" };
     var query = new GetTextByIdQuery(1);
 
 
@@ -41,7 +41,7 @@ public async Task Handle_ReturnsOkResult_WhenTextExists()
     null)).ReturnsAsync(text);
 
 
-    _mockMapper.Setup(m => m.Map<TextDTO>(text)).Returns(textDto);
+    _mockMapper.Setup(m => m.Map<TextDto>(text)).Returns(textDto);
 
     // Act
     var result = await _handler.Handle(query, CancellationToken.None);
@@ -55,7 +55,7 @@ public async Task Handle_ReturnsOkResult_WhenTextExists()
         It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(new Text { Id = query.Id })),
         null), Times.Once);
 
-    _mockMapper.Verify(m => m.Map<TextDTO>(text), Times.Once);
+    _mockMapper.Verify(m => m.Map<TextDto>(text), Times.Once);
 }
 
 [Fact]

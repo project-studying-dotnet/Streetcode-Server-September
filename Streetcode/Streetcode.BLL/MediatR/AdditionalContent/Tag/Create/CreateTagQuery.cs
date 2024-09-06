@@ -1,9 +1,9 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent;
-using Streetcode.BLL.DTO.AdditionalContent.Tag;
+using Streetcode.BLL.Dto.AdditionalContent;
+using Streetcode.BLL.Dto.AdditionalContent.Tag;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.Create
 {
-  public record CreateTagQuery(CreateTagDTO tag) : IRequest<Result<TagDTO>>;
+  public record CreateTagQuery(CreateTagDto tag) : IRequest<Result<TagDto>>;
 }

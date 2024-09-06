@@ -1,6 +1,6 @@
-namespace Streetcode.BLL.DTO.Streetcode.Types;
+namespace Streetcode.BLL.Dto.Streetcode.Types;
 
-public class PersonStreetcodeDTO : StreetcodeDTO
+public class PersonStreetcodeDto : StreetcodeDto
 {
     public string FirstName { get; set; }
     public string? Rank { get; set; }

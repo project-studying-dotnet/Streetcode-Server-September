@@ -1,6 +1,6 @@
-namespace Streetcode.BLL.DTO.AdditionalContent;
+namespace Streetcode.BLL.Dto.AdditionalContent;
 
-public class UrlDTO
+public class UrlDto
 {
     public string? Title { get; set; }
     public string Href { get; set; }

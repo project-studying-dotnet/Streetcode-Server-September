@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.MediatR.Media.Image.GetAll;
 using Streetcode.BLL.MediatR.Media.Image.GetBaseImage;
 using Streetcode.BLL.MediatR.Media.Image.GetById;
@@ -30,7 +30,7 @@ public class ImageController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] ImageFileBaseCreateDTO image)
+    public async Task<IActionResult> Create([FromBody] ImageFileBaseCreateDto image)
     {
         return HandleResult(await Mediator.Send(new CreateImageCommand(image)));
     }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Streetcode.BLL.DTO.Media.Images
+namespace Streetcode.BLL.Dto.Media.Images
 {
     public class ImageDetailsDto
     {

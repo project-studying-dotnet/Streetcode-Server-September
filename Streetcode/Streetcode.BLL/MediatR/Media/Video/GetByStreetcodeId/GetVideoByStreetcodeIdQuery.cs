@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Media.Video;
+using Streetcode.BLL.Dto.Media.Video;
 
 namespace Streetcode.BLL.MediatR.Media.Video.GetByStreetcodeId;
 
-public record GetVideoByStreetcodeIdQuery(int StreetcodeId) : IRequest<Result<VideoDTO>>;
+public record GetVideoByStreetcodeIdQuery(int StreetcodeId) : IRequest<Result<VideoDto>>;

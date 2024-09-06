@@ -1,9 +1,9 @@
-using Streetcode.BLL.DTO.AdditionalContent.Tag;
+using Streetcode.BLL.Dto.AdditionalContent.Tag;
 using Streetcode.DAL.Enums;
 
-namespace Streetcode.BLL.DTO.Streetcode;
+namespace Streetcode.BLL.Dto.Streetcode;
 
-public class StreetcodeDTO
+public class StreetcodeDto
 {
     public int Id { get; set; }
     public int Index { get; set; }
@@ -17,7 +17,7 @@ public class StreetcodeDTO
     public int ViewCount { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public IEnumerable<StreetcodeTagDTO> Tags { get; set; }
+    public IEnumerable<StreetcodeTagDto> Tags { get; set; }
     public string Teaser { get; set; }
     public StreetcodeType StreetcodeType { get; set; }
 }

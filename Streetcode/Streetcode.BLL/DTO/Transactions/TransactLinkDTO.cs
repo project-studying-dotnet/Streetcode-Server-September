@@ -1,8 +1,8 @@
-using Streetcode.BLL.DTO.AdditionalContent;
+using Streetcode.BLL.Dto.AdditionalContent;
 
-namespace Streetcode.BLL.DTO.Transactions;
+namespace Streetcode.BLL.Dto.Transactions;
 
-public class TransactLinkDTO
+public class TransactLinkDto
 {
     public int Id { get; set; }
     public string? Url { get; set; }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Streetcode.BLL.DTO.Streetcode.TextContent
+namespace Streetcode.BLL.Dto.Streetcode.TextContent
 {
-    public class RelatedTermDTO
+    public class RelatedTermDto
     {
         public int Id { get; set; }
         public string Word { get; set; }

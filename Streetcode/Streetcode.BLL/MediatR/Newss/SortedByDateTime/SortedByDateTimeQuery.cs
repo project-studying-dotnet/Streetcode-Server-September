@@ -1,8 +1,8 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.News;
+using Streetcode.BLL.Dto.News;
 
 namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
 {
-    public record SortedByDateTimeQuery() : IRequest<Result<List<NewsDTO>>>;
+    public record SortedByDateTimeQuery() : IRequest<Result<List<NewsDto>>>;
 }
