@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
@@ -39,14 +39,14 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             int id = 1;
             var query = new GetAllRelatedTermsByTermIdQuery(id);
             var relatedTerms = new List<RelatedTerm> { new RelatedTerm { TermId = id } };
-            var relatedTermsDTOs = new List<RelatedTermDTO> { new RelatedTermDTO() };
+            var relatedTermsDTOs = new List<RelatedTermDto> { new RelatedTermDto() };
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                 It.IsAny<Expression<Func<RelatedTerm, bool>>>(),
                 It.IsAny<Func<IQueryable<RelatedTerm>, IIncludableQueryable<RelatedTerm, object>>>()))
              .ReturnsAsync(relatedTerms);
 
-            _mapperMock.Setup(m => m.Map<IEnumerable<RelatedTermDTO>>(relatedTerms))
+            _mapperMock.Setup(m => m.Map<IEnumerable<RelatedTermDto>>(relatedTerms))
             .Returns(relatedTermsDTOs);
 
             // Act
@@ -85,15 +85,15 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             int id = 1;
             var query = new GetAllRelatedTermsByTermIdQuery(id);
             var relatedTerms = new List<RelatedTerm> { new RelatedTerm { TermId = id } };
-            var relatedTermsDTOs = new List<RelatedTermDTO> { new RelatedTermDTO() };
+            var relatedTermsDTOs = new List<RelatedTermDto> { new RelatedTermDto() };
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                 It.IsAny<Expression<Func<RelatedTerm, bool>>>(),
                 It.IsAny<Func<IQueryable<RelatedTerm>, IIncludableQueryable<RelatedTerm, object>>>()))
              .ReturnsAsync(relatedTerms);
 
-            _mapperMock.Setup(m => m.Map<IEnumerable<RelatedTermDTO>>(relatedTerms))
-            .Returns((IEnumerable<RelatedTermDTO>)null);
+            _mapperMock.Setup(m => m.Map<IEnumerable<RelatedTermDto>>(relatedTerms))
+            .Returns((IEnumerable<RelatedTermDto>)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);

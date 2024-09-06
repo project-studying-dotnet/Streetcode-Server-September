@@ -5,7 +5,7 @@ using Moq;
 using AutoMapper;
 using System.Threading;
 using System.Threading.Tasks;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.MediatR.Streetcode.Term.GetById;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -52,14 +52,14 @@ public class GetTermByIdHandlerTests
         // Arrange
         var request = new GetTermByIdQuery(1);
         var term = new Term { Id = 1, Title = "Test Term" };
-        var termDto = new TermDTO { Id = 1, Title = "Test Term" };
+        var termDto = new TermDto { Id = 1, Title = "Test Term" };
 
         _repositoryWrapperMock.Setup(repo => repo.TermRepository.GetFirstOrDefaultAsync(
             It.Is<Expression<Func<Term, bool>>>(exp => exp.Compile().Invoke(term)),
             null)).ReturnsAsync(term);
 
 
-        _mapperMock.Setup(m => m.Map<TermDTO>(term)).Returns(termDto);
+        _mapperMock.Setup(m => m.Map<TermDto>(term)).Returns(termDto);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -73,6 +73,6 @@ public class GetTermByIdHandlerTests
             It.Is<Expression<Func<Term, bool>>>(exp => exp.Compile().Invoke(new Term { Id = request.Id })),
             null), Times.Once);
 
-        _mapperMock.Verify(m => m.Map<TermDTO>(term), Times.Once);
+        _mapperMock.Verify(m => m.Map<TermDto>(term), Times.Once);
     }
 }
