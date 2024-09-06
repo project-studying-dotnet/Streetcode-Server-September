@@ -43,7 +43,7 @@ public class GetToponymsByStreetcodeIdHandler : IRequestHandler<GetToponymsByStr
         var toponymDto = distinctToponyms
             .GroupBy(x => x.StreetName)
             .Select(group => group.First())
-            .Select(x => _mapper.Map<ToponymDTO>(x));
+            .Select(x => _mapper.Map<ToponymDto>(x));
             
         return Result.Ok(toponymDto);
     }
