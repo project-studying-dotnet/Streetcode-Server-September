@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿namespace Term.GetAll;
+
+using Xunit;
 using Moq;
 using AutoMapper;
 using System.Threading;
