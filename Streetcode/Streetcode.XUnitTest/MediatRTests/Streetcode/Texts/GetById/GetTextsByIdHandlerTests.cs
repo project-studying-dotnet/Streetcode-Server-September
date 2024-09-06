@@ -38,9 +38,14 @@ namespace Texts.GetById
             var query = new GetTextByIdQuery(1);
 
             // Setting repository for ID search
+            //_mockRepository.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
+            //    It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(new Text { Id = query.Id })),
+            //    null)).ReturnsAsync(text);
+
             _mockRepository.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
-                It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(new Text { Id = query.Id })),
-                null)).ReturnsAsync(text);
+            It.Is<Expression<Func<Text, bool>>>(exp => exp.Compile().Invoke(text)),
+            null)).ReturnsAsync(text);
+
 
             _mockMapper.Setup(m => m.Map<TextDTO>(text)).Returns(textDto);
 
