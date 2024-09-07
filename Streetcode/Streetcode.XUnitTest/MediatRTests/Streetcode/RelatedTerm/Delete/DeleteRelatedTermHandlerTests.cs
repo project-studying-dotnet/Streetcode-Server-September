@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions;
 using Moq;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
@@ -36,7 +36,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
         public async Task Handle_ReturnsSuccess_WhenDTOFormed()
         {
             // Arrange
-            var relatedTermsDTO = new RelatedTermDTO();
+            var relatedTermsDTO = new RelatedTermDto();
             var query = new DeleteRelatedTermCommand(It.IsAny<string>());
             var relatedTerms = new List<RelatedTerm>(); 
             var entity = new RelatedTerm();
@@ -48,7 +48,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             _repositoryMock.Setup(r => r.SaveChangesAsync())
                 .ReturnsAsync(1);
 
-            _mapperMock.Setup(m => m.Map<RelatedTermDTO>(entity))
+            _mapperMock.Setup(m => m.Map<RelatedTermDto>(entity))
                 .Returns(relatedTermsDTO);
 
             // Act
@@ -62,7 +62,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
         public async Task Handle_ReturnsError_WhenRelatedTermNotFound()
         {
             // Arrange
-            var relatedTermsDTO = new RelatedTermDTO();
+            var relatedTermsDTO = new RelatedTermDto();
             var query = new DeleteRelatedTermCommand(It.IsAny<string>());
             var relatedTerms = new List<RelatedTerm>();
             var entity = new RelatedTerm();
@@ -84,7 +84,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
         public async Task Handle_ReturnsError_WhenSaveFailed()
         {
             // Arrange
-            var relatedTermsDTO = new RelatedTermDTO();
+            var relatedTermsDTO = new RelatedTermDto();
             var query = new DeleteRelatedTermCommand(It.IsAny<string>());
             var relatedTerms = new List<RelatedTerm>();
             var entity = new RelatedTerm();
@@ -109,7 +109,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
         public async Task Handle_ReturnsError_WhenMappingFailed()
         {
             // Arrange
-            var relatedTermsDTO = new RelatedTermDTO();
+            var relatedTermsDTO = new RelatedTermDto();
             var query = new DeleteRelatedTermCommand(It.IsAny<string>());
             var relatedTerms = new List<RelatedTerm>();
             var entity = new RelatedTerm();
@@ -121,8 +121,8 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             _repositoryMock.Setup(r => r.SaveChangesAsync())
                         .ReturnsAsync(1);
 
-            _mapperMock.Setup(m => m.Map<RelatedTermDTO>(entity))
-                .Returns((RelatedTermDTO) null);
+            _mapperMock.Setup(m => m.Map<RelatedTermDto>(entity))
+                .Returns((RelatedTermDto) null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
