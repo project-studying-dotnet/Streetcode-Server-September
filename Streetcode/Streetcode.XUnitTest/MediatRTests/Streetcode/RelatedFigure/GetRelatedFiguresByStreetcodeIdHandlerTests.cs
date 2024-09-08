@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using Streetcode.BLL.DTO.Streetcode.RelatedFigure;
+using Streetcode.BLL.Dto.Streetcode.RelatedFigure;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedFigure.GetByStreetcodeId;
 using Streetcode.DAL.Entities.Media.Images;
@@ -127,8 +127,8 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
             .ReturnsAsync(streetcodeFigures);
 
         _mapperMock
-            .Setup(mapper => mapper.Map<IEnumerable<RelatedFigureDTO>>(It.IsAny<IEnumerable<StreetcodeContent>>()))
-            .Returns(new List<RelatedFigureDTO>());
+            .Setup(mapper => mapper.Map<IEnumerable<RelatedFigureDto>>(It.IsAny<IEnumerable<StreetcodeContent>>()))
+            .Returns(new List<RelatedFigureDto>());
 
         // Act
         var result = await _handler.Handle(request, default);
@@ -136,7 +136,7 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
         //Assert
         Assert.True(result.IsSuccess);
         _mapperMock.Verify(
-            mapper => mapper.Map<IEnumerable<RelatedFigureDTO>>(It.IsAny<IEnumerable<StreetcodeContent>>()),
+            mapper => mapper.Map<IEnumerable<RelatedFigureDto>>(It.IsAny<IEnumerable<StreetcodeContent>>()),
             Times.Once);
         Assert.Equal("A", streetcodeFigures[0].Images.First().ImageDetails?.Alt);
     }
