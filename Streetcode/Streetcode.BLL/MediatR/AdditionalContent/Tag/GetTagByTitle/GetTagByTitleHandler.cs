@@ -1,14 +1,14 @@
 using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent;
+using Streetcode.BLL.Dto.AdditionalContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.AdditionalContent.Tag.GetByStreetcodeId;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.GetTagByTitle;
 
-public class GetTagByTitleHandler : IRequestHandler<GetTagByTitleQuery, Result<TagDTO>>
+public class GetTagByTitleHandler : IRequestHandler<GetTagByTitleQuery, Result<TagDto>>
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
@@ -21,7 +21,7 @@ public class GetTagByTitleHandler : IRequestHandler<GetTagByTitleQuery, Result<T
         _logger = logger;
     }
 
-    public async Task<Result<TagDTO>> Handle(GetTagByTitleQuery request, CancellationToken cancellationToken)
+    public async Task<Result<TagDto>> Handle(GetTagByTitleQuery request, CancellationToken cancellationToken)
     {
         var tag = await _repositoryWrapper.TagRepository.GetFirstOrDefaultAsync(f => f.Title == request.Title);
 
@@ -32,6 +32,6 @@ public class GetTagByTitleHandler : IRequestHandler<GetTagByTitleQuery, Result<T
             return Result.Fail(new Error(errorMsg));
         }
 
-        return Result.Ok(_mapper.Map<TagDTO>(tag));
+        return Result.Ok(_mapper.Map<TagDto>(tag));
     }
 }

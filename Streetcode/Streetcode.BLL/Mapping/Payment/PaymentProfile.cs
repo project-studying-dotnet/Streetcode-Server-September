@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Streetcode.BLL.DTO.Payment;
-using Streetcode.BLL.DTO.Toponyms;
+using Streetcode.BLL.Dto.Payment;
+using Streetcode.BLL.Dto.Toponyms;
 using Streetcode.DAL.Entities.Payment;
 using Streetcode.DAL.Entities.Toponyms;
 
@@ -10,6 +10,6 @@ public class PaymentProfile : Profile
 {
     public PaymentProfile()
     {
-        CreateMap<InvoiceInfo, PaymentResponseDTO>().ReverseMap();
+        CreateMap<InvoiceInfo, PaymentResponseDto>().ReverseMap();
     }
 }

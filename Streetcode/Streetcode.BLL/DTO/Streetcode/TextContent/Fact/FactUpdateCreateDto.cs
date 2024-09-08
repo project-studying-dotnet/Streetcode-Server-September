@@ -1,4 +1,4 @@
-﻿namespace Streetcode.BLL.DTO.Streetcode.TextContent.Fact
+﻿namespace Streetcode.BLL.Dto.Streetcode.TextContent.Fact
 {
     public class FactUpdateCreateDto : FactDto
     {

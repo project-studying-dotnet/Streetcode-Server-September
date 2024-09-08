@@ -2,13 +2,13 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId
 {
-    public record GetAllRelatedTermsByTermIdHandler : IRequestHandler<GetAllRelatedTermsByTermIdQuery, Result<IEnumerable<RelatedTermDTO>>>
+    public record GetAllRelatedTermsByTermIdHandler : IRequestHandler<GetAllRelatedTermsByTermIdQuery, Result<IEnumerable<RelatedTermDto>>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repository;
@@ -21,7 +21,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId
             _logger = logger;
         }
 
-        public async Task<Result<IEnumerable<RelatedTermDTO>>> Handle(GetAllRelatedTermsByTermIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<RelatedTermDto>>> Handle(GetAllRelatedTermsByTermIdQuery request, CancellationToken cancellationToken)
         {
             var relatedTerms = await _repository.RelatedTermRepository
                 .GetAllAsync(
@@ -35,16 +35,16 @@ namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId
                 return new Error(errorMsg);
             }
 
-            var relatedTermsDTO = _mapper.Map<IEnumerable<RelatedTermDTO>>(relatedTerms);
+            var relatedTermsDto = _mapper.Map<IEnumerable<RelatedTermDto>>(relatedTerms);
 
-            if (relatedTermsDTO is null)
+            if (relatedTermsDto is null)
             {
                 const string errorMsg = "Cannot create DTOs for related words!";
                 _logger.LogError(request, errorMsg);
                 return new Error(errorMsg);
             }
 
-            return Result.Ok(relatedTermsDTO);
+            return Result.Ok(relatedTermsDto);
         }
     }
 }

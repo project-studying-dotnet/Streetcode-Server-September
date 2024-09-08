@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Dto.Streetcode;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByIndex;
 
-public record GetStreetcodeByIndexQuery(int Index) : IRequest<Result<StreetcodeDTO>>;
+public record GetStreetcodeByIndexQuery(int Index) : IRequest<Result<StreetcodeDto>>;

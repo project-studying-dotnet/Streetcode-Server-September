@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
-using Streetcode.BLL.DTO.Media.Video;
+using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
+using Streetcode.BLL.Dto.Media.Video;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Video.GetAll;
 
-public class GetAllVideosHandler : IRequestHandler<GetAllVideosQuery, Result<IEnumerable<VideoDTO>>>
+public class GetAllVideosHandler : IRequestHandler<GetAllVideosQuery, Result<IEnumerable<VideoDto>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
@@ -22,7 +22,7 @@ public class GetAllVideosHandler : IRequestHandler<GetAllVideosQuery, Result<IEn
         _logger = logger;
     }
 
-    public async Task<Result<IEnumerable<VideoDTO>>> Handle(GetAllVideosQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<VideoDto>>> Handle(GetAllVideosQuery request, CancellationToken cancellationToken)
     {
         var videos = await _repositoryWrapper.VideoRepository.GetAllAsync();
 
@@ -33,6 +33,6 @@ public class GetAllVideosHandler : IRequestHandler<GetAllVideosQuery, Result<IEn
             return Result.Fail(new Error(errorMsg));
         }
 
-        return Result.Ok(_mapper.Map<IEnumerable<VideoDTO>>(videos));
+        return Result.Ok(_mapper.Map<IEnumerable<VideoDto>>(videos));
     }
 }

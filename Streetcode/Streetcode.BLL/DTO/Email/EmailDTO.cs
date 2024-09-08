@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Streetcode.BLL.DTO.Email
+namespace Streetcode.BLL.Dto.Email
 {
-    public class EmailDTO
+    public class EmailDto
     {
         [MaxLength(80)]
         public string From { get; set; }

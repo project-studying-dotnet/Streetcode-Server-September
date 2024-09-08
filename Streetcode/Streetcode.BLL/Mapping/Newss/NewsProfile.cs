@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Streetcode.BLL.DTO.News;
+using Streetcode.BLL.Dto.News;
 using Streetcode.DAL.Entities.News;
 
 namespace Streetcode.BLL.Mapping.Newss
@@ -8,7 +8,7 @@ namespace Streetcode.BLL.Mapping.Newss
     {
         public NewsProfile()
         {
-            CreateMap<News, NewsDTO>().ReverseMap();
+            CreateMap<News, NewsDto>().ReverseMap();
         }
     }
 }

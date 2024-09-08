@@ -1,6 +1,6 @@
-namespace Streetcode.BLL.DTO.AdditionalContent.Coordinates;
+namespace Streetcode.BLL.Dto.AdditionalContent.Coordinates;
 
-public abstract class CoordinateDTO
+public abstract class CoordinateDto
 {
     public int Id { get; set; }
     public decimal Latitude { get; set; }

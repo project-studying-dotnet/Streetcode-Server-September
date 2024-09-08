@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Streetcode.BLL.DTO.News
+namespace Streetcode.BLL.Dto.News
 {
-    public class RandomNewsDTO
+    public class RandomNewsDto
     {
         public string Title { get; set; }
 

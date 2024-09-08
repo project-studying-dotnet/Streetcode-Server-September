@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Dto.Streetcode;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetById;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByTransliterationUrl;
@@ -7,7 +7,7 @@ using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllShort;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllCatalog;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetCount;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter;
-using Streetcode.BLL.DTO.AdditionalContent.Filter;
+using Streetcode.BLL.Dto.AdditionalContent.Filter;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetShortById;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllStreetcodesMainPage;
 
@@ -16,7 +16,7 @@ namespace Streetcode.WebApi.Controllers.Streetcode;
 public class StreetcodeController : BaseApiController
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] GetAllStreetcodesRequestDTO request)
+    public async Task<IActionResult> GetAll([FromQuery] GetAllStreetcodesRequestDto request)
     {
         return HandleResult(await Mediator.Send(new GetAllStreetcodesQuery(request)));
     }
@@ -40,7 +40,7 @@ public class StreetcodeController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetByFilter([FromQuery] StreetcodeFilterRequestDTO request)
+    public async Task<IActionResult> GetByFilter([FromQuery] StreetcodeFilterRequestDto request)
     {
         return HandleResult(await Mediator.Send(new GetStreetcodeByFilterQuery(request)));
     }

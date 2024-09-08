@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.DTO.Partners;
+using Streetcode.BLL.Dto.Partners;
 using Streetcode.BLL.MediatR.Partners.Create;
 using Streetcode.BLL.MediatR.Partners.GetAll;
 using Streetcode.BLL.MediatR.Partners.GetAllPartnerShort;
@@ -35,13 +35,13 @@ public class PartnersController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreatePartnerDTO partner)
+    public async Task<IActionResult> Create([FromBody] CreatePartnerDto partner)
     {
         return HandleResult(await Mediator.Send(new CreatePartnerQuery(partner)));
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] CreatePartnerDTO partner)
+    public async Task<IActionResult> Update([FromBody] CreatePartnerDto partner)
     {
         return HandleResult(await Mediator.Send(new BLL.MediatR.Partners.Update.UpdatePartnerQuery(partner)));
     }

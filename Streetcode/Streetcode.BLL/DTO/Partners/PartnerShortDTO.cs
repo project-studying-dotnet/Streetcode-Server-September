@@ -1,6 +1,6 @@
-﻿namespace Streetcode.BLL.DTO.Partners
+﻿namespace Streetcode.BLL.Dto.Partners
 {
-    public class PartnerShortDTO
+    public class PartnerShortDto
     {
         public int Id { get; set; }
         public string Title { get; set; }

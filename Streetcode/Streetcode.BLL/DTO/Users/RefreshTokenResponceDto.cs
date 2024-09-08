@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Streetcode.BLL.DTO.Users
+namespace Streetcode.BLL.Dto.Users
 {
-    public class RefreshTokenResponce
+    public class RefreshTokenResponceDto
     {
         public string Token { get; set; }
         public DateTime ExpireAt { get; set; }

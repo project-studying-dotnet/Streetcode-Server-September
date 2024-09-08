@@ -1,8 +1,8 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Timeline;
+using Streetcode.BLL.Dto.Timeline;
 
 namespace Streetcode.BLL.MediatR.Timeline.HistoricalContext.GetAll
 {
-    public record GetAllHistoricalContextQuery : IRequest<Result<IEnumerable<HistoricalContextDTO>>>;
+    public record GetAllHistoricalContextQuery : IRequest<Result<IEnumerable<HistoricalContextDto>>>;
 }

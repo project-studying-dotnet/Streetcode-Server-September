@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Partners;
+using Streetcode.BLL.Dto.Partners;
 
 namespace Streetcode.BLL.MediatR.Partners.GetAll;
 
-public record GetAllPartnersQuery : IRequest<Result<IEnumerable<PartnerDTO>>>;
+public record GetAllPartnersQuery : IRequest<Result<IEnumerable<PartnerDto>>>;

@@ -1,10 +1,10 @@
-﻿using Streetcode.BLL.DTO.Media.Images;
-namespace Streetcode.BLL.DTO.Sources;
+﻿using Streetcode.BLL.Dto.Media.Images;
+namespace Streetcode.BLL.Dto.Sources;
 
-public class SourceLinkCategoryDTO
+public class SourceLinkCategoryDto
 {
     public int Id { get; set; }
     public string Title { get; set; }
     public int ImageId { get; set; }
-    public ImageDTO? Image { get; set; }
+    public ImageDto? Image { get; set; }
 }

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Streetcode.BLL.DTO.Payment
+namespace Streetcode.BLL.Dto.Payment
 {
-    public class PaymentDTO
+    public class PaymentDto
     {
         [Required]
         public long Amount { get; set; }

@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
-using Streetcode.BLL.DTO.Media.Images;
+using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
+using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.DTO.Media.Art;
+using Streetcode.BLL.Dto.Media.Art;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Art.GetAll;
 
-public class GetAllArtsHandler : IRequestHandler<GetAllArtsQuery, Result<IEnumerable<ArtDTO>>>
+public class GetAllArtsHandler : IRequestHandler<GetAllArtsQuery, Result<IEnumerable<ArtDto>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
@@ -22,7 +22,7 @@ public class GetAllArtsHandler : IRequestHandler<GetAllArtsQuery, Result<IEnumer
         _logger = logger;
     }
 
-    public async Task<Result<IEnumerable<ArtDTO>>> Handle(GetAllArtsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<ArtDto>>> Handle(GetAllArtsQuery request, CancellationToken cancellationToken)
     {
         var arts = await _repositoryWrapper.ArtRepository.GetAllAsync();
 
@@ -33,6 +33,6 @@ public class GetAllArtsHandler : IRequestHandler<GetAllArtsQuery, Result<IEnumer
             return Result.Fail(new Error(errorMsg));
         }
 
-        return Result.Ok(_mapper.Map<IEnumerable<ArtDTO>>(arts));
+        return Result.Ok(_mapper.Map<IEnumerable<ArtDto>>(arts));
     }
 }
