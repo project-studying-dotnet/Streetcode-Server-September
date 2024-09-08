@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿namespace Fact.GetAll;
+
+using AutoMapper;
 using FluentResults;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -16,68 +18,65 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts.GetAll
+public class GetAllFactsHandlerTests
 {
-    public class GetAllFactsHandlerTests
+    private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<ILoggerService> _loggerMock;
+    private readonly GetAllFactsHandler _handler;
+
+    public GetAllFactsHandlerTests()
     {
-        private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
-        private readonly GetAllFactsHandler _handler;
+        _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
+        _mapperMock = new Mock<IMapper>();
+        _loggerMock = new Mock<ILoggerService>();
+        _handler = new GetAllFactsHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
+    }
 
-        public GetAllFactsHandlerTests()
-        {
-            _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
-            _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _handler = new GetAllFactsHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
-        }
+    [Fact]
+    public async Task Handle_ReturnsFactsDto_WhenFactsExist()
+    {
+        // Arrange
+        var facts = new List<Fact> { new Fact { Id = 1, Title = "Fact Title", FactContent = "Fact Content" } };
+        var factsDto = new List<FactDto>() { new FactDto { Id = 1, Title = "Fact Title", FactContent = "Fact Content" } };
 
-        [Fact]
-        public async Task Handle_ReturnsFactsDto_WhenFactsExist()
-        {
-            // Arrange
-            var facts = new List<Fact> { new Fact { Id = 1, Title = "Fact Title", FactContent = "Fact Content" } };
-            var factsDto = new List<FactDto>() { new FactDto { Id = 1, Title = "Fact Title", FactContent = "Fact Content" } };
+        _repositoryWrapperMock.Setup(repo => repo.FactRepository
+            .GetAllAsync(
+                It.IsAny<Expression<Func<Fact, bool>>>(),
+                It.IsAny<Func<IQueryable<Fact>, IIncludableQueryable<Fact, object>>>()))
+            .ReturnsAsync(facts);
 
-            _repositoryWrapperMock.Setup(repo => repo.FactRepository
-                .GetAllAsync(
-                    It.IsAny<Expression<Func<Fact, bool>>>(),
-                    It.IsAny<Func<IQueryable<Fact>, IIncludableQueryable<Fact, object>>>()))
-                .ReturnsAsync(facts);
+        _mapperMock.Setup(mapper => mapper.Map<IEnumerable<FactDto>>(It.IsAny<IEnumerable<Fact>>()))
+            .Returns(factsDto);
 
-            _mapperMock.Setup(mapper => mapper.Map<IEnumerable<FactDto>>(It.IsAny<IEnumerable<Fact>>()))
-                .Returns(factsDto);
+        // Act
+        var result = await _handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
 
-            // Act
-            var result = await _handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
+        // Assert
+        Assert.Multiple(
+            () => Assert.True(result.IsSuccess),
+            () => Assert.Equal(factsDto, result.Value));
+    }
 
-            // Assert
-            Assert.Multiple(
-                () => Assert.True(result.IsSuccess),
-                () => Assert.Equal(factsDto, result.Value));
-        }
+    [Fact]
+    public async Task Handle_ReturnsErrorMsg_WhenFactsNotFound()
+    {
+        // Arrange
+        string expectedErrorMsg = $"Cannot find any fact";
 
-        [Fact]
-        public async Task Handle_ReturnsErrorMsg_WhenFactsNotFound()
-        {
-            // Arrange
-            string expectedErrorMsg = $"Cannot find any fact";
+        _repositoryWrapperMock.Setup(repo => repo.FactRepository
+           .GetAllAsync(
+               It.IsAny<Expression<Func<Fact, bool>>>(),
+               It.IsAny<Func<IQueryable<Fact>, IIncludableQueryable<Fact, object>>>()))
+           .ReturnsAsync((IEnumerable<Fact>)null);
 
-            _repositoryWrapperMock.Setup(repo => repo.FactRepository
-               .GetAllAsync(
-                   It.IsAny<Expression<Func<Fact, bool>>>(),
-                   It.IsAny<Func<IQueryable<Fact>, IIncludableQueryable<Fact, object>>>()))
-               .ReturnsAsync((IEnumerable<Fact>)null);
+        // Act
+        var result = await _handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
 
-            // Act
-            var result = await _handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
-
-            // Assert
-            Assert.Multiple(
-                () => Assert.True(result.IsFailed),
-                () => Assert.Equal(expectedErrorMsg, result.Errors.First().Message));
-            _loggerMock.Verify(x => x.LogError(It.IsAny<object>(), It.Is<string>(s => s.Contains(expectedErrorMsg))), Times.Once);
-        }
+        // Assert
+        Assert.Multiple(
+            () => Assert.True(result.IsFailed),
+            () => Assert.Equal(expectedErrorMsg, result.Errors.First().Message));
+        _loggerMock.Verify(x => x.LogError(It.IsAny<object>(), It.Is<string>(s => s.Contains(expectedErrorMsg))), Times.Once);
     }
 }
