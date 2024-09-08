@@ -7,11 +7,9 @@ ToDo
 
 ToDo
 
-## Testing approach
+## Comments
 
 ToDo
-
-## Comments
 
 ## CHECK LIST
 - [ ]  СI passed
