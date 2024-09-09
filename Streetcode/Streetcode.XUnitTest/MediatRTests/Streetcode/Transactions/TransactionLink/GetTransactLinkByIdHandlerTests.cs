@@ -5,6 +5,7 @@ using Moq;
 using Streetcode.BLL.Dto.Transactions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Transactions.TransactionLink.GetById;
+using Streetcode.BLL.MediatR.Transactions.TransactionLink.GetByStreetcodeId;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
 using Xunit;
@@ -31,26 +32,31 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Transactions.TransactionL
         public async Task Handle_ReturnOkResult_WhenTransactLinkExist()
         {
             // Arrange
-            var transactionLink = new TransactLink { Id = 1, StreetcodeId = 1 };
+            var id = 1;
+            var transactionLink = new TransactLink { Id = id, StreetcodeId = 1 };
+            var transactionDto = new TransactLinkDto { Id = transactionLink.Id, StreetcodeId = transactionLink.StreetcodeId };
+            var query = new GetTransactLinkByIdQuery(id);
 
             _mockRepository.Setup(repo => repo.TransactLinksRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<TransactLink, bool>>>(),
-                It.IsAny<Func<IQueryable<TransactLink>, IIncludableQueryable<TransactLink, object>>>()
-                ))
+                It.Is<Expression<Func<TransactLink, bool>>>(exp => exp.Compile().Invoke(transactionLink)), null))
             .ReturnsAsync(transactionLink);
 
-            var transactionDto =  new TransactLinkDto { Id = transactionLink.Id, StreetcodeId = transactionLink.StreetcodeId };
             _mockMapper.Setup(m => m.Map<TransactLinkDto>(transactionLink)).Returns(transactionDto);
 
             // Act
-            var result = await _handler.Handle(new GetTransactLinkByIdQuery(transactionLink.Id), CancellationToken.None);
+            var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
             result.ValueOrDefault.Should().BeEquivalentTo(transactionDto);
+
+            _mockRepository.Verify(repo => repo.TransactLinksRepository.GetFirstOrDefaultAsync(
+                    It.Is<Expression<Func<TransactLink, bool>>>(
+                         exp => exp.Compile().Invoke(new TransactLink { Id = query.Id })),
+            null), Times.Once);
         }
 
-        public async Task Handle_ReturnOkResult_WhenTransactLinkIsNull()
+        public async Task Handle_ReturnFailResult_WhenTransactLinkIsNull()
         {
             // Arrange
             _mockRepository.Setup(repo => repo.TransactLinksRepository.GetFirstOrDefaultAsync(

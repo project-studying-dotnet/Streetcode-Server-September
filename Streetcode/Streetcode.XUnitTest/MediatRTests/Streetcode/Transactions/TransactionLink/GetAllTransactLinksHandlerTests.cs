@@ -57,7 +57,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Transactions.TransactionL
         }
 
         [Fact]
-        public async Task Handle_ReturnOkResult_WhenTransactLinksAreNull()
+        public async Task Handle_ReturnFailResult_WhenTransactLinksAreNull()
         {
             // Arrange
             _mockRepository.Setup(repo => repo.TransactLinksRepository.GetAllAsync(
