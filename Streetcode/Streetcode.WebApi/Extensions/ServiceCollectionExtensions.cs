@@ -1,9 +1,6 @@
-using System.Text;
 using Hangfire;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Services.Logging;
@@ -15,7 +12,6 @@ using Streetcode.BLL.Services.Email;
 using Streetcode.DAL.Entities.AdditionalContent.Email;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
-using Streetcode.BLL.Interfaces.Users;
 using Microsoft.FeatureManagement;
 using Streetcode.BLL.Interfaces.Payment;
 using Streetcode.BLL.Services.Payment;
@@ -23,7 +19,6 @@ using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
-using Serilog.Events;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -52,8 +47,12 @@ public static class ServiceCollectionExtensions
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+        var connectionString = configuration.GetConnectionString("DefaultConnection") 
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not found in the configuration.");
+
+        var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>()
+            ?? throw new InvalidOperationException("EmailConfiguration section is missing in the configuration."); ;
+
         services.AddSingleton(emailConfig);
 
         services.AddDbContext<StreetcodeDbContext>(options =>
@@ -106,9 +105,9 @@ public static class ServiceCollectionExtensions
 
     public class CorsConfiguration
     {
-        public List<string> AllowedOrigins { get; set; }
-        public List<string> AllowedHeaders { get; set; }
-        public List<string> AllowedMethods { get; set; }
+        public List<string>? AllowedOrigins { get; set; }
+        public List<string>? AllowedHeaders { get; set; }
+        public List<string>? AllowedMethods { get; set; }
         public int PreflightMaxAge { get; set; }
     }
 }
