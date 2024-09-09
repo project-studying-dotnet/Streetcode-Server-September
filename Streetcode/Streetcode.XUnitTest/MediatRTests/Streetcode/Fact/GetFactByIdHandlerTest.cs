@@ -56,7 +56,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         public async Task Handle_ReturnsOkResult_WhenFactFound()
         {
             var factId = 1;
-            var request = new GetFactByIdQuery(5);
+            var request = new GetFactByIdQuery(factId);
             var fact = new FactEntity { Id = factId, Title = "Test Fact" };
             var factDto = new FactDto { Id = factId, Title = "Test Fact" };
 
