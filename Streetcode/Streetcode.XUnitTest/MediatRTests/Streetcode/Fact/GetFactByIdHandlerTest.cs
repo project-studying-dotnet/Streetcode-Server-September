@@ -3,6 +3,7 @@ using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System;
 using System.Collections.Generic;
@@ -55,12 +56,12 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         public async Task Handle_ReturnsOkResult_WhenFactFound()
         {
             var factId = 1;
-            var request = new GetFactByIdQuery(factId);
+            var request = new GetFactByIdQuery(5);
             var fact = new FactEntity { Id = factId, Title = "Test Fact" };
             var factDto = new FactDto { Id = factId, Title = "Test Fact" };
 
             _repositoryWrapperMock.Setup(repo => repo.FactRepository
-                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<FactEntity, bool>>>(), null))
+                .GetFirstOrDefaultAsync(It.Is<Expression<Func<FactEntity, bool>>>(exp => exp.Compile().Invoke(fact)), null))
                 .ReturnsAsync(fact);
 
             _mapperMock.Setup(m => m.Map<FactDto>(fact)).Returns(factDto);
@@ -71,9 +72,10 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
             // Assert
             Assert.True(result.IsSuccess);
             Assert.Equal(factDto, result.Value);
-            _repositoryWrapperMock.Verify(
-                repo => repo.FactRepository
-                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<FactEntity, bool>>>(), null), Times.Once);
+            _repositoryWrapperMock.Verify(repo => repo.FactRepository.GetFirstOrDefaultAsync(
+                It.Is<Expression<Func<FactEntity, bool>>>(
+                    exp => exp.Compile().Invoke(new FactEntity { Id = request.Id })), null), Times.Once);
+
             _mapperMock.Verify(m => m.Map<FactDto>(fact), Times.Once);
         }
     }
