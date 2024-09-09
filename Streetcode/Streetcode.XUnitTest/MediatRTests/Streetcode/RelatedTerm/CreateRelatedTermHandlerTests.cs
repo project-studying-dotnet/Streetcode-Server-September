@@ -1,26 +1,16 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using FluentResults;
-using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
-using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
-using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
+using RelatedTermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
-namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
+namespace Streetcode.XUnitTest.MediatRTests.Streetcode.RelatedTerm
 {
     public class CreateRelatedTermHandlerTests
     {
@@ -43,17 +33,17 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDto();
             var query = new CreateRelatedTermCommand(relatedTermsDTO);
-            var relatedTerms = new List<Entity>();
-            var entity = new Entity();
+            var relatedTerms = new List<RelatedTermEntity>();
+            var entity = new RelatedTermEntity();
 
-            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm))  
+            _mapperMock.Setup(m => m.Map<RelatedTermEntity>(query.RelatedTerm))  
                 .Returns(entity);
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
-                    It.IsAny<Expression<Func<Entity, bool>>>(), null))
-                .ReturnsAsync(relatedTerms);  
+                    It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
+                .ReturnsAsync(relatedTerms);
 
-            _repositoryMock.Setup(r => r.RelatedTermRepository.Create(It.IsAny<Entity>()))
+            _repositoryMock.Setup(r => r.RelatedTermRepository.Create(It.IsAny<RelatedTermEntity>()))
                 .Returns(entity);
 
             _repositoryMock.Setup(r => r.SaveChangesAsync())
@@ -77,12 +67,12 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDto();
             var query = new CreateRelatedTermCommand(relatedTermsDTO);
-            var relatedTerms = new List<Entity>(); 
-            var entity = new Entity();
+            var relatedTerms = new List<RelatedTermEntity>(); 
+            var entity = new RelatedTermEntity();
 
 
-            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm)) 
-                .Returns((Entity)null);
+            _mapperMock.Setup(m => m.Map<RelatedTermEntity>(query.RelatedTerm)) 
+                .Returns((RelatedTermEntity)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -99,15 +89,15 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDto();
             var query = new CreateRelatedTermCommand(relatedTermsDTO);
-            var relatedTerms = new List<Entity>(); 
-            var entity = new Entity();
+            var relatedTerms = new List<RelatedTermEntity>(); 
+            var entity = new RelatedTermEntity();
 
 
-            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm)).Returns(entity);
+            _mapperMock.Setup(m => m.Map<RelatedTermEntity>(query.RelatedTerm)).Returns(entity);
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
-                    It.IsAny<Expression<Func<Entity, bool>>>(), null))
-                .ReturnsAsync((IEnumerable<Entity>)null);
+                    It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
+                .ReturnsAsync((IEnumerable<RelatedTermEntity>)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -124,18 +114,18 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDto();
             var query = new CreateRelatedTermCommand(relatedTermsDTO);
-            var relatedTerms = new List<Entity>(); // Simulate no existing related terms
-            var entity = new Entity();
+            var relatedTerms = new List<RelatedTermEntity>(); // Simulate no existing related terms
+            var entity = new RelatedTermEntity();
 
 
-            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm)) 
+            _mapperMock.Setup(m => m.Map<RelatedTermEntity>(query.RelatedTerm)) 
                             .Returns(entity);
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
-                    It.IsAny<Expression<Func<Entity, bool>>>(), null))
-                .ReturnsAsync(relatedTerms); 
+                    It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
+                .ReturnsAsync(relatedTerms);
 
-            _repositoryMock.Setup(r => r.RelatedTermRepository.Create(It.IsAny<Entity>()))
+            _repositoryMock.Setup(r => r.RelatedTermRepository.Create(It.IsAny<RelatedTermEntity>()))
                 .Returns(entity);
 
             _repositoryMock.Setup(r => r.SaveChangesAsync())
@@ -156,18 +146,18 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDto();
             var query = new CreateRelatedTermCommand(relatedTermsDTO);
-            var relatedTerms = new List<Entity>(); 
-            var entity = new Entity();
+            var relatedTerms = new List<RelatedTermEntity>(); 
+            var entity = new RelatedTermEntity();
 
 
-            _mapperMock.Setup(m => m.Map<Entity>(query.RelatedTerm))
+            _mapperMock.Setup(m => m.Map<RelatedTermEntity>(query.RelatedTerm))
                             .Returns(entity);
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
-                    It.IsAny<Expression<Func<Entity, bool>>>(), null))
+                    It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
                 .ReturnsAsync(relatedTerms);
 
-            _repositoryMock.Setup(r => r.RelatedTermRepository.Create(It.IsAny<Entity>()))
+            _repositoryMock.Setup(r => r.RelatedTermRepository.Create(It.IsAny<RelatedTermEntity>()))
                 .Returns(entity);
 
             _repositoryMock.Setup(r => r.SaveChangesAsync())

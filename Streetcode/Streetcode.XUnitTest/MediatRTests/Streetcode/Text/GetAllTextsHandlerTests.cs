@@ -4,13 +4,13 @@ using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
 using Xunit;
 
+using TextEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
 
-namespace Streetcode.XUnitTest
+namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Text
 {
     public class GetAllTextsHandlerTests
     {
@@ -27,16 +27,15 @@ namespace Streetcode.XUnitTest
             _handler = new GetAllTextsHandler(_mockRepository.Object, _mockMapper.Object, _mockLogger.Object);
         }
 
-
         [Fact]
         public async Task Handle_ReturnOkResult_WhenTextsExist()
         {
             // Arrange
-            var texts = new List<Text> { new Text { Id = 1, TextContent = "Some sample text" } };
+            var texts = new List<TextEntity> { new TextEntity { Id = 1, TextContent = "Some sample text" } };
             _mockRepository.Setup(
             repo => repo.TextRepository.GetAllAsync(
-                It.IsAny<Expression<Func<Text, bool>>>(),
-                It.IsAny<Func<IQueryable<Text>, IIncludableQueryable<Text, object>>>()
+                It.IsAny<Expression<Func<TextEntity, bool>>>(),
+                It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()
             )).ReturnsAsync(texts);
 
 
@@ -51,11 +50,11 @@ namespace Streetcode.XUnitTest
             Assert.Equal(textDto, result.ValueOrDefault);
 
             _mockRepository.Verify(repo => repo.TextRepository.GetAllAsync(
-                It.IsAny<Expression<Func<Text, bool>>>(),
-                It.IsAny<Func<IQueryable<Text>, IIncludableQueryable<Text, object>>>()
+                It.IsAny<Expression<Func<TextEntity, bool>>>(),
+                It.IsAny<Func<IQueryable<TextEntity>, IIncludableQueryable<TextEntity, object>>>()
             ), Times.Once);
 
-            _mockMapper.Verify(m => m.Map<IEnumerable<TextDto>>(It.IsAny<IEnumerable<Text>>()), Times.Once);
+            _mockMapper.Verify(m => m.Map<IEnumerable<TextDto>>(It.IsAny<IEnumerable<TextEntity>>()), Times.Once);
         }
     }
 }
