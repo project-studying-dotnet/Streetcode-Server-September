@@ -43,11 +43,11 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.RelatedTerm
                     It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
                 .ReturnsAsync(relatedTerms);
 
-            _repositoryMock.Setup(r => r.RelatedTermRepository.Create(It.IsAny<RelatedTermEntity>()))
-                .Returns(entity);
+            _repositoryMock.Setup(r => r.RelatedTermRepository.CreateAsync(It.IsAny<RelatedTermEntity>()))
+                .ReturnsAsync(entity);
 
             _repositoryMock.Setup(r => r.SaveChangesAsync())
-                .ReturnsAsync(1); 
+                .ReturnsAsync(1);
 
             _mapperMock.Setup(m => m.Map<RelatedTermDto>(entity))
                 .Returns(relatedTermsDTO);
