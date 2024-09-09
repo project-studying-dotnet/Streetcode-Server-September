@@ -53,21 +53,21 @@ public class GetTimelineItemsByStreetcodeIdHandlerTests
         // Arrange
         var request = new GetTimelineItemsByStreetcodeIdQuery(1);
         var timelineItems = new List<TimelineItemEntity>
-    {
-        new TimelineItemEntity { Id = 1, Title = "Test Timeline", StreetcodeId = 1 },
-        new TimelineItemEntity { Id = 2, Title = "Another Timeline", StreetcodeId = 2 }
-    };
+        {
+            new TimelineItemEntity { Id = 1, Title = "Test Timeline", StreetcodeId = 1 },
+            new TimelineItemEntity { Id = 2, Title = "Another Timeline", StreetcodeId = 1 },
+        };
 
         var timelineItemDtos = new List<TimelineItemDto>
-    {
-        new TimelineItemDto { Id = 1, Title = "Test Timeline" },
-        new TimelineItemDto { Id = 2, Title = "Another Timeline" }
-    };
+        {
+            new TimelineItemDto { Id = 1, Title = "Test Timeline" },
+            new TimelineItemDto { Id = 2, Title = "Another Timeline" },
+        };
 
-        _repositoryWrapperMock.Setup(repo => repo.TimelineRepository
-            .GetAllAsync(
-                It.Is<Expression<Func<TimelineItemEntity, bool>>>(exp => exp.Compile().Invoke(new TimelineItemEntity { StreetcodeId = request.StreetcodeId })),
-                It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
+        _repositoryWrapperMock.Setup(r => r.TimelineRepository.GetAllAsync(
+            It.Is<Expression<Func<TimelineItemEntity, bool>>>(expr =>
+                timelineItems.All(item => expr.Compile()(item) && item.StreetcodeId == request.StreetcodeId)),
+            It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
             .ReturnsAsync(timelineItems);
 
         _mapperMock.Setup(m => m.Map<IEnumerable<TimelineItemDto>>(timelineItems)).Returns(timelineItemDtos);
@@ -76,8 +76,8 @@ public class GetTimelineItemsByStreetcodeIdHandlerTests
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Value.Should().BeEquivalentTo(timelineItemDtos);
+        Assert.True(result.IsSuccess);
+        Assert.Equal(timelineItemDtos, result.Value);
         _mapperMock.Verify(m => m.Map<IEnumerable<TimelineItemDto>>(timelineItems), Times.Once);
     }
 }
