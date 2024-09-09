@@ -3,19 +3,14 @@ using FluentAssertions;
 using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
+using RelatedTermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
+
+namespace Streetcode.XUnitTest.MediatRTests.Streetcode.RelatedTerm
 {
     public class DeleteRelatedTermHandlerTests
     {
@@ -38,11 +33,11 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDto();
             var query = new DeleteRelatedTermCommand(It.IsAny<string>());
-            var relatedTerms = new List<RelatedTerm>(); 
-            var entity = new RelatedTerm();
+            var relatedTerms = new List<RelatedTermEntity>(); 
+            var entity = new RelatedTermEntity();
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<RelatedTerm, bool>>>(), null))
+                It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
                 .ReturnsAsync(entity);
 
             _repositoryMock.Setup(r => r.SaveChangesAsync())
@@ -64,12 +59,12 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDto();
             var query = new DeleteRelatedTermCommand(It.IsAny<string>());
-            var relatedTerms = new List<RelatedTerm>();
-            var entity = new RelatedTerm();
+            var relatedTerms = new List<RelatedTermEntity>();
+            var entity = new RelatedTermEntity();
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<RelatedTerm, bool>>>(), null))
-                .ReturnsAsync((RelatedTerm)null);
+                It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
+                .ReturnsAsync((RelatedTermEntity)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -86,11 +81,11 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDto();
             var query = new DeleteRelatedTermCommand(It.IsAny<string>());
-            var relatedTerms = new List<RelatedTerm>();
-            var entity = new RelatedTerm();
+            var relatedTerms = new List<RelatedTermEntity>();
+            var entity = new RelatedTermEntity();
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<RelatedTerm, bool>>>(), null))
+                It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
                 .ReturnsAsync(entity);
 
             _repositoryMock.Setup(r => r.SaveChangesAsync())
@@ -111,11 +106,11 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             var relatedTermsDTO = new RelatedTermDto();
             var query = new DeleteRelatedTermCommand(It.IsAny<string>());
-            var relatedTerms = new List<RelatedTerm>();
-            var entity = new RelatedTerm();
+            var relatedTerms = new List<RelatedTermEntity>();
+            var entity = new RelatedTermEntity();
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
-                 It.IsAny<Expression<Func<RelatedTerm, bool>>>(), null))
+                 It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
                  .ReturnsAsync(entity);
 
             _repositoryMock.Setup(r => r.SaveChangesAsync())
