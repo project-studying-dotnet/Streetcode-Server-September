@@ -5,17 +5,13 @@ using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
+using RelatedTermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
+
+namespace Streetcode.XUnitTest.MediatRTests.Streetcode.RelatedTerm
 {
     public class GetAllRelatedTermsByTermIdHandlerTests
     {
@@ -38,12 +34,12 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             int id = 1;
             var query = new GetAllRelatedTermsByTermIdQuery(id);
-            var relatedTerms = new List<RelatedTerm> { new RelatedTerm { TermId = id } };
+            var relatedTerms = new List<RelatedTermEntity> { new RelatedTermEntity { TermId = id } };
             var relatedTermsDTOs = new List<RelatedTermDto> { new RelatedTermDto() };
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
-                It.IsAny<Expression<Func<RelatedTerm, bool>>>(),
-                It.IsAny<Func<IQueryable<RelatedTerm>, IIncludableQueryable<RelatedTerm, object>>>()))
+                It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(),
+                It.IsAny<Func<IQueryable<RelatedTermEntity>, IIncludableQueryable<RelatedTermEntity, object>>>()))
              .ReturnsAsync(relatedTerms);
 
             _mapperMock.Setup(m => m.Map<IEnumerable<RelatedTermDto>>(relatedTerms))
@@ -65,9 +61,9 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             var query = new GetAllRelatedTermsByTermIdQuery(id);
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
-                It.IsAny<Expression<Func<RelatedTerm, bool>>>(),
-                It.IsAny<Func<IQueryable<RelatedTerm>, IIncludableQueryable<RelatedTerm, object>>>()))
-             .ReturnsAsync((IEnumerable<RelatedTerm>)null);
+                It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(),
+                It.IsAny<Func<IQueryable<RelatedTermEntity>, IIncludableQueryable<RelatedTermEntity, object>>>()))
+             .ReturnsAsync((IEnumerable<RelatedTermEntity>)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -84,12 +80,12 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedTermTests
             // Arrange
             int id = 1;
             var query = new GetAllRelatedTermsByTermIdQuery(id);
-            var relatedTerms = new List<RelatedTerm> { new RelatedTerm { TermId = id } };
+            var relatedTerms = new List<RelatedTermEntity> { new RelatedTermEntity { TermId = id } };
             var relatedTermsDTOs = new List<RelatedTermDto> { new RelatedTermDto() };
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
-                It.IsAny<Expression<Func<RelatedTerm, bool>>>(),
-                It.IsAny<Func<IQueryable<RelatedTerm>, IIncludableQueryable<RelatedTerm, object>>>()))
+                It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(),
+                It.IsAny<Func<IQueryable<RelatedTermEntity>, IIncludableQueryable<RelatedTermEntity, object>>>()))
              .ReturnsAsync(relatedTerms);
 
             _mapperMock.Setup(m => m.Map<IEnumerable<RelatedTermDto>>(relatedTerms))

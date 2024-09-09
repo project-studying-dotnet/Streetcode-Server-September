@@ -1,23 +1,17 @@
 ﻿using AutoMapper;
-using FluentResults;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts.GetAll
-{
+using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
+
+namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact 
+{ 
     public class GetAllFactsHandlerTests
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
@@ -37,16 +31,16 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts.GetAll
         public async Task Handle_ReturnsFactsDto_WhenFactsExist()
         {
             // Arrange
-            var facts = new List<Fact> { new Fact { Id = 1, Title = "Fact Title", FactContent = "Fact Content" } };
+            var facts = new List<FactEntity> { new FactEntity { Id = 1, Title = "Fact Title", FactContent = "Fact Content" } };
             var factsDto = new List<FactDto>() { new FactDto { Id = 1, Title = "Fact Title", FactContent = "Fact Content" } };
 
             _repositoryWrapperMock.Setup(repo => repo.FactRepository
                 .GetAllAsync(
-                    It.IsAny<Expression<Func<Fact, bool>>>(),
-                    It.IsAny<Func<IQueryable<Fact>, IIncludableQueryable<Fact, object>>>()))
+                    It.IsAny<Expression<Func<FactEntity, bool>>>(),
+                    It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
                 .ReturnsAsync(facts);
 
-            _mapperMock.Setup(mapper => mapper.Map<IEnumerable<FactDto>>(It.IsAny<IEnumerable<Fact>>()))
+            _mapperMock.Setup(mapper => mapper.Map<IEnumerable<FactDto>>(It.IsAny<IEnumerable<FactEntity>>()))
                 .Returns(factsDto);
 
             // Act
@@ -66,9 +60,9 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts.GetAll
 
             _repositoryWrapperMock.Setup(repo => repo.FactRepository
                .GetAllAsync(
-                   It.IsAny<Expression<Func<Fact, bool>>>(),
-                   It.IsAny<Func<IQueryable<Fact>, IIncludableQueryable<Fact, object>>>()))
-               .ReturnsAsync((IEnumerable<Fact>)null);
+                   It.IsAny<Expression<Func<FactEntity, bool>>>(),
+                   It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
+               .ReturnsAsync((IEnumerable<FactEntity>)null);
 
             // Act
             var result = await _handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
@@ -81,3 +75,4 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts.GetAll
         }
     }
 }
+
