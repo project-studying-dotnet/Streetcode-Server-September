@@ -39,13 +39,15 @@ namespace Streetcode.WebApi.Extensions
 
                 string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
                 string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
-
+              
+                var adminConfig = app.Configuration.GetSection(nameof(AdminConfiguration)).Get<AdminConfiguration>();
+                
                 if (!dbContext.Images.Any())
                 {
-                    string imageJson = File.ReadAllText(initialDataImagePath, Encoding.UTF8);
-                    string audiosJson = File.ReadAllText(initialDataAudioPath, Encoding.UTF8);
-                    var imgfromJson = JsonConvert.DeserializeObject<List<Image>>(imageJson) ?? new List<Image>();
-                    var audiosfromJson = JsonConvert.DeserializeObject<List<Audio>>(audiosJson) ?? new List<Audio>();
+                    string imageJson = await File.ReadAllTextAsync(initialDataImagePath, Encoding.UTF8);
+                    string audiosJson = await File.ReadAllTextAsync(initialDataAudioPath, Encoding.UTF8);
+                    var imgfromJson = JsonConvert.DeserializeObject<List<Image>>(imageJson);
+                    var audiosfromJson = JsonConvert.DeserializeObject<List<Audio>>(audiosJson);
 
                     foreach (var img in imgfromJson)
                     {
@@ -277,12 +279,12 @@ namespace Streetcode.WebApi.Extensions
                         dbContext.Users.AddRange(
                             new DAL.Entities.Users.User
                             {
-                                Email = "admin",
-                                Role = UserRole.MainAdministrator,
-                                Login = "admin",
-                                Name = "admin",
-                                Password = "admin",
-                                Surname = "admin",
+                                Email = adminConfig.Email,
+                                Role = adminConfig.Role,
+                                Login = adminConfig.Login,
+                                Name = adminConfig.Name,
+                                Password = adminConfig.Password,
+                                Surname = adminConfig.Surname,
                             });
 
                         await dbContext.SaveChangesAsync();
