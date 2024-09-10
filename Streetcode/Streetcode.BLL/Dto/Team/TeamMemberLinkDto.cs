@@ -6,7 +6,7 @@ namespace Streetcode.BLL.Dto.Team
     {
         public int Id { get; set; }
         public LogoTypeDto LogoType { get; set; }
-        public string TargetUrl { get; set; }
+        public string TargetUrl { get; set; } = null!;
         public int TeamMemberId { get; set; }
     }
 }
