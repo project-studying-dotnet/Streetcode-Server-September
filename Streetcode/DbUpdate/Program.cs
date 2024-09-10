@@ -26,7 +26,7 @@ public class Program
         pathToScript = Console.ReadLine();
 
         pathToScript = migrationPath;
-        
+
         var upgrader =
             DeployChanges.To
                 .SqlDatabase(connectionString)

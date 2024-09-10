@@ -9,7 +9,7 @@ namespace Streetcode.BLL.Dto.Streetcode.TextContent
     public class RelatedTermDto
     {
         public int Id { get; set; }
-        public string Word { get; set; }
+        public string Word { get; set; } = null!;
         public int TermId { get; set; }
     }
 }

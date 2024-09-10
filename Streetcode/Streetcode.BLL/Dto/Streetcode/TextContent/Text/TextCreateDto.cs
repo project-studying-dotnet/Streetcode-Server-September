@@ -2,8 +2,8 @@ namespace Streetcode.BLL.Dto.Streetcode.TextContent.Text
 {
   public class TextCreateDto
   {
-    public string Title { get; set; }
-    public string TextContent { get; set; }
+    public string Title { get; set; } = null!;
+    public string TextContent { get; set; } = null!;
     public string? AdditionalText { get; set; }
   }
 }
