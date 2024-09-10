@@ -2,11 +2,8 @@
 using FluentAssertions;
 using Moq;
 using Streetcode.BLL.Dto.News;
-using Streetcode.BLL.Dto.Partners;
-using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.Create;
-using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System;
