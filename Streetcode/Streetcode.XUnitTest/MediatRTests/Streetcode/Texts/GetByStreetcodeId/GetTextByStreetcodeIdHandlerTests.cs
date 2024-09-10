@@ -2,7 +2,7 @@ namespace Texts.GetByStreetcodeId;
 using AutoMapper;
 using FluentAssertions;
 using Moq;
-using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetByStreetcodeId;
@@ -49,7 +49,7 @@ public class GetTextByStreetcodeIdHandlerTests
             AdditionalText = "Additional Info"
         };
         var textWithTags = "Sample text with tags";
-        var textDTO = new TextDTO
+        var textDto = new TextDto
         {
             StreetcodeId = streetcodeId,
             TextContent = textWithTags,
@@ -63,7 +63,7 @@ public class GetTextByStreetcodeIdHandlerTests
         .ReturnsAsync(text);
 
         _textServiceMock.Setup(t => t.AddTermsTag(text.TextContent)).ReturnsAsync(textWithTags);
-        _mapperMock.Setup(m => m.Map<TextDTO?>(It.Is<Text>(t => t.TextContent == textWithTags))).Returns(textDTO);
+        _mapperMock.Setup(m => m.Map<TextDto?>(It.Is<Text>(t => t.TextContent == textWithTags))).Returns(textDto);
 
         // Act
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -71,7 +71,7 @@ public class GetTextByStreetcodeIdHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
-        result.Value.Should().BeEquivalentTo(textDTO);
+        result.Value.Should().BeEquivalentTo(textDto);
     }
 
     [Fact]
