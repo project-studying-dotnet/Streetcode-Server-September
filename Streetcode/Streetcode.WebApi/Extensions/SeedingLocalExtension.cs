@@ -26,15 +26,20 @@ namespace Streetcode.WebApi.Extensions
         public static async Task SeedDataAsync(this WebApplication app)
         {
             using (var scope = app.Services.CreateScope())
-            {
-                Directory.CreateDirectory(app.Configuration.GetValue<string>("Blob:BlobStorePath"));
+            {                
                 var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
-                var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
-                string blobPath = app.Configuration.GetValue<string>("Blob:BlobStorePath");
                 var repo = new RepositoryWrapper(dbContext);
+                var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
+
+                var blobPath = app.Configuration.GetValue<string>("Blob:BlobStorePath") 
+                    ?? throw new InvalidOperationException("BlobStorePath is not found in the configuration.");
+
+                Directory.CreateDirectory(blobPath);
                 var blobService = new BlobService(blobOptions, repo);
+
                 string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
                 string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
+              
                 var adminConfig = app.Configuration.GetSection(nameof(AdminConfiguration)).Get<AdminConfiguration>();
                 
                 if (!dbContext.Images.Any())
@@ -46,19 +51,19 @@ namespace Streetcode.WebApi.Extensions
 
                     foreach (var img in imgfromJson)
                     {
-                        string filePath = Path.Combine(blobPath, img.BlobName);
-                        if (!File.Exists(filePath))
+                        string filePath = Path.Combine(blobPath, img.BlobName!);
+                        if (!File.Exists(filePath) && img.Base64 is not null)
                         {
-                            blobService.SaveFileInStorageBase64(img.Base64, img.BlobName.Split('.')[0], img.BlobName.Split('.')[1]);
+                            blobService.SaveFileInStorageBase64(img.Base64, img.BlobName!.Split('.')[0], img.BlobName.Split('.')[1]);
                         }
                     }
 
                     foreach (var audio in audiosfromJson)
                     {
-                        string filePath = Path.Combine(blobPath, audio.BlobName);
-                        if (!File.Exists(filePath))
+                        string filePath = Path.Combine(blobPath, audio.BlobName!);
+                        if (!File.Exists(filePath) && audio.Base64 is not null)
                         {
-                            blobService.SaveFileInStorageBase64(audio.Base64, audio.BlobName.Split('.')[0], audio.BlobName.Split('.')[1]);
+                            blobService.SaveFileInStorageBase64(audio.Base64, audio.BlobName!.Split('.')[0], audio.BlobName.Split('.')[1]);
                         }
                     }
 
