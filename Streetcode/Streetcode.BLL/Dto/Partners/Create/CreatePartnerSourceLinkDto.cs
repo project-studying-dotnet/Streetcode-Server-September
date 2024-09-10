@@ -8,6 +8,6 @@ namespace Streetcode.BLL.Dto.Partners.Create
 
     public LogoType LogoType { get; set; }
 
-    public string TargetUrl { get; set; }
+    public string? TargetUrl { get; set; }
   }
 }
