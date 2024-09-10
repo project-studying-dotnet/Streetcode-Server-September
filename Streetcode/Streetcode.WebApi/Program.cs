@@ -49,7 +49,7 @@ if (app.Environment.EnvironmentName != "Local")
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
 public partial class Program
 {
 }

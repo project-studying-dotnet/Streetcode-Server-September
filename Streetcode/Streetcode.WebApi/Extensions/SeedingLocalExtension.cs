@@ -39,8 +39,8 @@ namespace Streetcode.WebApi.Extensions
                 
                 if (!dbContext.Images.Any())
                 {
-                    string imageJson = File.ReadAllText(initialDataImagePath, Encoding.UTF8);
-                    string audiosJson = File.ReadAllText(initialDataAudioPath, Encoding.UTF8);
+                    string imageJson = await File.ReadAllTextAsync(initialDataImagePath, Encoding.UTF8);
+                    string audiosJson = await File.ReadAllTextAsync(initialDataAudioPath, Encoding.UTF8);
                     var imgfromJson = JsonConvert.DeserializeObject<List<Image>>(imageJson);
                     var audiosfromJson = JsonConvert.DeserializeObject<List<Audio>>(audiosJson);
 
