@@ -5,5 +5,5 @@ using Streetcode.DAL.Entities.News;
 
 namespace Streetcode.BLL.MediatR.Newss.Update
 {
-    public record UpdateNewsCommand(NewsDto news) : IRequest<Result<NewsDto>>;
+    public record UpdateNewsCommand(NewsDto news): IRequest<Result<NewsDto>>;
 }

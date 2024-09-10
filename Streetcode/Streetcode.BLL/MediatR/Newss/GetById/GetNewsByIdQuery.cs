@@ -4,5 +4,5 @@ using Streetcode.BLL.Dto.News;
 
 namespace Streetcode.BLL.MediatR.Newss.GetById
 {
-    public record GetNewsByIdQuery(int id) : IRequest<Result<NewsDto>>;
+    public record GetNewsByIdQuery(int id): IRequest<Result<NewsDto>>;
 }

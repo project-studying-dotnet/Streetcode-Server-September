@@ -5,4 +5,4 @@ using Streetcode.BLL.Dto.AdditionalContent.Tag;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.GetByStreetcodeId;
 
-public record GetTagByTitleQuery(string Title) : IRequest<Result<TagDto>>;
+public record GetTagByTitleQuery(string Title): IRequest<Result<TagDto>>;

@@ -4,5 +4,5 @@ using Streetcode.BLL.Dto.Streetcode.TextContent;
 
 namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete
 {
-    public record DeleteRelatedTermCommand(string word) : IRequest<Result<RelatedTermDto>>;
+    public record DeleteRelatedTermCommand(string word): IRequest<Result<RelatedTermDto>>;
 }
