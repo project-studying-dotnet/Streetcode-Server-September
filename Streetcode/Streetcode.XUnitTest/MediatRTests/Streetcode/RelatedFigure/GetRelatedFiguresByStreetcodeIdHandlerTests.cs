@@ -1,16 +1,19 @@
-using System.Linq.Expressions;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore.Query;
-using Moq;
 using Streetcode.BLL.Dto.Streetcode.RelatedFigure;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedFigure.GetByStreetcodeId;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Streetcode;
+using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Xunit;
 
 namespace Streetcode.XUnitTest.MediatRTests.Streetcode.RelatedFigure;
+
+using AutoMapper;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
+using System.Linq.Expressions;
+using Xunit;
+using RelatedFigure = DAL.Entities.Streetcode.RelatedFigure;
 
 public class GetRelatedFiguresByStreetcodeIdHandlerTests
 {
@@ -38,8 +41,8 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
         string expectedErrorMsg = $"Cannot find any related figures by a streetcode id: {Id}";
         _repositoryWrapperMock
             .Setup(r => r.RelatedFigureRepository
-                .FindAll(It.IsAny<Expression<Func<DAL.Entities.Streetcode.RelatedFigure, bool>>>()))
-            .Returns((IQueryable<DAL.Entities.Streetcode.RelatedFigure>)null);
+                .FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
+            .Returns((IQueryable<RelatedFigure>)null!);
 
         // Act
         var result = await _handler.Handle(new GetRelatedFigureByStreetcodeIdQuery(Id), default);
@@ -61,7 +64,7 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
         const int Id = 0;
         string expectedErrorMsg = $"Cannot find any related figures by a streetcode id: {Id}";
         var request = new GetRelatedFigureByStreetcodeIdQuery(Id);
-        var relatedFigure = new List<DAL.Entities.Streetcode.RelatedFigure>
+        var relatedFigure = new List<RelatedFigure>
         {
             new () { ObserverId = 1 },
             new () { TargetId = 2 },
@@ -69,14 +72,14 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
 
         _repositoryWrapperMock
             .Setup(repo => repo.RelatedFigureRepository
-                .FindAll(It.IsAny<Expression<Func<DAL.Entities.Streetcode.RelatedFigure, bool>>>()))
+                .FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
             .Returns(relatedFigure.AsQueryable());
 
         _repositoryWrapperMock
             .Setup(repo => repo.StreetcodeRepository.GetAllAsync(
                 It.IsAny<Expression<Func<StreetcodeContent, bool>>>(),
                 It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
-            .ReturnsAsync((IEnumerable<StreetcodeContent>)null);
+            .ReturnsAsync((IEnumerable<StreetcodeContent>)null!);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
@@ -102,29 +105,48 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
         // Arrange
         int streetcodeId = 1;
         var request = new GetRelatedFigureByStreetcodeIdQuery(streetcodeId);
+
+        var relatedFigures = new List<RelatedFigure>
+        {
+            new ()
+            {
+                TargetId = 1,
+                ObserverId = 2,
+            },
+        };
+
         var streetcodeFigures = new List<StreetcodeContent>
         {
-            new StreetcodeContent
+            new ()
             {
-                Id = 1,
+                Id = 2,
                 Images = new List<Image>
                 {
-                    new () { ImageDetails = new ImageDetails() { Alt = "B", }, },
-                    new () { ImageDetails = new ImageDetails() { Alt = "A", }, },
+                    new () { ImageDetails = new ImageDetails { Alt = "B", }, },
+                    new () { ImageDetails = new ImageDetails { Alt = "A", }, },
                 },
+                Status = StreetcodeStatus.Published,
             },
         };
 
         _repositoryWrapperMock
             .Setup(repo => repo.RelatedFigureRepository
-                .FindAll(It.IsAny<Expression<Func<DAL.Entities.Streetcode.RelatedFigure, bool>>>()))
-            .Returns(Enumerable.Empty<DAL.Entities.Streetcode.RelatedFigure>().AsQueryable());
+                .FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
+            .Returns((Expression<Func<RelatedFigure, bool>> predicate) => relatedFigures.AsQueryable().Where(predicate));
 
         _repositoryWrapperMock
             .Setup(repo => repo.StreetcodeRepository.GetAllAsync(
                 It.IsAny<Expression<Func<StreetcodeContent, bool>>>(),
                 It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
-            .ReturnsAsync(streetcodeFigures);
+            .ReturnsAsync((
+                Expression<Func<StreetcodeContent, bool>> exp,
+                Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>> _) =>
+            {
+                var predicate = exp.Compile();
+                var filteredFigures = streetcodeFigures.Where(predicate).ToList();
+
+                return filteredFigures.Any() ? filteredFigures : null!;
+            });
 
         _mapperMock
             .Setup(mapper => mapper.Map<IEnumerable<RelatedFigureDto>>(It.IsAny<IEnumerable<StreetcodeContent>>()))
@@ -133,7 +155,7 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
         // Act
         var result = await _handler.Handle(request, default);
 
-        //Assert
+        // Assert
         Assert.True(result.IsSuccess);
         _mapperMock.Verify(
             mapper => mapper.Map<IEnumerable<RelatedFigureDto>>(It.IsAny<IEnumerable<StreetcodeContent>>()),
