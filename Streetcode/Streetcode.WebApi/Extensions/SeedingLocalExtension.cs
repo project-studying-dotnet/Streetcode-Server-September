@@ -35,6 +35,8 @@ namespace Streetcode.WebApi.Extensions
                 var blobService = new BlobService(blobOptions, repo);
                 string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
                 string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
+                var adminConfig = app.Configuration.GetSection(nameof(AdminConfiguration)).Get<AdminConfiguration>();
+                
                 if (!dbContext.Images.Any())
                 {
                     string imageJson = File.ReadAllText(initialDataImagePath, Encoding.UTF8);
@@ -272,12 +274,12 @@ namespace Streetcode.WebApi.Extensions
                         dbContext.Users.AddRange(
                             new DAL.Entities.Users.User
                             {
-                                Email = "admin",
-                                Role = UserRole.MainAdministrator,
-                                Login = "admin",
-                                Name = "admin",
-                                Password = "admin",
-                                Surname = "admin",
+                                Email = adminConfig.Email,
+                                Role = adminConfig.Role,
+                                Login = adminConfig.Login,
+                                Name = adminConfig.Name,
+                                Password = adminConfig.Password,
+                                Surname = adminConfig.Surname,
                             });
 
                         await dbContext.SaveChangesAsync();
