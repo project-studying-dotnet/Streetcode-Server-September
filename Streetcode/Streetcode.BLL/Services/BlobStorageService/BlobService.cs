@@ -11,7 +11,7 @@ public class BlobService : IBlobService
     private readonly BlobEnvironmentVariables _envirovment;
     private readonly string _keyCrypt;
     private readonly string _blobPath;
-    private readonly IRepositoryWrapper _repositoryWrapper;
+    private readonly IRepositoryWrapper? _repositoryWrapper;
 
     public BlobService(IOptions<BlobEnvironmentVariables> environment, IRepositoryWrapper? repositoryWrapper = null)
     {
@@ -89,6 +89,11 @@ public class BlobService : IBlobService
 
     public async Task CleanBlobStorage()
     {
+        if (_repositoryWrapper == null)
+        {
+            throw new InvalidOperationException("Repository wrapper is not initialized.");
+        }
+
         var base64Files = GetAllBlobNames();
 
         var existingImagesInDatabase = await _repositoryWrapper.ImageRepository.GetAllAsync();
