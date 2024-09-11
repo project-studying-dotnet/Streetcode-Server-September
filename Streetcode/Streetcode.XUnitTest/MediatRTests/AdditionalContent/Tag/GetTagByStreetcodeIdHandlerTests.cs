@@ -2,18 +2,12 @@
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.Dto.AdditionalContent.Tag;
-using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.AdditionalContent.Tag.GetByStreetcodeId;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 using tagEntity = Streetcode.DAL.Entities.AdditionalContent.Tag;

@@ -1,21 +1,16 @@
 ﻿using AutoMapper;
-using FluentResults;
 using Moq;
 using Streetcode.BLL.Dto.AdditionalContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.AdditionalContent.Tag.GetTagByTitle;
-using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
 using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
-
-using tagEntity = Streetcode.DAL.Entities.AdditionalContent.Tag;
 using Streetcode.BLL.MediatR.AdditionalContent.Tag.GetByStreetcodeId;
 using Microsoft.EntityFrameworkCore.Query;
+
+using tagEntity = Streetcode.DAL.Entities.AdditionalContent.Tag;
 
 namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
 {

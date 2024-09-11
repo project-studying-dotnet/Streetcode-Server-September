@@ -1,21 +1,15 @@
 ﻿using AutoMapper;
-using FluentResults;
 using Moq;
 using Streetcode.BLL.Dto.AdditionalContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.AdditionalContent.Tag.GetById;
-using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Streetcode.BLL.MediatR.Streetcode.Term.GetById;
+
+using tagEntity = Streetcode.DAL.Entities.AdditionalContent.Tag;
 
 namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
 {
@@ -39,13 +33,13 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
         {
             // Arrange
             var tagId = 1; // Ожидаемый Id
-            var tagEntity = new DAL.Entities.AdditionalContent.Tag { Id = tagId, Title = "TestTag" };
+            var tagEntity = new tagEntity { Id = tagId, Title = "TestTag" };
             var tagDto = new TagDto { Id = tagId, Title = "TestTag" };
             var request = new GetTagByIdQuery(tagId);
 
 
             _repositoryWrapperMock.Setup(repo => repo.TagRepository.GetFirstOrDefaultAsync(
-                It.Is<Expression<Func<DAL.Entities.AdditionalContent.Tag, bool>>>(exp => exp.Compile().Invoke(tagEntity)),
+                It.Is<Expression<Func<tagEntity, bool>>>(exp => exp.Compile().Invoke(tagEntity)),
                 null)).ReturnsAsync(tagEntity);
 
             _mapperMock.Setup(m => m.Map<TagDto>(tagEntity)).Returns(tagDto);
@@ -57,8 +51,8 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(tagDto);
 
-            _repositoryWrapperMock.Verify<Task<DAL.Entities.AdditionalContent.Tag>>(repo => repo.TagRepository.GetFirstOrDefaultAsync(
-                It.Is<Expression<Func<DAL.Entities.AdditionalContent.Tag, bool>>>(exp => exp.Compile().Invoke(new DAL.Entities.AdditionalContent.Tag { Id = request.Id })),
+            _repositoryWrapperMock.Verify<Task<tagEntity>>(repo => repo.TagRepository.GetFirstOrDefaultAsync(
+                It.Is<Expression<Func<tagEntity, bool>>>(exp => exp.Compile().Invoke(new tagEntity { Id = request.Id })),
                 null), Times.Once);
 
             _mapperMock.Verify(m => m.Map<TagDto>(tagEntity), Times.Once);
@@ -72,8 +66,8 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
             var tagId = 1;
 
             _repositoryWrapperMock.Setup(repo => repo.TagRepository
-                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.AdditionalContent.Tag, bool>>>(), null))
-                .ReturnsAsync((DAL.Entities.AdditionalContent.Tag)null);
+                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<tagEntity, bool>>>(), null))
+                .ReturnsAsync((tagEntity)null);
 
             // Act
             var result = await _handler.Handle(new GetTagByIdQuery(tagId), CancellationToken.None);
@@ -82,17 +76,17 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
             result.IsFailed.Should().BeTrue();
             result.Errors.Should().ContainSingle(e => e.Message.Contains($"Cannot find a Tag with corresponding id: {tagId}"));
 
-            _mapperMock.Verify(m => m.Map<TagDto>(It.IsAny<DAL.Entities.AdditionalContent.Tag>()), Times.Never);
+            _mapperMock.Verify(m => m.Map<TagDto>(It.IsAny<tagEntity>()), Times.Never);
             _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), $"Cannot find a Tag with corresponding id: {tagId}"), Times.Once);
         }
 
         // Метод для проверки, что выражение использует правильный Id
-        private bool CheckExpression(Expression<Func<DAL.Entities.AdditionalContent.Tag, bool>> expression, int expectedId)
+        private bool CheckExpression(Expression<Func<tagEntity, bool>> expression, int expectedId)
         {
             // Преобразуем выражение в делегат
             var func = expression.Compile();
             // Создаём тестовый объект Tag с ожидаемым Id
-            var testTag = new DAL.Entities.AdditionalContent.Tag { Id = expectedId };
+            var testTag = new tagEntity { Id = expectedId };
             // Проверяем, что выражение возвращает true для этого объекта
             return func(testTag);
         }

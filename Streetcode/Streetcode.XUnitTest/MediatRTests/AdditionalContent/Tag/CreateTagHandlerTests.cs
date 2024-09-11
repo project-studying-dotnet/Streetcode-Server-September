@@ -1,17 +1,15 @@
 ﻿using AutoMapper;
-using FluentResults;
 using Moq;
 using Streetcode.BLL.Dto.AdditionalContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.AdditionalContent.Tag.Create;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
 using Streetcode.BLL.Dto.AdditionalContent.Tag;
+
+using tagEntity = Streetcode.DAL.Entities.AdditionalContent.Tag;
 
 namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
 {
@@ -35,10 +33,10 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
         {
             // Arrange
             var createTagQuery = new CreateTagQuery(new CreateTagDto { Title = "New Tag" });
-            var newTagEntity = new DAL.Entities.AdditionalContent.Tag { Title = "New Tag" };
+            var newTagEntity = new tagEntity { Title = "New Tag" };
             var tagDto = new TagDto { Title = "New Tag" };
 
-            _repositoryWrapperMock.Setup(r => r.TagRepository.CreateAsync(It.IsAny<DAL.Entities.AdditionalContent.Tag>()))
+            _repositoryWrapperMock.Setup(r => r.TagRepository.CreateAsync(It.IsAny<tagEntity>()))
                                   .ReturnsAsync(newTagEntity);
 
             _mapperMock.Setup(m => m.Map<TagDto>(newTagEntity)).Returns(tagDto);
@@ -50,7 +48,7 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(tagDto);
 
-            _repositoryWrapperMock.Verify(r => r.TagRepository.CreateAsync(It.IsAny<DAL.Entities.AdditionalContent.Tag>()), Times.Once);
+            _repositoryWrapperMock.Verify(r => r.TagRepository.CreateAsync(It.IsAny<tagEntity>()), Times.Once);
             _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
         }
 
@@ -59,9 +57,9 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
         {
             // Arrange
             var createTagQuery = new CreateTagQuery(new CreateTagDto { Title = "New Tag" });
-            var newTagEntity = new DAL.Entities.AdditionalContent.Tag { Title = "New Tag" };
+            var newTagEntity = new tagEntity { Title = "New Tag" };
 
-            _repositoryWrapperMock.Setup(r => r.TagRepository.CreateAsync(It.IsAny<DAL.Entities.AdditionalContent.Tag>()))
+            _repositoryWrapperMock.Setup(r => r.TagRepository.CreateAsync(It.IsAny<tagEntity>()))
                                   .ReturnsAsync(newTagEntity);
 
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync())
@@ -74,7 +72,7 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
             result.IsFailed.Should().BeTrue();
             result.Errors.Should().ContainSingle(e => e.Message.Contains("Database error"));
 
-            _repositoryWrapperMock.Verify(r => r.TagRepository.CreateAsync(It.IsAny<DAL.Entities.AdditionalContent.Tag>()), Times.Once);
+            _repositoryWrapperMock.Verify(r => r.TagRepository.CreateAsync(It.IsAny<tagEntity>()), Times.Once);
             _repositoryWrapperMock.Verify(r => r.SaveChangesAsync(), Times.Once);
             _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Once);
         }
