@@ -76,9 +76,10 @@ public static class ServiceCollectionExtensions
         {
             opt.AddDefaultPolicy(policy =>
             {
-                policy.AllowAnyOrigin()
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
+                policy.WithOrigins(corsConfig?.AllowedOrigins?.ToArray() ?? Array.Empty<string>())
+             .WithHeaders(corsConfig?.AllowedHeaders?.ToArray() ?? Array.Empty<string>())
+             .WithMethods(corsConfig?.AllowedMethods?.ToArray() ?? Array.Empty<string>())
+             .SetPreflightMaxAge(TimeSpan.FromSeconds(corsConfig?.PreflightMaxAge ?? 86400));
             });
         });
 
