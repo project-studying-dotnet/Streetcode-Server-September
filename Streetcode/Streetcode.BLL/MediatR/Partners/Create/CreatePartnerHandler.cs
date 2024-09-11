@@ -26,6 +26,12 @@ namespace Streetcode.BLL.MediatR.Partners.Create
             var newPartner = _mapper.Map<Partner>(request.newPartner);
             try
             {
+                if (newPartner == null)
+                {
+                    var errorMsg = "Failed to create a partner";
+                    _logger.LogError(request, errorMsg);
+                    return Result.Fail(errorMsg);
+                }
                 newPartner.Streetcodes.Clear();
                 newPartner = await _repositoryWrapper.PartnersRepository.CreateAsync(newPartner);
                 await _repositoryWrapper.SaveChangesAsync();

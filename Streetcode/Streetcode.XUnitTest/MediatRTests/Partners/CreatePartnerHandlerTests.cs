@@ -78,24 +78,22 @@ namespace Streetcode.BLL.MediatR.Partners.Create
                 Streetcodes = new List<StreetcodeShortDto> { new StreetcodeShortDto { Id = 1 } }
             };
 
-            var testPartner = new PartnerEntity { Id = 1, Title = "Test Partner" };
             var command = new CreatePartnerQuery(testPartnerDto);
-            string errorMsg = "Failed to create a partner";
 
-            _mapperMock.Setup(m => m.Map<PartnerEntity>(command.newPartner)).Returns(testPartner);
-            _repositoryWrapperMock.Setup(repo => repo.PartnersRepository.CreateAsync(testPartner)).ReturnsAsync(testPartner);
-            _repositoryWrapperMock.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(0);
+            _mapperMock.Setup(m => m.Map<PartnerEntity>(It.IsAny<CreatePartnerDto>()))
+                .Returns((PartnerEntity)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.False(result.IsSuccess);
-            //Assert.Equal(errorMsg, result.Errors.First().Message);
-            _repositoryWrapperMock.Verify(repo => repo.PartnersRepository.CreateAsync(testPartner), Times.Once);
-            _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
-            _mapperMock.Verify(m => m.Map<PartnerDto>(It.IsAny<PartnerEntity>()), Times.Never);
-            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            result.IsSuccess.Should().BeFalse();
+            result.Errors.Should().NotBeEmpty();
+            result.Errors.First().Message.Should().Contain("Failed to create a partner");
+
+            _repositoryWrapperMock.Verify(repo => repo.PartnersRepository.CreateAsync(It.IsAny<PartnerEntity>()), Times.Never);
+            _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+            _loggerMock.Verify(l => l.LogError(It.IsAny<CreatePartnerQuery>(), It.Is<string>(s => s.Contains("Failed to create a partner"))), Times.Once);
         }
     }
 }
