@@ -1,7 +1,11 @@
+using FluentValidation;
 using Hangfire;
+using MediatR;
 using Streetcode.BLL.Services.BlobStorageService;
+using Streetcode.BLL.ValidationBehavior;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
@@ -13,6 +17,11 @@ builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
+
+builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+builder.Services.AddValidatorsFromAssembly(Assembly.Load("Streetcode.BLL"));
+
+
 var app = builder.Build();
 
 if (app.Environment.EnvironmentName == "Local")
