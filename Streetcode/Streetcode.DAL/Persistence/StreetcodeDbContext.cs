@@ -17,18 +17,6 @@ using Entities.Timeline;
 using Entities.Toponyms;
 using Entities.Transactions;
 using Entities.Users;
-using Configurations.AdditionalContent;
-using Configurations.AdditionalContent.Coordinates;
-using Configurations.Analytics;
-using Configurations.Media.Images;
-using Configurations.News;
-using Configurations.Partners;
-using Configurations.Sources;
-using Configurations.Streetcode;
-using Configurations.Streetcode.TextContent;
-using Configurations.Team;
-using Configurations.Timeline;
-using Configurations.Toponyms;
 
 public class StreetcodeDbContext : DbContext
 {
