@@ -10,8 +10,8 @@ using Entities.Media.Images;
 using Entities.News;
 using Entities.Partners;
 using Entities.Sources;
-using Streetcode.DAL.Entities.Streetcode;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Entities.Streetcode;
+using Entities.Streetcode.TextContent;
 using Entities.Team;
 using Entities.Timeline;
 using Entities.Toponyms;
@@ -24,8 +24,8 @@ using Configurations.Media.Images;
 using Configurations.News;
 using Configurations.Partners;
 using Configurations.Sources;
-using Streetcode.DAL.Persistence.Configurations.Streetcode;
-using Streetcode.DAL.Persistence.Configurations.Streetcode.TextContent;
+using Configurations.Streetcode;
+using Configurations.Streetcode.TextContent;
 using Configurations.Team;
 using Configurations.Timeline;
 using Configurations.Toponyms;
@@ -83,22 +83,6 @@ public class StreetcodeDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.UseCollation("SQL_Ukrainian_CP1251_CI_AS");
-
-        modelBuilder.ApplyConfiguration(new StatisticRecordConfiguration());
-        modelBuilder.ApplyConfiguration(new NewsConfiguration());
-        modelBuilder.ApplyConfiguration(new TeamMemberConfiguration());
-        modelBuilder.ApplyConfiguration(new TeamMemberPositionsConfiguration());
-        modelBuilder.ApplyConfiguration(new TagConfiguration());
-        modelBuilder.ApplyConfiguration(new StreetcodeTagIndexConfiguration());
-        modelBuilder.ApplyConfiguration(new ToponymConfiguration());
-        modelBuilder.ApplyConfiguration(new PartnerConfiguration());
-        modelBuilder.ApplyConfiguration(new HistoricalContextTimelineConfiguration());
-        modelBuilder.ApplyConfiguration(new SourceLinkCategoryConfiguration());
-        modelBuilder.ApplyConfiguration(new ImageConfiguration());
-        modelBuilder.ApplyConfiguration(new RelatedFigureConfiguration());
-        modelBuilder.ApplyConfiguration(new StreetcodeArtConfiguration());
-        modelBuilder.ApplyConfiguration(new StreetcodeContentConfiguration());
-        modelBuilder.ApplyConfiguration(new RelatedTermConfiguration());
-        modelBuilder.ApplyConfiguration(new CoordinateConfiguration());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(StreetcodeDbContext).Assembly);
     }
 }
