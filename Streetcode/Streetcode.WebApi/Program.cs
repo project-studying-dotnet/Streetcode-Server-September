@@ -37,6 +37,8 @@ app.UseAuthorization();
 
 app.UseHangfireDashboard("/dash");
 
+app.UseGlobalExceptionHandler();
+
 if (app.Environment.EnvironmentName != "Local")
 {
     BackgroundJob.Schedule<WebParsingUtils>(
