@@ -46,6 +46,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddModelValidationServices();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
