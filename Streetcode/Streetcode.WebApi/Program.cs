@@ -17,10 +17,7 @@ builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
-
-builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
-builder.Services.AddValidatorsFromAssembly(Assembly.Load("Streetcode.BLL"));
-
+builder.Services.AddModelValidationServices();
 
 var app = builder.Build();
 

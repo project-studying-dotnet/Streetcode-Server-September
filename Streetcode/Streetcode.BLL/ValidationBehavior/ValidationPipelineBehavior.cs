@@ -21,7 +21,7 @@ namespace Streetcode.BLL.ValidationBehavior
                 .Select(x => x.Validate(context))
                 .SelectMany(x => x.Errors)
                 .Where(f => f != null)
-                .ToList();
+            .ToList();
 
             if (failures.Any())
             {
@@ -30,6 +30,5 @@ namespace Streetcode.BLL.ValidationBehavior
 
             return next();
         }
-
     }
 }

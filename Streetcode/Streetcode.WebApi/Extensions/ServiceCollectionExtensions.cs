@@ -19,6 +19,9 @@ using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
+using Streetcode.BLL.ValidationBehavior;
+using System.Reflection;
+using FluentValidation;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -102,6 +105,12 @@ public static class ServiceCollectionExtensions
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
             opt.CustomSchemaIds(x => x.FullName);
         });
+    }
+
+    public static void AddModelValidationServices(this IServiceCollection services)
+    {
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+        services.AddValidatorsFromAssembly(Assembly.Load("Streetcode.BLL"));
     }
 
     public class CorsConfiguration
