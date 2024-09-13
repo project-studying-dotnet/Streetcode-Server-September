@@ -2,22 +2,22 @@
 using FluentValidation;
 using Streetcode.BLL.Exceptions.CustomExceptions;
 
-namespace Streetcode.WebApi
+namespace Streetcode.WebApi.Middlewares
 {
-    public class GlobalExceptionHandlingMidlleware 
+    public class GlobalExceptionHandlingMidlleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<GlobalExceptionHandlingMidlleware> _logger;
 
-       public GlobalExceptionHandlingMidlleware(RequestDelegate next,
-                ILogger<GlobalExceptionHandlingMidlleware> logger)
-       {
-           _next = next;
-           _logger = logger;
-       }
+        public GlobalExceptionHandlingMidlleware(RequestDelegate next,
+                 ILogger<GlobalExceptionHandlingMidlleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
 
-       public async Task InvokeAsync(HttpContext context)
-       {
+        public async Task InvokeAsync(HttpContext context)
+        {
             try
             {
                 await _next(context);
@@ -56,7 +56,7 @@ namespace Streetcode.WebApi
 
         private static async Task HandleValidationExceptionAsync(HttpContext context, ValidationException validationException)
         {
-            context.Response.StatusCode = StatusCodes.Status400BadRequest; 
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
             context.Response.ContentType = "application/json";
 
             var errors = validationException.Errors.Select(error => new
