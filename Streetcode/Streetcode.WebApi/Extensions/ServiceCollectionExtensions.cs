@@ -19,6 +19,9 @@ using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
+using Streetcode.BLL.ValidationBehavior;
+using System.Reflection;
+using FluentValidation;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -43,6 +46,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddModelValidationServices();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
@@ -76,9 +80,10 @@ public static class ServiceCollectionExtensions
         {
             opt.AddDefaultPolicy(policy =>
             {
-                policy.AllowAnyOrigin()
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
+                policy.WithOrigins(corsConfig?.AllowedOrigins?.ToArray() ?? Array.Empty<string>())
+                    .WithHeaders(corsConfig?.AllowedHeaders?.ToArray() ?? Array.Empty<string>())
+                    .WithMethods(corsConfig?.AllowedMethods?.ToArray() ?? Array.Empty<string>())
+                    .SetPreflightMaxAge(TimeSpan.FromSeconds(corsConfig?.PreflightMaxAge ?? 86400));
             });
         });
 
@@ -101,6 +106,12 @@ public static class ServiceCollectionExtensions
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
             opt.CustomSchemaIds(x => x.FullName);
         });
+    }
+
+    public static void AddModelValidationServices(this IServiceCollection services)
+    {
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+        services.AddValidatorsFromAssembly(Assembly.Load("Streetcode.BLL"));
     }
 
     public class CorsConfiguration
