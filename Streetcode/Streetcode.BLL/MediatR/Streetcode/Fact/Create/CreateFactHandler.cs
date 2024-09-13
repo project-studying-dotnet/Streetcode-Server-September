@@ -38,8 +38,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
                 newFact.ImageId = null;
             }
 
-            newFact.StreetcodeId = 1;
-
             var entity = await _repository.FactRepository.CreateAsync(newFact);
             var resultIsSuccess = await _repository.SaveChangesAsync() > 0;
 
