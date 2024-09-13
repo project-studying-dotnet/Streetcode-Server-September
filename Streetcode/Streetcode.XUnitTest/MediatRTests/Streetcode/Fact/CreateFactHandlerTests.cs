@@ -30,7 +30,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         {
             // Arrange
             var factDto = new FactDto { };
-            var query = new CreateFactQuery(factDto);
+            var query = new CreateFactCommand(factDto);
             var factEntity = new FactEntity { ImageId = 1 };
 
             _mockMapper.Setup(m => m.Map<FactEntity>(query.Fact)).Returns(factEntity);
@@ -51,7 +51,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         {
             // Arrange
             var factDto = new FactDto { };
-            var query = new CreateFactQuery(factDto);
+            var query = new CreateFactCommand(factDto);
 
             _mockMapper.Setup(m => m.Map<FactEntity>(query.Fact)).Returns((FactEntity)null);
 
@@ -69,7 +69,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         {
             // Arrange
             var factDto = new FactDto { };
-            var query = new CreateFactQuery(factDto);
+            var query = new CreateFactCommand(factDto);
             var factEntity = new FactEntity { ImageId = 1 };
 
             _mockMapper.Setup(m => m.Map<FactEntity>(query.Fact)).Returns(factEntity);
