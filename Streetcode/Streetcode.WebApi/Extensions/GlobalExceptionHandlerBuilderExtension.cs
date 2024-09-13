@@ -2,7 +2,7 @@
 
 namespace Streetcode.WebApi.Extensions
 {
-    public static class GlobalExceptionHanderBuilderExtension
+    public static class GlobalExceptionHandlerBuilderExtension
     {
         public static IApplicationBuilder UseGlobalExceptionHandler(this IApplicationBuilder app)
         {
