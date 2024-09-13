@@ -1,9 +1,4 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentValidation;
 
 namespace Streetcode.BLL.ValidationBehavior
@@ -30,11 +25,6 @@ namespace Streetcode.BLL.ValidationBehavior
 
             if (failures.Any())
             {
-                Console.WriteLine($"Validation failed with {failures.Count} errors"); //
-                foreach (var failure in failures)
-                {
-                    Console.WriteLine($"Property: {failure.PropertyName}, Error: {failure.ErrorMessage}");
-                }
                 throw new ValidationException(failures);
             }
 
