@@ -33,15 +33,11 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
         {
             // Arrange
             var query = new DeleteCategoryContentByStreetcodeIdQuery(It.IsAny<int>(), It.IsAny<int>());
-            var sourceLinkCategoryContents = new List<StreetcodeCategoryContent>
-            {
-                new StreetcodeCategoryContent { SourceLinkCategoryId = 1, StreetcodeId = 1 },
-                new StreetcodeCategoryContent { SourceLinkCategoryId = 1, StreetcodeId = 2 }
-            };
+            var sourceLinkCategoryContent = new StreetcodeCategoryContent { SourceLinkCategoryId = 1, StreetcodeId = 1 };
 
             _repositoryMock.Setup(r => r.StreetcodeCategoryContentRepository
-                .GetAllAsync(It.IsAny<Expression<Func<StreetcodeCategoryContent, bool>>>(), null))
-             .ReturnsAsync(sourceLinkCategoryContents);
+                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeCategoryContent, bool>>>(), null))
+             .ReturnsAsync(sourceLinkCategoryContent);
 
             _repositoryMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
 
@@ -50,8 +46,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
 
             // Assert
             Assert.True(result.IsSuccess);
-            _repositoryMock.Verify(r => r.StreetcodeCategoryContentRepository
-                .Delete(It.IsAny<StreetcodeCategoryContent>()), Times.Exactly(sourceLinkCategoryContents.Count));
             _repositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
         }
 
@@ -62,8 +56,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
             var query = new DeleteCategoryContentByStreetcodeIdQuery(It.IsAny<int>(), It.IsAny<int>());
 
             _repositoryMock.Setup(r => r.StreetcodeCategoryContentRepository
-                .GetAllAsync(It.IsAny<Expression<Func<StreetcodeCategoryContent, bool>>>(), null))
-             .ReturnsAsync((IEnumerable<StreetcodeCategoryContent>)null);
+                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeCategoryContent, bool>>>(), null))
+             .ReturnsAsync((StreetcodeCategoryContent) null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -79,15 +73,11 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
         {
             // Arrange
             var query = new DeleteCategoryContentByStreetcodeIdQuery(It.IsAny<int>(), It.IsAny<int>());
-            var sourceLinkCategoryContents = new List<StreetcodeCategoryContent>
-            {
-                new StreetcodeCategoryContent { SourceLinkCategoryId = 1, StreetcodeId = 1 },
-                new StreetcodeCategoryContent { SourceLinkCategoryId = 1, StreetcodeId = 2 }
-            };
+            var sourceLinkCategoryContent = new StreetcodeCategoryContent { SourceLinkCategoryId = 1, StreetcodeId = 1 };
 
             _repositoryMock.Setup(r => r.StreetcodeCategoryContentRepository
-                .GetAllAsync(It.IsAny<Expression<Func<StreetcodeCategoryContent, bool>>>(), null))
-             .ReturnsAsync(sourceLinkCategoryContents);
+                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeCategoryContent, bool>>>(), null))
+             .ReturnsAsync(sourceLinkCategoryContent);
 
             _repositoryMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 

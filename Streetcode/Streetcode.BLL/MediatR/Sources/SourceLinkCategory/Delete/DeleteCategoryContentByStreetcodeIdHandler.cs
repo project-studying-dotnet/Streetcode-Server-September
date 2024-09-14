@@ -21,21 +21,18 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete
 
         public async Task<Result<Unit>> Handle(DeleteCategoryContentByStreetcodeIdQuery request, CancellationToken cancellationToken)
         {
-            var srcCategoryContents = await _repository.StreetcodeCategoryContentRepository
-                .GetAllAsync(p => p.SourceLinkCategoryId == request.categoryId && 
+            var srcCategoryContent = await _repository.StreetcodeCategoryContentRepository
+                .GetFirstOrDefaultAsync(p => p.SourceLinkCategoryId == request.categoryId && 
                  p.StreetcodeId == request.streetcodeId);
 
-            if (srcCategoryContents == null)
+            if (srcCategoryContent == null)
             {
                 const string errorMsg = "No item with such ids";
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
 
-            foreach (var item in srcCategoryContents)
-            {
-                _repository.StreetcodeCategoryContentRepository.Delete(item);
-            }
+            _repository.StreetcodeCategoryContentRepository.Delete(srcCategoryContent);
 
             var resultIsSuccess = await _repository.SaveChangesAsync() > 0;
 
