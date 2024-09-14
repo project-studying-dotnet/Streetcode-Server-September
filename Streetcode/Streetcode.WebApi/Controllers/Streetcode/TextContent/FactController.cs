@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
-using Streetcode.BLL.MediatR.Newss.Delete;
+using Streetcode.BLL.MediatR.Streetcode.Fact.Delete;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
-using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 

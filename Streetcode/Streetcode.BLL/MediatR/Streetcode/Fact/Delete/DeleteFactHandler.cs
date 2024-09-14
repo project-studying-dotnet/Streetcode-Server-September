@@ -4,7 +4,7 @@ using MediatR;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.BLL.MediatR.Newss.Delete
+namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete
 {
     public class DeleteFactHandler : IRequestHandler<DeleteFactCommand, Result<Unit>>
     {
