@@ -33,11 +33,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
                 return Result.Fail(errorMsg);
             }
 
-            if (newFact.ImageId == 0)
-            {
-                newFact.ImageId = null;
-            }
-
             var entity = await _repository.FactRepository.CreateAsync(newFact);
             var resultIsSuccess = await _repository.SaveChangesAsync() > 0;
 
