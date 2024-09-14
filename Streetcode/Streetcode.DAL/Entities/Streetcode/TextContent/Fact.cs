@@ -23,6 +23,7 @@ public class Fact
 
     public Image? Image { get; set; }
 
+    [Required]
     public int StreetcodeId { get; set; }
 
     public StreetcodeContent? Streetcode { get; set; }
