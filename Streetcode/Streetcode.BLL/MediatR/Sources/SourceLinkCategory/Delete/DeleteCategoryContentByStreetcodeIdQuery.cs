@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete
 {
-    public record DeleteCategoryQuery(int id): IRequest<Result<SourceLinkCategoryDto>>;
+    public record DeleteCategoryContentByStreetcodeIdQuery(int streetcodeId, int categoryId) : IRequest<Result<Unit>>;
 }

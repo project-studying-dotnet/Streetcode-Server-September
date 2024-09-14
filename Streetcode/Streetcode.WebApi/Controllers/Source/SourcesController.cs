@@ -39,9 +39,9 @@ public class SourcesController : BaseApiController
         return HandleResult(await Mediator.Send(new GetCategoriesByStreetcodeIdQuery(streetcodeId)));
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+    [HttpDelete("{categoryId:int}&{streetcodeId:int}")]
+    public async Task<IActionResult> DeleteCategoryContent([FromRoute] int streetcodeId, [FromRoute] int categoryId)
     {
-        return HandleResult(await Mediator.Send(new DeleteCategoryQuery(id)));
+        return HandleResult(await Mediator.Send(new DeleteCategoryContentByStreetcodeIdQuery(streetcodeId, categoryId)));
     }
 }
