@@ -46,7 +46,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
 
             // Assert
             Assert.True(result.IsSuccess);
-            _repositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
+            _repositoryMock.Verify(r => r.StreetcodeCategoryContentRepository.Delete(sourceLinkCategoryContent), Times.Once);
         }
 
         [Fact]
