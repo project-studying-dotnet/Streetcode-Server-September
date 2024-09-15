@@ -18,7 +18,7 @@ using FactEntety =  Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
 {
-    public class UpdateFactHandler : IRequestHandler<UpdateFactCommand, Result<FactDto>>
+    public class UpdateFactHandler : IRequestHandler<UpdateFactCommand, Result<FactUpdateDto>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
@@ -32,7 +32,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
             _logger = logger;
         }
 
-        public async Task<Result<FactDto>> Handle(UpdateFactCommand request, CancellationToken cancellationToken)
+        public async Task<Result<FactUpdateDto>> Handle(UpdateFactCommand request, CancellationToken cancellationToken)
         {
             var fact = _mapper.Map<FactEntety>(request.Fact);
 
@@ -43,7 +43,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var response = _mapper.Map<FactDto>(fact);
+            var response = _mapper.Map<FactUpdateDto>(fact);
 
             _repositoryWrapper.FactRepository.Update(fact);
             bool resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;

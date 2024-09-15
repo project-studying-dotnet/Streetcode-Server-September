@@ -37,7 +37,7 @@ public class FactController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] FactDto factDto)
+    public async Task<IActionResult> Update([FromBody] FactUpdateDto factDto)
     {
         return HandleResult(await Mediator.Send(new UpdateFactCommand(factDto)));
     }
