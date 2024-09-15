@@ -16,7 +16,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete
             _logger = logger;
         }
 
-
         public async Task<Result<Unit>> Handle(DeleteFactCommand request, CancellationToken cancellationToken)
         {
             int id = request.id;
@@ -28,11 +27,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
-
-            /*if (fact.Image is not null)
-            {
-                _repositoryWrapper.ImageRepository.Delete(fact.Image);
-            }*/
 
             _repositoryWrapper.FactRepository.Delete(fact);
             var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
