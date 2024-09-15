@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Streetcode.BLL.Dto.Sources;
 using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoryById;
 using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoriesByStreetcodeId;
+using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetAll;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetCategoryContentByStreetcodeId;
 
@@ -36,5 +38,11 @@ public class SourcesController : BaseApiController
     public async Task<IActionResult> GetCategoriesByStreetcodeId([FromRoute] int streetcodeId)
     {
         return HandleResult(await Mediator.Send(new GetCategoriesByStreetcodeIdQuery(streetcodeId)));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] SourceLinkCategoryCreateDto srcLinkCategoryCreateDto)
+    {
+        return HandleResult(await Mediator.Send(new CreateSourceLinkCategoryCommand(srcLinkCategoryCreateDto)));
     }
 }
