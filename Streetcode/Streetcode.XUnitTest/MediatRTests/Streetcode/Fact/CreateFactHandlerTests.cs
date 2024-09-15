@@ -29,11 +29,34 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         public async Task Handle_ShouldReturnSuccessResult_WhenFactIsCreatedSuccessfully()
         {
             // Arrange
-            var factDto = new FactDto { };
-            var query = new CreateFactCommand(factDto);
-            var factEntity = new FactEntity { ImageId = 1 };
+            var factCreateDto = new FactCreateDto
+            {
+                Title = "Test Fact",
+                ImageId = 1,
+                FactContent = "Some content",
+                StreetcodeId = 123
+            };
 
-            _mockMapper.Setup(m => m.Map<FactEntity>(query.Fact)).Returns(factEntity);
+            var factDto = new FactDto
+            {
+                Id = 1,
+                Title = "Test Fact",
+                ImageId = 1,
+                FactContent = "Some content"
+            };
+
+            var factEntity = new FactEntity
+            {
+                Id = 1,
+                Title = "Test Fact",
+                ImageId = 1,
+                FactContent = "Some content",
+                StreetcodeId = 123
+            };
+
+            var query = new CreateFactCommand(factCreateDto);
+
+            _mockMapper.Setup(m => m.Map<FactEntity>(factCreateDto)).Returns(factEntity);
             _mockRepository.Setup(r => r.FactRepository.CreateAsync(factEntity)).ReturnsAsync(factEntity);
             _mockRepository.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
             _mockMapper.Setup(m => m.Map<FactDto>(factEntity)).Returns(factDto);
@@ -43,14 +66,17 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal(factDto, result.Value);
+            Assert.Equal(factCreateDto.Title, result.Value.Title);
+            Assert.Equal(factCreateDto.ImageId, result.Value.ImageId);
+            Assert.Equal(factCreateDto.FactContent, result.Value.FactContent);
         }
+
 
         [Fact]
         public async Task Handle_ShouldReturnFailResult_WhenMapperReturnsNull()
         {
             // Arrange
-            var factDto = new FactDto { };
+            var factDto = new FactCreateDto { };
             var query = new CreateFactCommand(factDto);
 
             _mockMapper.Setup(m => m.Map<FactEntity>(query.Fact)).Returns((FactEntity)null);
@@ -68,7 +94,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         public async Task Handle_ShouldReturnFailResult_WhenSaveChangesFails()
         {
             // Arrange
-            var factDto = new FactDto { };
+            var factDto = new FactCreateDto { };
             var query = new CreateFactCommand(factDto);
             var factEntity = new FactEntity { ImageId = 1 };
 
