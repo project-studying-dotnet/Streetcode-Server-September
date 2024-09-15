@@ -12,9 +12,9 @@ using Streetcode.DAL.Entities.Transactions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
 using Xunit;
-
 namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
 {
+    using StreetcodeCategoryContent = DAL.Entities.Sources.StreetcodeCategoryContent;
     public class DeleteCategoryHandlerTests
     {
         private readonly Mock<IRepositoryWrapper> _repositoryMock;
