@@ -5,7 +5,7 @@ using Moq;
 using Streetcode.BLL.Dto.Sources;
 using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete;
+using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
 using Streetcode.DAL.Entities.Sources;
 using Streetcode.DAL.Entities.Transactions;
