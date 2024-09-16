@@ -1,12 +1,24 @@
-﻿using System;
+﻿using Streetcode.DAL.Enums;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Streetcode.BLL.Dto.Timeline
 {
-    internal class TimelineItemCreateDto
+    public class TimelineItemCreateDto
     {
+        [Required]
+        [MaxLength(26)]
+        public string Title { get; set; } = null!;
+        [Required]
+        [MaxLength(400)]
+        public string? Description { get; set; }
+        public DateTime Date { get; set; }
+        public DateViewPattern DateViewPattern { get; set; }
+        public IEnumerable<HistoricalContextDto>? HistoricalContexts { get; set; } = new List<HistoricalContextDto>();
+        public int StreetcodeId { get; set; }
     }
 }
