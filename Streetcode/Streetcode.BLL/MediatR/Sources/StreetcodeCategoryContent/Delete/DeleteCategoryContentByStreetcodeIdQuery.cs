@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete
+namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete
 {
     public record DeleteCategoryContentByStreetcodeIdQuery(int streetcodeId, int categoryId) : IRequest<Result<Unit>>;
 }
