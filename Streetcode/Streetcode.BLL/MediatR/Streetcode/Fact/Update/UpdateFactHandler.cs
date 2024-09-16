@@ -41,7 +41,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var response = _mapper.Map<FactUpdateDto>(fact);
+            var response = request.Fact;
 
             _repositoryWrapper.FactRepository.Update(fact);
             bool resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
