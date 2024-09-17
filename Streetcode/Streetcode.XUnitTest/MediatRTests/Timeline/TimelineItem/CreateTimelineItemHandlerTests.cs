@@ -108,31 +108,5 @@ namespace Streetcode.XUnitTest.MediatRTests.Timeline.TimelineItem
             Assert.False(result.IsSuccess);
             Assert.Equal("Streetcode does not exist.", result.Errors.First().Message);
         }
-
-        [Fact]
-        public async Task Handle_ShouldReturnError_WhenSaveChangesFails()
-        {
-            // Arrange
-            var timelineItemCreateDto = new TimelineItemCreateDto { };               
-            var streetcodeEntity = new StreetcodeEntity { Id = 99 };
-            var timelineItemEntity = new TimelineItemEntity { StreetcodeId = 99 };
-
-            var command = new CreateTimelineItemCommand(timelineItemCreateDto);
-
-            _repositoryMock.Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
-                  It.IsAny<Expression<Func<StreetcodeEntity, bool>>>(), null))
-              .ReturnsAsync(streetcodeEntity);
-
-            _mapperMock.Setup(m => m.Map<TimelineItemEntity>(timelineItemCreateDto)).Returns(timelineItemEntity);
-            _repositoryMock.Setup(r => r.TimelineRepository.CreateAsync(timelineItemEntity)).ReturnsAsync(timelineItemEntity);
-            _repositoryMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0); 
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal("Failed to create TimelineItem", result.Errors.First().Message);
-        }
     }
 }

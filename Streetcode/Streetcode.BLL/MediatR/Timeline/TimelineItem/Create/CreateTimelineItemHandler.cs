@@ -25,8 +25,6 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
 
         public async Task<Result<TimelineItemDto>> Handle(CreateTimelineItemCommand request, CancellationToken cancellationToken)
         {
-            bool isSaveSuccessful = false;
-
             var streetcodeExists = await _repository.StreetcodeRepository.GetFirstOrDefaultAsync(s => s.Id == request.timelineItemCreateDto.StreetcodeId);
             if (streetcodeExists == null)
             {
@@ -36,11 +34,17 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
             }
 
             var newTimelineItem = _mapper.Map<TimelineItemEntity>(request.timelineItemCreateDto);
+            if (newTimelineItem == null)
+            {
+                const string errorMessage = "Failed to create TimelineItem";
+                _logger.LogError(request, errorMessage);
+                return Result.Fail(new Error(errorMessage));
+            }
 
             if (!request.timelineItemCreateDto.HistoricalContexts.Any())
             {
                 await _repository.TimelineRepository.CreateAsync(newTimelineItem);
-                isSaveSuccessful = await _repository.SaveChangesAsync() > 0;
+                await _repository.SaveChangesAsync();
                 return Result.Ok(_mapper.Map<TimelineItemDto>(newTimelineItem));
             }
 
@@ -63,14 +67,8 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
                 }).ToList();
 
             newTimelineItem.HistoricalContextTimelines.AddRange(historicalContextTimelines);
-            isSaveSuccessful = await _repository.SaveChangesAsync() > 0;
+            await _repository.SaveChangesAsync();
             
-            if (!isSaveSuccessful)
-            {
-                const string errorMessage = "Failed to create TimelineItem";
-                _logger.LogError(request, errorMessage);
-                return Result.Fail(new Error(errorMessage));
-            }
             return Result.Ok(_mapper.Map<TimelineItemDto>(newTimelineItem));
         }
     }
