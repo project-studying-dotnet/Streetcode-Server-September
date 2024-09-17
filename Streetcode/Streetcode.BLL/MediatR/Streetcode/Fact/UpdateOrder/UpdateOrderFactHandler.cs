@@ -1,0 +1,38 @@
+﻿using AutoMapper;
+using FluentResults;
+using MediatR;
+using Streetcode.BLL.Dto.News;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Interfaces.BlobStorage;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.MediatR.Newss.Update;
+using Streetcode.DAL.Entities.News;
+using Streetcode.DAL.Repositories.Interfaces.Base;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using FactEntety = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
+
+namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
+{
+    public class UpdateOrderFactHandler : IRequestHandler<UpdateOrderFactCommand, Result<IEnumerable<FactDto>>>
+    {
+        private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly IMapper _mapper;
+        private readonly ILoggerService _logger;
+        public UpdateOrderFactHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
+        {
+            _repositoryWrapper = repositoryWrapper;
+            _mapper = mapper;
+            _logger = logger;
+        }
+
+        public async Task<Result<IEnumerable<FactUpdateDto>>> Handle(UpdateOrderFactCommand request, CancellationToken cancellationToken)
+        {
+
+        }
+    }
+}
