@@ -193,80 +193,80 @@ namespace Streetcode.WebApi.Extensions
 
                                 await dbContext.SaveChangesAsync();
                             }
-
+                            var TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90";
                             if (!dbContext.TeamMemberLinks.Any())
                             {
                                 dbContext.AddRange(
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.YouTube,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 1,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.Facebook,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 1,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.Instagram,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 1,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.Twitter,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 1,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.YouTube,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 2,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.Facebook,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 2,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.Instagram,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 2,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.Twitter,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 2,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.YouTube,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 3,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.Facebook,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 3,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.Instagram,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 3,
                                     },
                                     new TeamMemberLink
                                     {
                                         LogoType = LogoType.Twitter,
-                                        TargetUrl = "https://www.youtube.com/watch?v=8kCnOqvmEp0&ab_channel=JL%7C%D0%AE%D0%9B%D0%86%D0%AF%D0%9B%D0%A3%D0%A9%D0%98%D0%9D%D0%A1%D0%AC%D0%9A%D0%90",
+                                        TargetUrl = TargetUrl,
                                         TeamMemberId = 3,
                                     });
                                 await dbContext.SaveChangesAsync();
