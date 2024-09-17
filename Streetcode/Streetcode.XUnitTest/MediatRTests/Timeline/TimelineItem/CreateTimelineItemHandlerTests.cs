@@ -97,8 +97,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Timeline.TimelineItem
 
             var command = new CreateTimelineItemCommand(timelineItemCreateDto);
 
-            _repositoryMock
-              .Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
+            _repositoryMock.Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
                   It.IsAny<Expression<Func<StreetcodeEntity, bool>>>(), null))
               .ReturnsAsync((StreetcodeEntity)null);
 

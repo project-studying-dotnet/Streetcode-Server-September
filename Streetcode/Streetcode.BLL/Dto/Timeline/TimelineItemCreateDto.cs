@@ -10,11 +10,7 @@ namespace Streetcode.BLL.Dto.Timeline
 {
     public class TimelineItemCreateDto
     {
-        [Required]
-        [MaxLength(26)]
         public string Title { get; set; } = null!;
-        [Required]
-        [MaxLength(400)]
         public string? Description { get; set; }
         public DateTime Date { get; set; }
         public DateViewPattern DateViewPattern { get; set; }
