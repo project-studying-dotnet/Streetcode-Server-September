@@ -74,9 +74,9 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
 
             //Assert 
             Assert.False(result.IsSuccess);
-            Assert.Equal("Cannot convert null to category content", result.Errors.FirstOrDefault().Message);
+            Assert.Equal("Category content not found", result.Errors.FirstOrDefault().Message);
 
-            _loggerMock.Verify(logger => logger.LogError(command, "Cannot convert null to category content"), Times.Once);
+            _loggerMock.Verify(logger => logger.LogError(command, "Category content not found"), Times.Once);
             _repositoryMock.Verify(repo => repo.StreetcodeCategoryContentRepository
                            .Update(It.IsAny<StreetcodeCategoryContentEnitity>()), Times.Never);
             _repositoryMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
