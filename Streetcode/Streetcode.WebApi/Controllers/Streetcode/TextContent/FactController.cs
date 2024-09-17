@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Delete;
@@ -7,7 +6,7 @@ using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Update;
-using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Update;
+using Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 
@@ -47,5 +46,11 @@ public class FactController : BaseApiController
     public async Task<IActionResult> Update([FromBody] FactUpdateDto factDto)
     {
         return HandleResult(await Mediator.Send(new UpdateFactCommand(factDto)));
+    }
+
+    [HttpPost("update-fact-order")]
+    public async Task<IActionResult> UpdateFactOrder([FromBody] FactOrderUpdateDto factDto)
+    {
+        return HandleResult(await Mediator.Send(new UpdateOrderFactCommand(factDto)));
     }
 }

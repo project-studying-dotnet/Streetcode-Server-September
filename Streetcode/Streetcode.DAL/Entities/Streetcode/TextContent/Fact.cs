@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.DAL.Entities.Media.Images;
 
 namespace Streetcode.DAL.Entities.Streetcode.TextContent;
 
 [Table("facts", Schema = "streetcode")]
+[Index(nameof(SortOrder), IsUnique = true)]
 public class Fact
 {
     [Key]
@@ -18,6 +20,9 @@ public class Fact
     [Required]
     [MaxLength(600)]
     public string? FactContent { get; set; }
+
+    [Required]
+    public int SortOrder { get; set; }
 
     public int? ImageId { get; set; }
 
