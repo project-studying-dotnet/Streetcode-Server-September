@@ -28,5 +28,14 @@ public class CreateFactCommandValidator : AbstractValidator<CreateFactCommand>
             .WithMessage("Main text is required")
             .MaximumLength(600)
             .WithMessage("Main text can not exceed 600 characters");
+
+        RuleFor(x => x.Fact.StreetcodeId)
+            .Must((StreetcodeId, _) =>
+            {
+                return repositoryWrapper.StreetcodeRepository
+                    .GetFirstOrDefaultAsync(Streetcode => Streetcode.Id == StreetcodeId.Fact.StreetcodeId)
+                    .Result != null;
+            })
+            .WithMessage("Streetcode Id doesn't exist");
     }
 }
