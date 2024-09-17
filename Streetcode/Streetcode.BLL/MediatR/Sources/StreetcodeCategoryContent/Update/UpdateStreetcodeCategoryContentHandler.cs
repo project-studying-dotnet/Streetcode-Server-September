@@ -26,12 +26,12 @@ namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update
         public async Task<Result<SourceLinkCategoryContentUpdateDto>> Handle(UpdateStreetcodeCategoryContentCommand request, CancellationToken cancellationToken)
         {
             var streetcodeCategoryContentToUpdate = await _repository.StreetcodeCategoryContentRepository
-                .GetFirstOrDefaultAsync(c => c.StreetcodeId == request.streetcodeId
+                .GetFirstOrDefaultAsync(c => c.StreetcodeId == request.CategoryContentUpdateDto.StreetcodeId
                                           && c.SourceLinkCategoryId == request.categoryId);
 
             if (streetcodeCategoryContentToUpdate == null)
             {
-                const string errorMsg = "Cannot convert null to category content";
+                const string errorMsg = "Category content not found";
                 _logger.LogError(request, errorMsg);    
                 return Result.Fail(errorMsg);
             }

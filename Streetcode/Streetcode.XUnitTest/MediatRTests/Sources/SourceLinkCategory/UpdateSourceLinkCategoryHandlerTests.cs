@@ -33,9 +33,9 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
         public async Task Handle_SuccessfulUpdate_ReturnsUpdatedContent()
         {
             // Arrange
-            var existingEntity = new StreetcodeCategoryContentEnitity { StreetcodeId = 1, SourceLinkCategoryId = 1, Text = "Original Text" };
+            var existingEntity = new StreetcodeCategoryContentEnitity { SourceLinkCategoryId = 1, StreetcodeId = 1, Text = "Original Text" };
             var updateDto = new SourceLinkCategoryContentUpdateDto { SourceLinkCategoryId = 2, StreetcodeId = 1, Text = "Updated Text" };
-            var command = new UpdateStreetcodeCategoryContentCommand(1, 2, updateDto);
+            var command = new UpdateStreetcodeCategoryContentCommand(2, updateDto);
 
             _repositoryMock.Setup(r => r.StreetcodeCategoryContentRepository
                  .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeCategoryContentEnitity, bool>>>(), null))
@@ -63,7 +63,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
         public async Task Handle_EntityNotFound_ReturnsFailResult()
         {
             // Arrange
-            var command = new UpdateStreetcodeCategoryContentCommand(1, 2, new SourceLinkCategoryContentUpdateDto { Text = "Updated Text" });
+            var command = new UpdateStreetcodeCategoryContentCommand(2, new SourceLinkCategoryContentUpdateDto { Text = "Updated Text" });
 
             _repositoryMock.Setup(r => r.StreetcodeCategoryContentRepository
                  .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeCategoryContentEnitity, bool>>>(), null))
@@ -86,9 +86,9 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
         public async Task Handle_SaveChangesFails_ReturnsFailResult()
         {
             // Arrange
-            var existingEntity = new StreetcodeCategoryContentEnitity { StreetcodeId = 1, SourceLinkCategoryId = 1, Text = "Original Text" };
+            var existingEntity = new StreetcodeCategoryContentEnitity { SourceLinkCategoryId = 1, StreetcodeId = 1, Text = "Original Text" };
             var updateDto = new SourceLinkCategoryContentUpdateDto { SourceLinkCategoryId = 2, StreetcodeId = 1, Text = "Updated Text" };
-            var command = new UpdateStreetcodeCategoryContentCommand(1, 2, updateDto);
+            var command = new UpdateStreetcodeCategoryContentCommand(2, updateDto);
 
             _repositoryMock.Setup(r => r.StreetcodeCategoryContentRepository
                  .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeCategoryContentEnitity, bool>>>(), null))

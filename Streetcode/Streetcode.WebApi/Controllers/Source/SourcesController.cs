@@ -49,11 +49,11 @@ public class SourcesController : BaseApiController
         return HandleResult(await Mediator.Send(new CreateSourceLinkCategoryCommand(srcLinkCategoryCreateDto)));
     }
 
-    [HttpPut("{categoryId:int}&{streetcodeId:int}")]
-    public async Task<IActionResult> Update([FromRoute] int streetcodeId, [FromRoute] int categoryId, 
+    [HttpPut("{categoryId:int}")]
+    public async Task<IActionResult> Update([FromRoute] int categoryId, 
                                             [FromBody] SourceLinkCategoryContentUpdateDto srcLinkCategoryCreateDto)
     {
-        return HandleResult(await Mediator.Send(new UpdateStreetcodeCategoryContentCommand(streetcodeId, categoryId, srcLinkCategoryCreateDto)));
+        return HandleResult(await Mediator.Send(new UpdateStreetcodeCategoryContentCommand(categoryId, srcLinkCategoryCreateDto)));
     }
 
     [HttpDelete("{categoryId:int}&{streetcodeId:int}")]
