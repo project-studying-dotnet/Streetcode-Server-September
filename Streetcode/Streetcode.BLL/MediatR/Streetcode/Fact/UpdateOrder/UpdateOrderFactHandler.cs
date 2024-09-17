@@ -26,6 +26,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
         {
             try
             {
+                //  Get a list of all facts related to the same Streetcode
                 var requestedStreetCodeId = request.Fact.StreetcodeId;
 
                 var facts = await _repositoryWrapper.FactRepository
@@ -37,6 +38,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
                     return Result.Fail<IEnumerable<FactDto>>("Facts not found");
                 }
 
+                // Checking the correctness of the new SortOrder
                 var newOrder = request.Fact.NewOrder;
                 var maxOrderInFacts = facts.Select(f => f.SortOrder).Max();
 
@@ -44,11 +46,14 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
 
                 if (newOrder < 1) newOrder = 1;
 
+                // Use the function to update the order of facts
                 FactOrderHelper.UpdateFactOrder(facts.ToList(), request.Fact.FactId, newOrder);
 
+                // Saving changes
                 _repositoryWrapper.FactRepository.UpdateRange(facts);
                 await _repositoryWrapper.SaveChangesAsync();
 
+                // Return updated facts
                 var factDtos = _mapper.Map<IEnumerable<FactDto>>(facts);
                 factDtos = factDtos.OrderBy(f => f.SortOrder);
 

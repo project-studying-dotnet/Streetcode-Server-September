@@ -1,9 +1,4 @@
 ﻿using Streetcode.DAL.Entities.Streetcode.TextContent;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Streetcode.BLL.Util
 {
@@ -11,6 +6,7 @@ namespace Streetcode.BLL.Util
     {
         public static void UpdateFactOrder(List<Fact> facts, int factId, int newSortOrder)
         {
+            // Find the fact to move.
             var factToMove = facts.FirstOrDefault(f => f.Id == factId) ?? throw new ArgumentException($"Fact with Id {factId} not found");
             
             var currentSortOrder = factToMove.SortOrder;
@@ -44,6 +40,7 @@ namespace Streetcode.BLL.Util
                 }
             }
 
+            // Move the fact to a new position
             factToMove.SortOrder = newSortOrder;
         }
     }
