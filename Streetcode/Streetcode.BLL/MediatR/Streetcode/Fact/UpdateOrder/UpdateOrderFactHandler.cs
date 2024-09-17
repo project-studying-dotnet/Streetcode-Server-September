@@ -26,16 +26,25 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
         {
             try
             {
+                var requestedStreetCodeId = request.Fact.StreetcodeId;
+
                 var facts = await _repositoryWrapper.FactRepository
-                    .GetAllAsync(f => f.StreetcodeId == request.Fact.StreetcodeId);
+                    .GetAllAsync(f => f.StreetcodeId == requestedStreetCodeId);
 
                 if (facts == null || !facts.Any())
                 {
-                    _logger.LogError(request, $"No facts found for StreetcodeId: {request.Fact.StreetcodeId}");
+                    _logger.LogError(request, $"No facts found for StreetcodeId: {requestedStreetCodeId}");
                     return Result.Fail<IEnumerable<FactDto>>("Facts not found");
                 }
 
-                FactOrderHelper.UpdateFactOrder(facts.ToList(), request.Fact.FactId, request.Fact.NewOrder);
+                var newOrder = request.Fact.NewOrder;
+                var maxOrderInFacts = facts.Select(f => f.SortOrder).Max();
+
+                if (newOrder > maxOrderInFacts) newOrder = maxOrderInFacts;
+
+                if (newOrder < 1) newOrder = 1;
+
+                FactOrderHelper.UpdateFactOrder(facts.ToList(), request.Fact.FactId, newOrder);
 
                 _repositoryWrapper.FactRepository.UpdateRange(facts);
                 await _repositoryWrapper.SaveChangesAsync();
