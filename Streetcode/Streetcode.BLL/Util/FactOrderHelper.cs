@@ -5,7 +5,7 @@ namespace Streetcode.BLL.Util
 {
     public static class FactOrderHelper
     {
-        public static void UpdateFactOrder(List<Fact> facts, int factId, int newSortOrder)
+        public static void UpdateFactOrder(List<Fact> facts, int factId, int newSortOrder = int.MaxValue)
         {
             // Find the fact to move.
             var factToMove = facts.FirstOrDefault(f => f.Id == factId) ?? throw new ArgumentException($"Fact with Id {factId} not found");
