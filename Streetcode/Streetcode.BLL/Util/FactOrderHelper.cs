@@ -1,4 +1,5 @@
-﻿using Streetcode.DAL.Entities.Streetcode.TextContent;
+﻿using Org.BouncyCastle.Asn1.Ocsp;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
 
 namespace Streetcode.BLL.Util
 {
@@ -10,6 +11,13 @@ namespace Streetcode.BLL.Util
             var factToMove = facts.FirstOrDefault(f => f.Id == factId) ?? throw new ArgumentException($"Fact with Id {factId} not found");
             
             var currentSortOrder = factToMove.SortOrder;
+
+            // Checking the correctness of the new SortOrder
+            var maxOrderInFacts = facts.Select(f => f.SortOrder).Max();
+
+            if (newSortOrder > maxOrderInFacts) newSortOrder = maxOrderInFacts;
+
+            if (newSortOrder < 1) newSortOrder = 1;
 
             // If the new order is the same as the old order - nothing needs to change
             if (currentSortOrder == newSortOrder)

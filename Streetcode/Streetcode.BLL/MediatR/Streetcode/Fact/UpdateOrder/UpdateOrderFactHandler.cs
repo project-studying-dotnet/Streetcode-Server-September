@@ -38,16 +38,8 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
                     return Result.Fail<IEnumerable<FactDto>>("Facts not found");
                 }
 
-                // Checking the correctness of the new SortOrder
-                var newOrder = request.Fact.NewOrder;
-                var maxOrderInFacts = facts.Select(f => f.SortOrder).Max();
-
-                if (newOrder > maxOrderInFacts) newOrder = maxOrderInFacts;
-
-                if (newOrder < 1) newOrder = 1;
-
                 // Use the function to update the order of facts
-                FactOrderHelper.UpdateFactOrder(facts.ToList(), request.Fact.FactId, newOrder);
+                FactOrderHelper.UpdateFactOrder(facts.ToList(), request.Fact.FactId, request.Fact.NewOrder);
 
                 // Saving changes
                 _repositoryWrapper.FactRepository.UpdateRange(facts);
