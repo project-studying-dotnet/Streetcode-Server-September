@@ -33,6 +33,13 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
                 return Result.Fail(errorMsg);
             }
 
+            var facts = await _repository.FactRepository
+                    .GetAllAsync(f => f.StreetcodeId == newFact.StreetcodeId);
+
+            var maxOrderInFacts = facts.Select(f => f.SortOrder).Max();
+
+            newFact.SortOrder = maxOrderInFacts + 1;
+
             var entity = await _repository.FactRepository.CreateAsync(newFact);
             var resultIsSuccess = await _repository.SaveChangesAsync() > 0;
 
