@@ -636,9 +636,6 @@ namespace Streetcode.DAL.Persistence.Migrations
 
                     b.HasIndex("ImageId");
 
-                    b.HasIndex("SortOrder")
-                        .IsUnique();
-
                     b.HasIndex("StreetcodeId");
 
                     b.ToTable("facts", "streetcode");
@@ -846,7 +843,7 @@ namespace Streetcode.DAL.Persistence.Migrations
 
                     b.HasIndex("HistoricalContextId");
 
-                    b.ToTable("HistoricalContextsTimelines");
+                    b.ToTable("HistoricalContextsTimelines", (string)null);
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Timeline.TimelineItem", b =>
