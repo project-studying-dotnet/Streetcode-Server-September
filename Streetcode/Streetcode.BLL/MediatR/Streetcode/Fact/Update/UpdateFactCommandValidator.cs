@@ -17,10 +17,10 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
                 .Must((factId, _) =>
                 {
                     return repositoryWrapper.FactRepository
-                        .GetFirstOrDefaultAsync(fact => fact.Id == factId.Fact.ImageId)
+                        .GetFirstOrDefaultAsync(fact => fact.Id == factId.Fact.Id)
                         .Result != null;
                 })
-                .WithMessage("Image Id doesn't exist");
+                .WithMessage("Fact Id doesn't exist");
 
             RuleFor(x => x.Fact.Title)
                 .NotEmpty()
