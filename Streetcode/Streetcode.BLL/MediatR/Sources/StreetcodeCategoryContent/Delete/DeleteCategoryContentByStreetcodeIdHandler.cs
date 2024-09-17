@@ -5,7 +5,7 @@ using Streetcode.BLL.Dto.Sources;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete
+namespace Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete
 {
 
     public class DeleteCategoryContentByStreetcodeIdHandler : IRequestHandler<DeleteCategoryContentByStreetcodeIdQuery, Result<Unit>>
@@ -22,7 +22,7 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete
         public async Task<Result<Unit>> Handle(DeleteCategoryContentByStreetcodeIdQuery request, CancellationToken cancellationToken)
         {
             var srcCategoryContent = await _repository.StreetcodeCategoryContentRepository
-                .GetFirstOrDefaultAsync(p => p.SourceLinkCategoryId == request.categoryId && 
+                .GetFirstOrDefaultAsync(p => p.SourceLinkCategoryId == request.categoryId &&
                  p.StreetcodeId == request.streetcodeId);
 
             if (srcCategoryContent == null)

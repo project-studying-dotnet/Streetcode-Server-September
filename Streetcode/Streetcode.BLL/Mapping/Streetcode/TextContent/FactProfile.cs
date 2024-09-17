@@ -11,5 +11,6 @@ public class FactProfile : Profile
         CreateMap<Fact, FactDto>().ReverseMap();
         CreateMap<Fact, FactUpdateCreateDto>().ReverseMap();
         CreateMap<Fact, FactCreateDto>().ReverseMap();
+        CreateMap<Fact, FactUpdateDto>().ReverseMap();
     }
 }

@@ -5,9 +5,9 @@ using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoriesByStreetcodeId;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetAll;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetCategoryContentByStreetcodeId;
-using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Delete;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Create;
 using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Update;
+using Streetcode.BLL.MediatR.Sources.StreetcodeCategoryContent.Delete;
 
 namespace Streetcode.WebApi.Controllers.Source;
 
