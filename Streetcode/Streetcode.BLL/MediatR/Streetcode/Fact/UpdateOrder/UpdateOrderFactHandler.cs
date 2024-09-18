@@ -7,6 +7,8 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.Util;
 
 using FactEntety = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
 {
@@ -33,10 +35,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
                     .GetAllAsync(f => f.StreetcodeId == requestedStreetCodeId);
 
                 if (facts == null || !facts.Any())
-                {
-                    _logger.LogError(request, $"No facts found for StreetcodeId: {requestedStreetCodeId}");
-                    return Result.Fail<IEnumerable<FactDto>>("Facts not found");
-                }
+                    throw new CustomException($"No facts found for StreetcodeId: {requestedStreetCodeId}", StatusCodes.Status204NoContent);
 
                 // Use the function to update the order of facts
                 FactOrderHelper.UpdateFactOrder(facts.ToList(), request.Fact.FactId, request.Fact.NewOrder);
@@ -53,8 +52,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
             }
             catch (Exception ex)
             {
-                _logger.LogError(request, $"Error occurred while updating fact order: {ex.Message}");
-                return Result.Fail<IEnumerable<FactDto>>("Error occurred while updating fact order");
+                throw new CustomException($"Error occurred while updating fact order: {ex.Message}", StatusCodes.Status400BadRequest);
             }
         }
     }

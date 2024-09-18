@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.News;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.Update;
@@ -35,11 +37,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
             var fact = _mapper.Map<FactEntety>(request.Fact);
 
             if (fact is null)
-            {
-                const string errorMsg = $"Cannot convert null to fact";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
+                throw new CustomException($"Cannot convert null to fact", StatusCodes.Status204NoContent);
 
             var response = request.Fact;
 
@@ -52,9 +50,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Update
             }
             else
             {
-                const string errorMsg = $"Failed to update fact";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
+                throw new CustomException($"Failed to update fact", StatusCodes.Status400BadRequest);
             }
         }
     }
