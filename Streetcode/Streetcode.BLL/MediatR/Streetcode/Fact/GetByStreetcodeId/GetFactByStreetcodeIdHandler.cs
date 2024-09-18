@@ -33,6 +33,8 @@ public class GetFactByStreetcodeIdHandler : IRequestHandler<GetFactByStreetcodeI
             return Result.Fail(new Error(errorMsg));
         }
 
-        return Result.Ok(_mapper.Map<IEnumerable<FactDto>>(fact));
+        var response = _mapper.Map<IEnumerable<FactDto>>(fact);
+        response = response.OrderBy(f => f.SortOrder);
+        return Result.Ok(response);
     }
 }

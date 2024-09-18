@@ -12,18 +12,12 @@ public class TimelineItem
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    [Required]
-    [DataType(DataType.Date)]
     public DateTime Date { get; set; }
 
-    [Required]
     public DateViewPattern DateViewPattern { get; set; }
 
-    [Required]
-    [MaxLength(100)]
     public string? Title { get; set; }
 
-    [MaxLength(600)]
     public string? Description { get; set; }
 
     public int StreetcodeId { get; set; }
