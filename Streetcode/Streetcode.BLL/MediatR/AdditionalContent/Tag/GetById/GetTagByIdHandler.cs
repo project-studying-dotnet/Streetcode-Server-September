@@ -4,6 +4,7 @@ using MediatR;
 using Streetcode.BLL.Dto.AdditionalContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.DAL.Specification.AdditionalContent.TagSpecification;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.GetById;
 
@@ -22,7 +23,9 @@ public class GetTagByIdHandler : IRequestHandler<GetTagByIdQuery, Result<TagDto>
 
     public async Task<Result<TagDto>> Handle(GetTagByIdQuery request, CancellationToken cancellationToken)
     {
-        var tag = await _repositoryWrapper.TagRepository.GetFirstOrDefaultAsync(f => f.Id == request.Id);
+        var spec = new GetTagByIdSpec(request.Id);
+
+        var tag = await _repositoryWrapper.TagRepository.GetItemBySpecAsync(spec);
 
         if (tag is null)
         {

@@ -6,6 +6,7 @@ using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.AdditionalContent.Tag;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.DAL.Specification.AdditionalContent.TagSpecification;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.GetAll;
 
@@ -24,7 +25,9 @@ public class GetAllTagsHandler : IRequestHandler<GetAllTagsQuery, Result<IEnumer
 
     public async Task<Result<IEnumerable<TagDto>>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken)
     {
-        var tags = await _repositoryWrapper.TagRepository.GetAllAsync();
+        var spec = new GetAllTagsSpec();
+
+        var tags = await _repositoryWrapper.TagRepository.GetItemsBySpecAsync(spec);
 
         if (tags is null)
         {
