@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
@@ -33,23 +35,24 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         }
 
         [Fact]
-        public async Task Handle_ReturnsError_WhenFactNotExist()
+        public async Task Handle_ShouldThrowCustomException_WhenFactNotExist()
         {
             // Arrange
             var factId = 1;
             var request = new GetFactByIdQuery(factId);
             string errorMsg = $"Cannot find any fact with corresponding id: {factId}";
+
             _repositoryWrapperMock.Setup(repo => repo.FactRepository
                 .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<FactEntity, bool>>>(), null))
                 .ReturnsAsync((FactEntity)null);
 
-            // Act
-            var result = await _handler.Handle(request, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(request, CancellationToken.None));
 
-            // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            Assert.Equal($"Cannot find any fact with corresponding id: {request.Id}", exception.Message);
+            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
+
+            _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]
