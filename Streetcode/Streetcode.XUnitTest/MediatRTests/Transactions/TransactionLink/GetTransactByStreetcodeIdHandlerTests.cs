@@ -58,27 +58,26 @@ namespace Streetcode.XUnitTest.MediatRTests.Transactions.TransactionLink
         [Fact]
         public async Task Handle_ReturnFailResult_WhenTransactLinkIsNull()
         {
-            var streetCodeId = 1;
-            var query = new GetTransactLinkByStreetcodeIdQuery(streetCodeId);
+            const int StreetcodeId = 1;
+            var query = new GetTransactLinkByStreetcodeIdQuery(StreetcodeId);
 
             // Arrange
             _mockRepository.Setup(repo => repo.TransactLinksRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<TransactLink, bool>>>(), null))
-            .ReturnsAsync((TransactLink)null);
+            .ReturnsAsync((TransactLink)null!);
 
             _mockRepository.Setup(repo => repo.StreetcodeRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<StreetcodeContent, bool>>>(), null))
-            .ReturnsAsync((StreetcodeContent)null);
+            .ReturnsAsync((StreetcodeContent)null!);
 
-            int id = It.IsAny<int>();
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().Contain(error => error.Message == $"Cannot find a transaction link by a streetcode id: {streetCodeId}, because such streetcode doesn`t exist");
-            _mockLogger.Verify(l => l.LogError(It.IsAny<object>(), $"Cannot find a transaction link by a streetcode id: {streetCodeId}, because such streetcode doesn`t exist"), Times.Once);
+            result.Errors.Should().Contain(error => error.Message == $"Cannot find a transaction link by a streetcode id: {StreetcodeId}, because such streetcode doesn`t exist");
+            _mockLogger.Verify(l => l.LogError(It.IsAny<object>(), $"Cannot find a transaction link by a streetcode id: {StreetcodeId}, because such streetcode doesn`t exist"), Times.Once);
         }
     }
 }

@@ -61,9 +61,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Transactions.TransactionLink
             // Arrange
             _mockRepository.Setup(repo => repo.TransactLinksRepository.GetAllAsync(
                 It.IsAny<Expression<Func<TransactLink, bool>>>(),
-                It.IsAny<Func<IQueryable<TransactLink>, IIncludableQueryable<TransactLink, object>>>()
-                ))
-            .ReturnsAsync((IEnumerable<TransactLink>) null);
+                It.IsAny<Func<IQueryable<TransactLink>, IIncludableQueryable<TransactLink, object>>>()))
+            .ReturnsAsync((IEnumerable<TransactLink>) null!);
 
             // Act
             var result = await _handler.Handle(new GetAllTransactLinksQuery(), CancellationToken.None);

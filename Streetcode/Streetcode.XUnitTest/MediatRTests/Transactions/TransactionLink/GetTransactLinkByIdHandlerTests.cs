@@ -55,6 +55,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Transactions.TransactionLink
             null), Times.Once);
         }
 
+        [Fact]
         public async Task Handle_ReturnFailResult_WhenTransactLinkIsNull()
         {
             // Arrange
@@ -62,7 +63,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Transactions.TransactionLink
                 It.IsAny<Expression<Func<TransactLink, bool>>>(),
                 It.IsAny<Func<IQueryable<TransactLink>, IIncludableQueryable<TransactLink, object>>>()
                 ))
-            .ReturnsAsync((TransactLink)null);
+            .ReturnsAsync((TransactLink)null!);
 
             int id = It.IsAny<int>();
 
