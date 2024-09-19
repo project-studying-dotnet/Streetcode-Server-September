@@ -4,5 +4,5 @@ using Streetcode.BLL.Dto.Timeline;
 
 namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Update
 {
-    public record CreateTimelineItemCommand(TimelineItemUpdateDto timelineItemUpdateDto) : IRequest<Result<TimelineItemDto>>;
+    public record UpdateTimelineItemCommand(TimelineItemUpdateDto timelineItemUpdateDto) : IRequest<Result<TimelineItemDto>>;
 }

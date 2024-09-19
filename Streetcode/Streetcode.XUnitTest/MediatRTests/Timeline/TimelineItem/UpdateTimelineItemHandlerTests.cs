@@ -4,7 +4,6 @@ using Moq;
 using Streetcode.BLL.Dto.Timeline;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Update;
-using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
 using Xunit;
@@ -38,7 +37,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Timeline.TimelineItem
                     It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
                 .ReturnsAsync((TimelineItemEntity)null!);
 
-            var command = new CreateTimelineItemCommand(new TimelineItemUpdateDto { Id = 1 });
+            var command = new UpdateTimelineItemCommand(new TimelineItemUpdateDto { Id = 1 });
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -63,7 +62,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Timeline.TimelineItem
             _repositoryMock.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(1);
 
             var updateDto = new TimelineItemUpdateDto { Id = 1 };
-            var command = new CreateTimelineItemCommand(updateDto);
+            var command = new UpdateTimelineItemCommand(updateDto);
             var updatedDto = new TimelineItemDto { Id = 1 };
 
             _mapperMock.Setup(mapper => mapper.Map<TimelineItemDto>(It.IsAny<TimelineItemEntity>())).Returns(updatedDto);
@@ -93,7 +92,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Timeline.TimelineItem
 
             _repositoryMock.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(0);
 
-            var command = new CreateTimelineItemCommand(new TimelineItemUpdateDto { Id = 1 });
+            var command = new UpdateTimelineItemCommand(new TimelineItemUpdateDto { Id = 1 });
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -113,7 +112,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Timeline.TimelineItem
                     It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
                 .ReturnsAsync((TimelineItemEntity)null!);
 
-            var command = new CreateTimelineItemCommand(new TimelineItemUpdateDto { Id = 1 });
+            var command = new UpdateTimelineItemCommand(new TimelineItemUpdateDto { Id = 1 });
 
             // Act
             await _handler.Handle(command, CancellationToken.None);

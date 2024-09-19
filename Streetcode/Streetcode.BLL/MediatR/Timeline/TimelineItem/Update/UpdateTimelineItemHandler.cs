@@ -7,7 +7,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Update
 {
-    public class UpdateTimelineItemHandler : IRequestHandler<CreateTimelineItemCommand, Result<TimelineItemDto>>
+    public class UpdateTimelineItemHandler : IRequestHandler<UpdateTimelineItemCommand, Result<TimelineItemDto>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repository;
@@ -20,7 +20,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Update
             _logger = logger;
         }
 
-        public async Task<Result<TimelineItemDto>> Handle(CreateTimelineItemCommand request, CancellationToken cancellationToken)
+        public async Task<Result<TimelineItemDto>> Handle(UpdateTimelineItemCommand request, CancellationToken cancellationToken)
         {
             var existingItem = await _repository.TimelineRepository
                 .GetFirstOrDefaultAsync(x => x.Id == request.timelineItemUpdateDto.Id);

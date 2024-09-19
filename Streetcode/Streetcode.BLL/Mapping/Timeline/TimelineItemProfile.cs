@@ -16,7 +16,7 @@ public class TimelineItemProfile : Profile
             .ForMember(dest => dest.HistoricalContexts, opt => opt.MapFrom(x => x.HistoricalContextTimelines
                 .Select(hct => new HistoricalContextDto
                 {
-                    Id = hct.HistoricalContext.Id,
+                    Id = hct.HistoricalContextId,
                     Title = hct.HistoricalContext.Title
                 }).ToList()))
             .ReverseMap();
