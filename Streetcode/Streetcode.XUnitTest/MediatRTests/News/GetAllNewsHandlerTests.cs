@@ -36,8 +36,16 @@ namespace Streetcode.XUnitTest.MediatRTests.News
         public async Task Handle_ReturnsNewsDto_WhenNewsExist()
         {
             // Arrange
-            var news = new List<NewsEntity> { new NewsEntity() { Id = 1, Title = "Test News", Image = new Image { BlobName = "image1" } } };
-            var newsDtos = new List<NewsDto>() { new NewsDto() { Image = new ImageDto() } };
+            var news = new List<NewsEntity> 
+            { 
+                new NewsEntity() { Id = 1, Title = "Test News", Image = new Image { Id = 1 } },
+                new NewsEntity() { Id = 2, Title = "Test News" } 
+            };
+            var newsDtos = new List<NewsDto>() 
+            { 
+                new NewsDto() { Id = 1, Image = new ImageDto() },
+                new NewsDto() { Id = 2 }
+            };
 
             _repositoryWrapperMock.Setup(repo => repo.NewsRepository
                 .GetAllAsync(
@@ -52,35 +60,10 @@ namespace Streetcode.XUnitTest.MediatRTests.News
             var result = await _handler.Handle(new GetAllNewsQuery(), CancellationToken.None);
 
             // Assert
-            Assert.Multiple(
-                () => Assert.True(result.IsSuccess),
-                () => Assert.Equal(newsDtos, result.Value));
+            Assert.True(result.IsSuccess);
+            Assert.Equal(newsDtos, result.Value);
         }
 
-        [Fact]
-        public async Task Handle_ReturnsNewsDto_WhenNewsWithoutImageExist()
-        {
-            // Arrange
-            var news = new List<NewsEntity> { new NewsEntity() { Id = 1, Title = "Test News", Image = null } };
-            var newsDtos = new List<NewsDto>() { new NewsDto() };
-
-            _repositoryWrapperMock.Setup(repo => repo.NewsRepository
-                .GetAllAsync(
-                    It.IsAny<Expression<Func<NewsEntity, bool>>>(),
-                    It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))
-                .ReturnsAsync(news);
-
-            _mapperMock.Setup(mapper => mapper.Map<IEnumerable<NewsDto>>(It.IsAny<IEnumerable<NewsEntity>>()))
-                .Returns(newsDtos);
-
-            // Act
-            var result = await _handler.Handle(new GetAllNewsQuery(), CancellationToken.None);
-
-            // Assert
-            Assert.Multiple(
-                () => Assert.True(result.IsSuccess),
-                () => Assert.Equal(newsDtos, result.Value));
-        }
         [Fact]
         public async Task Handle_ReturnsErrorMsg_WhenNewsNotFound()
         {
@@ -97,11 +80,9 @@ namespace Streetcode.XUnitTest.MediatRTests.News
             var result = await _handler.Handle(new GetAllNewsQuery(), CancellationToken.None);
 
             // Assert
-            Assert.Multiple(
-                () => Assert.True(result.IsFailed),
-                () => Assert.Equal(expectedErrorMsg, result.Errors.First().Message));
+            Assert.True(result.IsFailed);
+            Assert.Equal(expectedErrorMsg, result.Errors.First().Message);
             _loggerMock.Verify(x => x.LogError(It.IsAny<object>(), It.Is<string>(s => s.Contains(expectedErrorMsg))), Times.Once);
         }
-
     }
 }

@@ -35,9 +35,10 @@ namespace Streetcode.XUnitTest.MediatRTests.News
         [Fact]
         public async Task Handle_ReturnsOkResult_WhenNewsFound()
         {
+            // Arrange
             var url = "test.com";
             var request = new GetNewsByUrlQuery(url);
-            var news = new NewsEntity() { Id = 1, Title = "Test News", URL = "test.com", Image = new Image { BlobName = "image1" } };
+            var news = new NewsEntity() { Id = 1, Title = "Test News", URL = "test.com", Image = new Image { Id = 1 } };
             var newsDto = new NewsDto() { Id = 1, Title = "Test News", URL = "test.com", Image = new ImageDto() };
 
             _repositoryWrapperMock.Setup(repo => repo.NewsRepository
