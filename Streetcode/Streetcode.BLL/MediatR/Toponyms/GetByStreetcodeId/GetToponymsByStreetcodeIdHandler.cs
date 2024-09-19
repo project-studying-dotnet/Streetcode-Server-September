@@ -29,11 +29,11 @@ public class GetToponymsByStreetcodeIdHandler : IRequestHandler<GetToponymsByStr
             .ToponymRepository
             .GetAllAsync(
                 predicate: sc => sc.Streetcodes.Any(s => s.Id == request.StreetcodeId),
-                include: scl => scl.Include(sc => sc.Coordinate));
+                include: scl => scl.Include(sc => sc.Coordinate)!);
 
         var distinctToponyms = toponyms.DistinctBy(x => x.StreetName).ToList();
 
-        if (distinctToponyms == null || !distinctToponyms.Any())
+        if (!distinctToponyms.Any())
         {
             string errorMsg = $"Cannot find any toponym by the streetcode id: {request.StreetcodeId}";
             _logger.LogError(request, errorMsg);

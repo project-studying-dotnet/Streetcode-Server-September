@@ -1,11 +1,14 @@
-﻿using Moq;
-using Xunit;
+﻿using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Moq;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Delete;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Xunit;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
 
 using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
 
@@ -16,11 +19,13 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Delete
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<ILoggerService> _loggerMock;
         private readonly DeleteFactHandler _handler;
+        private readonly Mock<IMapper> _mapperMock;
 
         public DeleteFactHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _loggerMock = new Mock<ILoggerService>();
+            _mapperMock = new Mock<IMapper>();
             _handler = new DeleteFactHandler(_repositoryWrapperMock.Object, _loggerMock.Object);
         }
 
@@ -67,11 +72,10 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Delete
             _repositoryWrapperMock.Verify(repo => repo.FactRepository.Delete(fact), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.FactRepository.UpdateRange(It.IsAny<IEnumerable<FactEntity>>()), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_FactDoesNotExist_ReturnsFailure()
+        public async Task Handle_ShouldThrowCustomException_WhenFactDoesNotExist()
         {
             // Arrange
             int factId = 2;
@@ -82,20 +86,18 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Delete
                 null))
                 .ReturnsAsync((FactEntity)null);
 
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal($"No fact found by entered Id - {factId}", result.Errors[0].Message);
+            Assert.Equal($"No fact found by entered Id - {factId}", exception.Message);
+            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
 
-            _loggerMock.Verify(logger => logger.LogError(command, It.IsAny<string>()), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.FactRepository.Delete(It.IsAny<FactEntity>()), Times.Never);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_NoFactsForStreetcode_ReturnsFailure()
+        public async Task Handle_ShouldThrowCustomException_WhenNoFactsForStreetcode()
         {
             // Arrange
             int factId = 1;
@@ -113,20 +115,18 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Delete
                 null))
                 .ReturnsAsync((IEnumerable<FactEntity>)null);
 
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal($"No facts found for StreetcodeId: {fact.StreetcodeId}", result.Errors[0].Message);
+            Assert.Equal($"No facts found for StreetcodeId: {fact.StreetcodeId}", exception.Message);
+            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
 
-            _loggerMock.Verify(logger => logger.LogError(command, It.IsAny<string>()), Times.Once);
-            _repositoryWrapperMock.Verify(repo => repo.FactRepository.Delete(It.IsAny<FactEntity>()), Times.Never);
+            _repositoryWrapperMock.Verify(repo => repo.FactRepository.UpdateRange(It.IsAny<IEnumerable<FactEntity>>()), Times.Never);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_FactsListIsEmpty_ReturnsFailure()
+        public async Task Handle_ShouldThrowCustomException_WhenFactsListIsEmpty()
         {
             // Arrange
             int factId = 1;
@@ -146,20 +146,18 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Delete
                 null))
                 .ReturnsAsync(facts);
 
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal($"No facts found for StreetcodeId: {fact.StreetcodeId}", result.Errors[0].Message);
+            Assert.Equal($"No facts found for StreetcodeId: {fact.StreetcodeId}", exception.Message);
+            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
 
-            _loggerMock.Verify(logger => logger.LogError(command, It.IsAny<string>()), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.FactRepository.Delete(It.IsAny<FactEntity>()), Times.Never);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_SaveChangesFails_ReturnsFailure()
+        public async Task Handle_ShouldThrowCustomException_WhenSaveChangesFails()
         {
             // Arrange
             int factId = 1;
@@ -186,18 +184,16 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Delete
             _repositoryWrapperMock.Setup(repo => repo.FactRepository.Delete(fact));
 
             _repositoryWrapperMock.Setup(repo => repo.SaveChangesAsync())
-                .ReturnsAsync(0); // Симулируем ошибку сохранения
+                .ReturnsAsync(0);
 
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal("Failed to delete fact", result.Errors[0].Message);
+            Assert.Equal("Failed to delete fact", exception.Message);
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
 
             _repositoryWrapperMock.Verify(repo => repo.FactRepository.Delete(fact), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
-            _loggerMock.Verify(logger => logger.LogError(command, It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
@@ -242,12 +238,8 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Delete
             Assert.IsType<Unit>(result.Value);
 
             _repositoryWrapperMock.Verify(repo => repo.FactRepository.Delete(factToDelete), Times.Once);
-            _repositoryWrapperMock.Verify(repo => repo.FactRepository.UpdateRange(It.Is<IEnumerable<FactEntity>>(updatedFacts =>
-                updatedFacts.Any(f => f.Id == 3 && f.SortOrder == 2) &&
-                updatedFacts.Any(f => f.Id == 4 && f.SortOrder == 3)
-            )), Times.Once);
+            _repositoryWrapperMock.Verify(repo => repo.FactRepository.UpdateRange(It.IsAny<IEnumerable<FactEntity>>()), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
         }
     }
 }

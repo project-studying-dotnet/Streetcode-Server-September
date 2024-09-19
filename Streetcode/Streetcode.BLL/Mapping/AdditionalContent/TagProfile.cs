@@ -13,6 +13,6 @@ public class TagProfile : Profile
         CreateMap<Tag, StreetcodeTagDto>().ReverseMap();
         CreateMap<StreetcodeTagIndex, StreetcodeTagDto>()
             .ForMember(x => x.Id, conf => conf.MapFrom(ti => ti.TagId))
-            .ForMember(x => x.Title, conf => conf.MapFrom(ti => ti.Tag.Title ?? ""));
+            .ForMember(x => x.Title, conf => conf.MapFrom(ti => ti.Tag!.Title ?? ""));
     }
 }

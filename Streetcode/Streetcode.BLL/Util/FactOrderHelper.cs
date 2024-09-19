@@ -1,4 +1,6 @@
-﻿using Org.BouncyCastle.Asn1.Ocsp;
+﻿using Microsoft.AspNetCore.Http;
+using Org.BouncyCastle.Asn1.Ocsp;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 
 namespace Streetcode.BLL.Util
@@ -8,8 +10,9 @@ namespace Streetcode.BLL.Util
         public static void UpdateFactOrder(List<Fact> facts, int factId, int newSortOrder = int.MaxValue)
         {
             // Find the fact to move.
-            var factToMove = facts.FirstOrDefault(f => f.Id == factId) ?? throw new ArgumentException($"Fact with Id {factId} not found");
-            
+            var factToMove = facts.FirstOrDefault(f => f.Id == factId) ?? 
+                throw new CustomException($"Fact with Id {factId} not found", StatusCodes.Status204NoContent);
+
             var currentSortOrder = factToMove.SortOrder;
 
             // Checking the correctness of the new SortOrder

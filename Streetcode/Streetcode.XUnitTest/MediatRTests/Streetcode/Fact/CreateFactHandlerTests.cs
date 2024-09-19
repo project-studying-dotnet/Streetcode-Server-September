@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -100,7 +102,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         }
 
         [Fact]
-        public async Task Handle_ShouldReturnFailResult_WhenMapperReturnsNull()
+        public async Task Handle_ShouldThrowCustomException_WhenMapperReturnsNull()
         {
             // Arrange
             var factCreateDto = new FactCreateDto { };
@@ -108,21 +110,18 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
 
             _mockMapper.Setup(m => m.Map<FactEntity>(query.Fact)).Returns((FactEntity)null);
 
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(query, CancellationToken.None));
 
-            // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal("Cannot convert null to fact", result.Errors[0].Message);
-
-            _mockLogger.Verify(l => l.LogError(query, "Cannot convert null to fact"), Times.Once);
+            Assert.Equal("Cannot convert null to fact", exception.Message);
+            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
 
             _mockRepository.Verify(r => r.FactRepository.CreateAsync(It.IsAny<FactEntity>()), Times.Never);
             _mockRepository.Verify(r => r.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_ShouldReturnFailResult_WhenSaveChangesFails()
+        public async Task Handle_ShouldThrowCustomException_WhenSaveChangesFails()
         {
             // Arrange
             var factDto = new FactCreateDto
@@ -165,18 +164,16 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
 
             _mockRepository.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(query, CancellationToken.None));
 
-            // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal("Failed to create a fact", result.Errors[0].Message);
-            _mockLogger.Verify(l => l.LogError(query, "Failed to create a fact"), Times.Once);
+            Assert.Equal("Failed to create a fact", exception.Message);
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
 
             _mockRepository.Verify(r => r.FactRepository.CreateAsync(factEntity), Times.Once);
             _mockRepository.Verify(r => r.SaveChangesAsync(), Times.Once);
 
-            Assert.Equal(3, createdFact.SortOrder); 
+            Assert.Equal(3, createdFact.SortOrder);
             Assert.Equal(123, createdFact.StreetcodeId);
         }
     }

@@ -10,8 +10,9 @@ using Streetcode.BLL.MediatR.Streetcode.Fact.Update;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 
-// Алиас для FactEntity
 using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 
 
 namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
@@ -80,7 +81,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         }
 
         [Fact]
-        public async Task Handle_MappingFails_ReturnsFailure()
+        public async Task Handle_ShouldThrowCustomException_WhenMappingFails()
         {
             // Arrange
             var factUpdateDto = new FactUpdateDto
@@ -92,20 +93,18 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
             _mapperMock.Setup(mapper => mapper.Map<FactEntity>(factUpdateDto))
                 .Returns((FactEntity)null);
 
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal("Cannot convert null to fact", result.Errors[0].Message);
+            Assert.Equal("Cannot convert null to fact", exception.Message);
+            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
 
-            _loggerMock.Verify(logger => logger.LogError(command, "Cannot convert null to fact"), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.FactRepository.Update(It.IsAny<FactEntity>()), Times.Never);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_SaveChangesFails_ReturnsFailure()
+        public async Task Handle_ShouldThrowCustomException_WhenSaveChangesFails()
         {
             // Arrange
             var factUpdateDto = new FactUpdateDto
@@ -136,17 +135,14 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
             _repositoryWrapperMock.Setup(repo => repo.SaveChangesAsync())
                 .ReturnsAsync(0);
 
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal("Failed to update fact", result.Errors[0].Message);
+            Assert.Equal("Failed to update fact", exception.Message);
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
 
             _repositoryWrapperMock.Verify(repo => repo.FactRepository.Update(factEntity), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
-            _loggerMock.Verify(logger => logger.LogError(command, "Failed to update fact"), Times.Once);
         }
-
     }
 }

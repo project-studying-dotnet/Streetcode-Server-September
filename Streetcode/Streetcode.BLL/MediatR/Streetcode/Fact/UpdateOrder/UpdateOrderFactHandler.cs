@@ -7,6 +7,9 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.Util;
 
 using FactEntety = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
+using Streetcode.DAL.Entities.Feedback;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
 {
@@ -24,37 +27,41 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
 
         public async Task<Result<IEnumerable<FactDto>>> Handle(UpdateOrderFactCommand request, CancellationToken cancellationToken)
         {
+            //  Get a list of all facts related to the same Streetcode
+            var requestedStreetCodeId = request.Fact.StreetcodeId;
+
+            var facts = await _repositoryWrapper.FactRepository
+                .GetAllAsync(f => f.StreetcodeId == requestedStreetCodeId);
+
+            if (facts == null || !facts.Any())
+                throw new CustomException($"No facts found for StreetcodeId: {requestedStreetCodeId}", StatusCodes.Status204NoContent);
+
             try
             {
-                //  Get a list of all facts related to the same Streetcode
-                var requestedStreetCodeId = request.Fact.StreetcodeId;
-
-                var facts = await _repositoryWrapper.FactRepository
-                    .GetAllAsync(f => f.StreetcodeId == requestedStreetCodeId);
-
-                if (facts == null || !facts.Any())
-                {
-                    _logger.LogError(request, $"No facts found for StreetcodeId: {requestedStreetCodeId}");
-                    return Result.Fail<IEnumerable<FactDto>>("Facts not found");
-                }
-
                 // Use the function to update the order of facts
                 FactOrderHelper.UpdateFactOrder(facts.ToList(), request.Fact.FactId, request.Fact.NewOrder);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
 
-                // Saving changes
-                _repositoryWrapper.FactRepository.UpdateRange(facts);
-                await _repositoryWrapper.SaveChangesAsync();
+            // Saving changes
+            _repositoryWrapper.FactRepository.UpdateRange(facts);
+            bool resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
 
+            if (resultIsSuccess)
+            {
                 // Return updated facts
                 var factDtos = _mapper.Map<IEnumerable<FactDto>>(facts);
                 factDtos = factDtos.OrderBy(f => f.SortOrder);
 
                 return Result.Ok(factDtos);
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(request, $"Error occurred while updating fact order: {ex.Message}");
-                return Result.Fail<IEnumerable<FactDto>>("Error occurred while updating fact order");
+                throw new CustomException($"Failed to update fact", StatusCodes.Status400BadRequest);
             }
         }
     }

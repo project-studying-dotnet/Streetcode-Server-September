@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
@@ -16,6 +18,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using FactEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
 
 namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
@@ -36,7 +39,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         }
 
         [Fact]
-        public async Task Handle_ReturnsError_WhenFactByStreetcodeIdNotFound()
+        public async Task Handle_ShouldThrowCustomException_WhenFactByStreetcodeIdNotFound()
         {
             var streetcodeId = 1;
             var request = new GetFactByStreetcodeIdQuery(streetcodeId);
@@ -48,13 +51,13 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
                    It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
                .ReturnsAsync((IEnumerable<FactEntity>)null);
 
-            // Act
-            var result = await _handler.Handle(request, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(request, CancellationToken.None));
 
-            // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            Assert.Equal($"Cannot find any fact by the streetcode id: {request.StreetcodeId}", exception.Message);
+            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
+
+            _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
         }
 
         [Fact]

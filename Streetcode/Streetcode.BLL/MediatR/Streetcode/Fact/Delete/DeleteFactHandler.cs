@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Util;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -24,22 +26,14 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete
             var fact = await _repositoryWrapper.FactRepository.GetFirstOrDefaultAsync(f => f.Id == id);
 
             if (fact == null)
-            {
-                string errorMsg = $"No fact found by entered Id - {id}";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(errorMsg);
-            }
+                throw new CustomException($"No fact found by entered Id - {id}", StatusCodes.Status204NoContent);
 
             // Getting all the facts related to the same Streetcode
             var facts = await _repositoryWrapper.FactRepository
                 .GetAllAsync(f => f.StreetcodeId == fact.StreetcodeId);
 
             if (facts == null || !facts.Any())
-            {
-                string errorMsg = $"No facts found for StreetcodeId: {fact.StreetcodeId}";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
+                throw new CustomException($"No facts found for StreetcodeId: {fact.StreetcodeId}", StatusCodes.Status204NoContent);
 
             _repositoryWrapper.FactRepository.Delete(fact);
 
@@ -56,9 +50,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete
             }
             else
             {
-                string errorMsg = "Failed to delete fact";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
+                throw new CustomException("Failed to delete fact", StatusCodes.Status400BadRequest);
             }
         }
     }

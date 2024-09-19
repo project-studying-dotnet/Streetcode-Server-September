@@ -16,18 +16,13 @@ public class StreetcodeProfile : Profile
         CreateMap<StreetcodeContent, StreetcodeShortDto>().ReverseMap();
         CreateMap<StreetcodeContent, StreetcodeMainPageDto>()
              .ForPath(dto => dto.Text, conf => conf
-                .MapFrom(e => e.Text.Title))
+                .MapFrom(e => e.Text!.Title))
             .ForPath(dto => dto.ImageId, conf => conf
                 .MapFrom(e => e.Images.Select(i => i.Id).LastOrDefault()));
     }
 
-    private StreetcodeType GetStreetcodeType(StreetcodeContent streetcode)
+    private static StreetcodeType GetStreetcodeType(StreetcodeContent streetcode)
     {
-        if(streetcode is EventStreetcode)
-        {
-            return StreetcodeType.Event;
-        }
-
-        return StreetcodeType.Person;
+        return streetcode is EventStreetcode ? StreetcodeType.Event : StreetcodeType.Person;
     }
 }

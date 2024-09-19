@@ -1,6 +1,10 @@
 ﻿using Xunit;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.BLL.Util;
+using Microsoft.AspNetCore.Http;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Streetcode.BLL.Exceptions.CustomExceptions;
+using System.Reflection.Metadata;
 
 namespace Streetcode.XUnitTest.Util;
 
@@ -76,7 +80,7 @@ public class FactOrderHelperTests
     }
 
     [Fact]
-    public void UpdateFactOrder_FactIdNotFound_ThrowsArgumentException()
+    public void UpdateFactOrder_FactIdNotFound_ShouldThrowCustomException()
     {
         // Arrange
         var factIdToMove = 4; // Does not exist
@@ -90,10 +94,12 @@ public class FactOrderHelperTests
         };
 
         // Act & Assert
-        var exception = Assert.Throws<ArgumentException>(() =>
+        var exception = Assert.Throws<CustomException>(() =>
             FactOrderHelper.UpdateFactOrder(facts, factIdToMove, newSortOrder));
 
+        // Проверка сообщения и кода статуса исключения
         Assert.Equal($"Fact with Id {factIdToMove} not found", exception.Message);
+        Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
     }
 
     [Fact]
