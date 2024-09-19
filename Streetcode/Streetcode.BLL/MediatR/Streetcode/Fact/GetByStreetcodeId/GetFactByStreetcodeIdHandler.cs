@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -27,11 +29,7 @@ public class GetFactByStreetcodeIdHandler : IRequestHandler<GetFactByStreetcodeI
             .GetAllAsync(f => f.StreetcodeId == request.StreetcodeId);
 
         if (fact is null)
-        {
-            string errorMsg = $"Cannot find any fact by the streetcode id: {request.StreetcodeId}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
-        }
+            throw new CustomException($"Cannot find any fact by the streetcode id: {request.StreetcodeId}", StatusCodes.Status204NoContent);
 
         var response = _mapper.Map<IEnumerable<FactDto>>(fact);
         response = response.OrderBy(f => f.SortOrder);

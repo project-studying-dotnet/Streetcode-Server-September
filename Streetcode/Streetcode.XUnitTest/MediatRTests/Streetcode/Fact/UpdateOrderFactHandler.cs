@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 using Moq;
 using AutoMapper;
-using FluentResults;
-using MediatR;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 using FactEntety = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
+using System.Linq.Expressions;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
 
 namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact;
 
@@ -96,7 +93,7 @@ public class UpdateOrderFactHandlerTests
     }
 
     [Fact]
-    public async Task Handle_NoFactsFound_ReturnsFailure()
+    public async Task Handle_ShouldThrowCustomException_WhenNoFactsFound()
     {
         // Arrange
         var streetcodeId = 1;
@@ -109,29 +106,26 @@ public class UpdateOrderFactHandlerTests
 
         var command = new UpdateOrderFactCommand(requestDto);
 
-        // Mock repository to return null or empty list
         _repositoryWrapperMock.Setup(repo => repo.FactRepository.GetAllAsync(
-            It.IsAny<System.Linq.Expressions.Expression<Func<FactEntety, bool>>>(),
+            It.IsAny<Expression<Func<FactEntety, bool>>>(),
             null))
             .ReturnsAsync(new List<FactEntety>());
 
-        // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
-        // Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal("Facts not found", result.Errors.First().Message);
+        Assert.Equal($"No facts found for StreetcodeId: {streetcodeId}", exception.Message);
+        Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
 
-        _loggerMock.Verify(logger => logger.LogError(command, $"No facts found for StreetcodeId: {streetcodeId}"), Times.Once);
         _repositoryWrapperMock.Verify(repo => repo.FactRepository.UpdateRange(It.IsAny<IEnumerable<FactEntety>>()), Times.Never);
         _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
     }
 
     [Fact]
-    public async Task Handle_ExceptionOccurs_ReturnsFailure()
+    public async Task Handle_ShouldThrowCustomException_WhenFactToMoveNotFound()
     {
         // Arrange
-        var factIdToMove = 5; // Fact ID that does not exist in the facts list
+        var factIdToMove = 5; // Fact ID, которого нет в списке фактов
         var newOrder = 1;
         var streetcodeId = 1;
 
@@ -152,23 +146,20 @@ public class UpdateOrderFactHandlerTests
         };
 
         _repositoryWrapperMock.Setup(repo => repo.FactRepository.GetAllAsync(
-            It.IsAny<System.Linq.Expressions.Expression<Func<FactEntety, bool>>>(),
+            It.IsAny<Expression<Func<FactEntety, bool>>>(),
             null))
-            .ReturnsAsync(facts);
+        .ReturnsAsync(facts);
 
-        // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
-        // Assert
-        Assert.False(result.IsSuccess);
-        Assert.Equal("Error occurred while updating fact order", result.Errors.First().Message);
+        // Проверка сообщения и кода статуса исключения
+        Assert.Contains($"Fact with Id {factIdToMove} not found", exception.Message);
+        Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
 
-        _loggerMock.Verify(logger => logger.LogError(
-            command,
-            It.Is<string>(msg => msg.Contains("Error occurred while updating fact order"))),
-            Times.Once);
-
+        // Проверка, что методы репозитория UpdateRange и SaveChangesAsync НЕ были вызваны
         _repositoryWrapperMock.Verify(repo => repo.FactRepository.UpdateRange(It.IsAny<IEnumerable<FactEntety>>()), Times.Never);
         _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
     }
+
 }
