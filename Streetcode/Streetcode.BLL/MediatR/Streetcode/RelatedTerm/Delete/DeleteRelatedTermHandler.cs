@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Dto.Streetcode.TextContent;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete

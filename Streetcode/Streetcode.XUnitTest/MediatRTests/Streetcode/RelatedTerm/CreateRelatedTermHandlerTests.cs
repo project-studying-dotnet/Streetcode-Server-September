@@ -6,6 +6,7 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
 using Xunit;
 
 using RelatedTermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
