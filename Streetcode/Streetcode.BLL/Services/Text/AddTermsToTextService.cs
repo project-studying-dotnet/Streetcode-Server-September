@@ -10,7 +10,7 @@ namespace Streetcode.BLL.Services.Text
     public class AddTermsToTextService : ITextService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private List<int> _buffer;
+        private readonly List<int> _buffer;
 
         private readonly StringBuilder _text = new StringBuilder();
 
@@ -21,7 +21,7 @@ namespace Streetcode.BLL.Services.Text
             Pattern = new("(\\s)|(<[^>]*>)", RegexOptions.None, TimeSpan.FromMilliseconds(1000));
         }
 
-        public Regex Pattern { get; private set; }
+        private Regex Pattern { get; set; }
 
         public async Task<string> AddTermsTag(string text)
         {
@@ -48,7 +48,8 @@ namespace Streetcode.BLL.Services.Text
 
                 var term = await _repositoryWrapper.TermRepository
                     .GetFirstOrDefaultAsync(
-                        t => t.Title.ToLower().Equals(resultedWord.ToLower()));
+                        t => t.Title != null 
+                             && t.Title.ToLower().Equals(resultedWord.ToLower()));
 
                 if (term == null)
                 {
@@ -62,7 +63,7 @@ namespace Streetcode.BLL.Services.Text
                 {
                     if (!CheckInBuffer(term.Id))
                     {
-                        resultedWord = MarkTermWithDescription(resultedWord, term.Description);
+                        resultedWord = MarkTermWithDescription(resultedWord, term.Description!);
                         AddToBuffer(term.Id);
                     }
                 }
@@ -86,20 +87,20 @@ namespace Streetcode.BLL.Services.Text
         {
             var relatedTerm = await _repositoryWrapper.RelatedTermRepository
                 .GetFirstOrDefaultAsync(
-                rt => rt.Word.ToLower().Equals(clearedWord.ToLower()),
-                rt => rt.Include(rt => rt.Term));
+                    rt => rt.Word != null && rt.Word.ToLower().Equals(clearedWord.ToLower()),
+                    rt => rt.Include(term => term.Term)!);
 
-            if (relatedTerm == null || relatedTerm.Term == null || CheckInBuffer(relatedTerm.TermId))
+            if (relatedTerm?.Term == null || CheckInBuffer(relatedTerm.TermId))
             {
                 return string.Empty;
             }
 
             AddToBuffer(relatedTerm.TermId);
 
-            return MarkTermWithDescription(clearedWord, relatedTerm.Term.Description);
+            return MarkTermWithDescription(clearedWord, relatedTerm.Term.Description!);
         }
 
-        private (string _clearedWord, string _extras) CleanWord(string word)
+        private static (string _clearedWord, string _extras) CleanWord(string word)
         {
             var clearedWord = word.Split('.', ',').First();
 
