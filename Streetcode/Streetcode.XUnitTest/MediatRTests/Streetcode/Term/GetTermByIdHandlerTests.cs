@@ -7,7 +7,7 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
 using FluentAssertions;
-
+using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
 using TermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Term;
 
 namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Term
