@@ -1,8 +1,12 @@
 using FluentValidation;
 using Hangfire;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.BLL.ValidationBehavior;
+using Streetcode.DAL.Entities.Users;
+using Streetcode.DAL.Persistence;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
 using System.Reflection;
@@ -17,6 +21,14 @@ builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
+
+builder.Services.AddDbContext<StreetcodeDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<User, IdentityRole<int>>()
+    .AddEntityFrameworkStores<StreetcodeDbContext>()
+    .AddDefaultTokenProviders();
+
 
 var app = builder.Build();
 

@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using Streetcode.DAL.Enums;
 
 namespace Streetcode.DAL.Entities.Users
 {
     [Table("Users", Schema = "Users")]
-    public class User
+    public class User: IdentityUser<int>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -25,6 +26,12 @@ namespace Streetcode.DAL.Entities.Users
         [Required]
         [MaxLength(20)]
         public string Password { get; set; } = null!;
+
+        [Required]
+        public string SecurityStamp { get; set; } = Guid.NewGuid().ToString();
+
+        public string ConcurrencyStamp { get; set; } = Guid.NewGuid().ToString();
+
         [Required]
         public UserRole Role { get; set; }
     }
