@@ -1,6 +1,7 @@
 using AutoMapper;
 using FluentAssertions;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
+using Streetcode.BLL.Mapping.Streetcode.TextContent;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Xunit;
 
@@ -9,41 +10,24 @@ namespace Streetcode.XUnitTest.MappingTests.Streetcode.TextContent;
 public class RelatedTermProfileTests
 {
     private readonly IMapper _mapper;
+    private readonly MapperConfiguration _config;
 
     public RelatedTermProfileTests()
     {
-        var config = GetMapperConfiguration();
+        _config = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<RelatedTermProfile>();
+            cfg.AddProfile<TermProfile>();
+        });
 
-        _mapper = config.CreateMapper();
+        _mapper = _config.CreateMapper();
     }
 
     [Fact]
     public void MappingConfiguration_IsValid()
     {
-        var config = GetMapperConfiguration();
-
-        config.AssertConfigurationIsValid();
+        _config.AssertConfigurationIsValid();
     }
-    
-    private static MapperConfiguration GetMapperConfiguration() => new (cfg =>
-    {
-        cfg.CreateMap<Term, TermDto>().ReverseMap();
-        cfg.CreateMap<RelatedTerm, RelatedTermDto>().ReverseMap();
-        cfg.CreateMap<RelatedTermCreateDto, RelatedTerm>()
-            .ForMember(entity => entity.Word, opt => opt.MapFrom(src => src.Word))
-            .ForMember(entity => entity.TermId, opt => opt.MapFrom(src => src.TermId))
-            .ForMember(entity => entity.Term, opt => opt.MapFrom<Term>(_ => null!))
-            .ForMember(entity => entity.Id, opt => opt.MapFrom<int>(_ => default));
-        cfg.CreateMap<RelatedTerm, RelatedTermFullDto>()
-            .ForCtorParam("Id", opt => opt.MapFrom(src => src.Id))
-            .ForCtorParam("Word", opt => opt.MapFrom(src => src.Word))
-            .ForCtorParam("TermDto", opt => opt.MapFrom(src => src.Term));
-        cfg.CreateMap<RelatedTermFullDto, RelatedTerm>()
-            .ForMember(entity => entity.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(entity => entity.Word, opt => opt.MapFrom(src => src.Word))
-            .ForMember(entity => entity.Term, opt => opt.MapFrom(src => src.TermDto))
-            .ForMember(entity => entity.TermId, opt => opt.MapFrom(src => src.TermDto.Id));
-    });
     
     [Fact]
     public void RelatedTerm_ShouldMapTo_RelatedTermDto()
