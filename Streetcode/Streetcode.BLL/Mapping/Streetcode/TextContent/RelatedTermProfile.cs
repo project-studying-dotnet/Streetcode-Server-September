@@ -10,7 +10,11 @@ public class RelatedTermProfile : Profile
     public RelatedTermProfile()
     {
         CreateMap<RelatedTerm, RelatedTermDto>().ReverseMap();
-        CreateMap<RelatedTermCreateDto, RelatedTerm>();
+        CreateMap<RelatedTermCreateDto, RelatedTerm>()
+            .ForMember(entity => entity.Word, opt => opt.MapFrom(src => src.Word))
+            .ForMember(entity => entity.TermId, opt => opt.MapFrom(src => src.TermId))
+            .ForMember(entity => entity.Term, opt => opt.MapFrom<Term>(_ => null!))
+            .ForMember(entity => entity.Id, opt => opt.MapFrom<int>(_ => default));;
         CreateMap<RelatedTerm, RelatedTermFullDto>()
             .ForCtorParam("Id", opt => opt.MapFrom(src => src.Id))
             .ForCtorParam("Word", opt => opt.MapFrom(src => src.Word))
