@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -53,25 +55,32 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
         }
 
         [Fact]
-        public async Task Handle_ReturnsErrorMsg_WhenFactsNotFound()
+        public async Task Handle_ShouldThrowCustomException_WhenFactsNotFound()
         {
             // Arrange
-            string expectedErrorMsg = $"Cannot find any fact";
+            string expectedErrorMsg = "Cannot find any fact";
 
+            // Настройка мока для метода GetAllAsync без параметров
             _repositoryWrapperMock.Setup(repo => repo.FactRepository
                .GetAllAsync(
                    It.IsAny<Expression<Func<FactEntity, bool>>>(),
                    It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
                .ReturnsAsync((IEnumerable<FactEntity>)null);
 
-            // Act
-            var result = await _handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
+            var query = new GetAllFactsQuery();
 
-            // Assert
-            Assert.Multiple(
-                () => Assert.True(result.IsFailed),
-                () => Assert.Equal(expectedErrorMsg, result.Errors.First().Message));
-            _loggerMock.Verify(x => x.LogError(It.IsAny<object>(), It.Is<string>(s => s.Contains(expectedErrorMsg))), Times.Once);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(query, CancellationToken.None));
+
+            // Проверка сообщения и кода статуса исключения
+            Assert.Equal(expectedErrorMsg, exception.Message);
+            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
+
+            _repositoryWrapperMock.Verify(repo => repo.FactRepository
+               .GetAllAsync(
+                   It.IsAny<Expression<Func<FactEntity, bool>>>(),
+                   It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()),
+                Times.Once);
         }
     }
 }

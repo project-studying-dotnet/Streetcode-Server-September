@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -27,11 +29,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
             var newFact = _mapper.Map<factEntety>(request.Fact);
 
             if (newFact is null)
-            {
-                const string errorMsg = "Cannot convert null to fact";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(errorMsg);
-            }
+                throw new CustomException("Cannot convert null to fact", StatusCodes.Status204NoContent);
 
             var facts = await _repository.FactRepository
                     .GetAllAsync(f => f.StreetcodeId == newFact.StreetcodeId);
@@ -49,9 +47,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
             }
             else
             {
-                const string errorMsg = "Failed to create a fact";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
+                throw new CustomException("Failed to create a fact", StatusCodes.Status400BadRequest);
             }
         }
     }

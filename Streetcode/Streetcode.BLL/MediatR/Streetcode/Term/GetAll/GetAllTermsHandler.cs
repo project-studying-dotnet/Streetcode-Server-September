@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.Streetcode.TextContent;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates;
 using Streetcode.DAL.Repositories.Interfaces.Base;

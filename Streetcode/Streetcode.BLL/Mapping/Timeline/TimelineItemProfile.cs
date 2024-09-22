@@ -10,23 +10,18 @@ public class TimelineItemProfile : Profile
     {
         CreateMap<TimelineItem, TimelineItemDto>().ReverseMap();
 
-        CreateMap<TimelineItem, TimelineItemCreateDto>().ReverseMap();
+        CreateMap<TimelineItem, TimelineItemUpdateDto>().ReverseMap();
 
-        CreateMap<TimelineItem, TimelineItemDto>()
-            .ForMember(dest => dest.HistoricalContexts, opt => opt.MapFrom(x => x.HistoricalContextTimelines
-                .Select(x => new HistoricalContextDto
-                {
-                    Id = x.HistoricalContextId,
-                    Title = x.HistoricalContext.Title
-                }).ToList()));
-
-        CreateMap<TimelineItem, TimelineItemCreateDto>()
+        CreateMap<TimelineItem, TimelineItemUpdateDto>()
             .ForMember(dest => dest.HistoricalContexts, opt => opt.MapFrom(x => x.HistoricalContextTimelines
                 .Select(hct => new HistoricalContextDto
                 {
                     Id = hct.HistoricalContextId,
-                    Title = hct.HistoricalContext.Title
+                    Title = hct.HistoricalContext!.Title ?? string.Empty
                 }).ToList()))
             .ReverseMap();
+
+        CreateMap<TimelineItem, TimelineItemCreateDto>().ReverseMap();
+        
     }
 }

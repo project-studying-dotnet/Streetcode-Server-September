@@ -1,41 +1,40 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.Dto.Transactions;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Transactions.TransactionLink.GetById;
 using Streetcode.BLL.MediatR.Transactions.TransactionLink.GetByStreetcodeId;
+using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
 using Xunit;
 using TransactLink = Streetcode.DAL.Entities.Transactions.TransactionLink;
 
-namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Transactions.TransactionLink
+namespace Streetcode.XUnitTest.MediatRTests.Transactions.TransactionLink
 {
-    public class GetTransactLinkByIdHandlerTests
+    public class GetTransactByStreetcodeIdHandlerTests
     {
         private readonly Mock<IRepositoryWrapper> _mockRepository;
         private readonly Mock<IMapper> _mockMapper;
         private readonly Mock<ILoggerService> _mockLogger;
-        private readonly GetTransactLinkByIdHandler _handler;
+        private readonly GetTransactLinkByStreetcodeIdHandler _handler;
 
-        public GetTransactLinkByIdHandlerTests()
+        public GetTransactByStreetcodeIdHandlerTests()
         {
             _mockRepository = new Mock<IRepositoryWrapper>();
             _mockMapper = new Mock<IMapper>();
             _mockLogger = new Mock<ILoggerService>();
-            _handler = new GetTransactLinkByIdHandler(_mockRepository.Object, _mockMapper.Object, _mockLogger.Object);
+            _handler = new GetTransactLinkByStreetcodeIdHandler(_mockRepository.Object, _mockMapper.Object, _mockLogger.Object);
         }
 
         [Fact]
         public async Task Handle_ReturnOkResult_WhenTransactLinkExist()
         {
             // Arrange
-            var id = 1;
-            var transactionLink = new TransactLink { Id = id, StreetcodeId = 1 };
+            var streetCodeId = 1;
+            var transactionLink = new TransactLink { Id = 1, StreetcodeId = streetCodeId };
             var transactionDto = new TransactLinkDto { Id = transactionLink.Id, StreetcodeId = transactionLink.StreetcodeId };
-            var query = new GetTransactLinkByIdQuery(id);
+            var query = new GetTransactLinkByStreetcodeIdQuery(streetCodeId);
 
             _mockRepository.Setup(repo => repo.TransactLinksRepository.GetFirstOrDefaultAsync(
                 It.Is<Expression<Func<TransactLink, bool>>>(exp => exp.Compile().Invoke(transactionLink)), null))
@@ -52,28 +51,33 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Transactions.TransactionL
 
             _mockRepository.Verify(repo => repo.TransactLinksRepository.GetFirstOrDefaultAsync(
                     It.Is<Expression<Func<TransactLink, bool>>>(
-                         exp => exp.Compile().Invoke(new TransactLink { Id = query.Id })),
+                         exp => exp.Compile().Invoke(new TransactLink { StreetcodeId = query.StreetcodeId })),
             null), Times.Once);
         }
 
+        [Fact]
         public async Task Handle_ReturnFailResult_WhenTransactLinkIsNull()
         {
+            const int StreetcodeId = 1;
+            var query = new GetTransactLinkByStreetcodeIdQuery(StreetcodeId);
+
             // Arrange
             _mockRepository.Setup(repo => repo.TransactLinksRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<TransactLink, bool>>>(),
-                It.IsAny<Func<IQueryable<TransactLink>, IIncludableQueryable<TransactLink, object>>>()
-                ))
-            .ReturnsAsync((TransactLink)null);
+                It.IsAny<Expression<Func<TransactLink, bool>>>(), null))
+            .ReturnsAsync((TransactLink)null!);
 
-            int id = It.IsAny<int>();
+            _mockRepository.Setup(repo => repo.StreetcodeRepository.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<StreetcodeContent, bool>>>(), null))
+            .ReturnsAsync((StreetcodeContent)null!);
+
 
             // Act
-            var result = await _handler.Handle(new GetTransactLinkByIdQuery(id), CancellationToken.None);
+            var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
             result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().Contain(error => error.Message == $"Cannot find any transaction link with corresponding id: {id}");
-            _mockLogger.Verify(l => l.LogError(It.IsAny<object>(), $"Cannot find any transaction link with corresponding id: {id}"), Times.Once);
+            result.Errors.Should().Contain(error => error.Message == $"Cannot find a transaction link by a streetcode id: {StreetcodeId}, because such streetcode doesn`t exist");
+            _mockLogger.Verify(l => l.LogError(It.IsAny<object>(), $"Cannot find a transaction link by a streetcode id: {StreetcodeId}, because such streetcode doesn`t exist"), Times.Once);
         }
     }
 }
