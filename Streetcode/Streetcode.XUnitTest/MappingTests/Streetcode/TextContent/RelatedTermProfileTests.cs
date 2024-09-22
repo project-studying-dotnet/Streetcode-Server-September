@@ -38,6 +38,11 @@ public class RelatedTermProfileTests
             .ForCtorParam("Id", opt => opt.MapFrom(src => src.Id))
             .ForCtorParam("Word", opt => opt.MapFrom(src => src.Word))
             .ForCtorParam("TermDto", opt => opt.MapFrom(src => src.Term));
+        cfg.CreateMap<RelatedTermFullDto, RelatedTerm>()
+            .ForMember(entity => entity.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(entity => entity.Word, opt => opt.MapFrom(src => src.Word))
+            .ForMember(entity => entity.Term, opt => opt.MapFrom(src => src.TermDto))
+            .ForMember(entity => entity.TermId, opt => opt.MapFrom(src => src.TermDto.Id));
     });
     
     [Fact]

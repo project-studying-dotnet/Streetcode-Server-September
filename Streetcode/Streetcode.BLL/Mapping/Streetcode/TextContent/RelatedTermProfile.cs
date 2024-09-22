@@ -1,5 +1,4 @@
 using AutoMapper;
-using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 
@@ -14,7 +13,12 @@ public class RelatedTermProfile : Profile
             .ForMember(entity => entity.Word, opt => opt.MapFrom(src => src.Word))
             .ForMember(entity => entity.TermId, opt => opt.MapFrom(src => src.TermId))
             .ForMember(entity => entity.Term, opt => opt.MapFrom<Term>(_ => null!))
-            .ForMember(entity => entity.Id, opt => opt.MapFrom<int>(_ => default));;
+            .ForMember(entity => entity.Id, opt => opt.MapFrom<int>(_ => default));
+        CreateMap<RelatedTermFullDto, RelatedTerm>()
+            .ForMember(entity => entity.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(entity => entity.Word, opt => opt.MapFrom(src => src.Word))
+            .ForMember(entity => entity.Term, opt => opt.MapFrom(src => src.TermDto))
+            .ForMember(entity => entity.TermId, opt => opt.MapFrom(src => src.TermDto.Id));
         CreateMap<RelatedTerm, RelatedTermFullDto>()
             .ForCtorParam("Id", opt => opt.MapFrom(src => src.Id))
             .ForCtorParam("Word", opt => opt.MapFrom(src => src.Word))
