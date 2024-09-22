@@ -33,7 +33,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository
                 .GetFirstOrDefaultAsync(It.Is<Expression<Func<ArtEntity, bool>>>(exp => exp.Compile().Invoke(art)),
-                null)).ReturnsAsync(art);
+                It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>())).ReturnsAsync(art);
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository.Delete(art));
             _repositoryWrapperMock.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(1);
@@ -106,8 +106,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
             var art = new ArtEntity() { Id = 1, Title = "Test Art" };
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository
-                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ArtEntity, bool>>>(),
-                null)).ReturnsAsync(art);
+                .GetFirstOrDefaultAsync(It.Is<Expression<Func<ArtEntity, bool>>>(exp => exp.Compile().Invoke(art)),
+                It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>())).ReturnsAsync(art);
 
             _repositoryWrapperMock.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(0);
 
