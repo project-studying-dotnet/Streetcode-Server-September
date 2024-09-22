@@ -1074,6 +1074,31 @@ namespace Streetcode.WebApi.Extensions
                                 await dbContext.SaveChangesAsync();
                             }
 
+                            if (!dbContext.Comments.Any())
+                            {
+                                dbContext.Comments.AddRange(
+                                    new Comment
+                                    {
+                                        UserId = 1,
+                                        CommentContent = "Дуже цікаво!",
+                                        StreetcodeId = 1
+                                    },
+                                    new Comment
+                                    {
+                                        UserId = 2,
+                                        CommentContent = "Дякую за інформацію!",
+                                        StreetcodeId = 2
+                                    },
+                                    new Comment
+                                    {
+                                        UserId = 1,
+                                        CommentContent = "Дуже цікаво!",
+                                        StreetcodeId = 2
+                                    });
+
+                                await dbContext.SaveChangesAsync();
+                            }
+
                             if (!dbContext.Facts.Any())
                             {
                                 dbContext.Facts.AddRange(
@@ -1211,6 +1236,7 @@ namespace Streetcode.WebApi.Extensions
                                         SortOrder = 14,
                                     }); ;
                                 await dbContext.SaveChangesAsync();
+
                                 dbContext.ImageDetailses.AddRange(new[]
                                 {
                                      new ImageDetails()
