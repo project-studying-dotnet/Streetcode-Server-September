@@ -61,7 +61,7 @@ namespace Streetcode.WebApi.Extensions
 
 
                 // Create Admin
-                if (dbContext.Users.Any())
+                if (!dbContext.Users.Any())
                 {
                     var adminUser = new User
                     {
