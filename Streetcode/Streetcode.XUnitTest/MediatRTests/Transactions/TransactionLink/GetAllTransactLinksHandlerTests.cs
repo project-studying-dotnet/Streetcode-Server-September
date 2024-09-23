@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -6,12 +7,10 @@ using Streetcode.BLL.Dto.Transactions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Transactions.TransactionLink.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
 using Xunit;
-
 using TransactLink = Streetcode.DAL.Entities.Transactions.TransactionLink;
 
-namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Transactions.TransactionLink
+namespace Streetcode.XUnitTest.MediatRTests.Transactions.TransactionLink
 {
     public class GetAllTransactLinksHandlerTests
     {
@@ -62,9 +61,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Transactions.TransactionL
             // Arrange
             _mockRepository.Setup(repo => repo.TransactLinksRepository.GetAllAsync(
                 It.IsAny<Expression<Func<TransactLink, bool>>>(),
-                It.IsAny<Func<IQueryable<TransactLink>, IIncludableQueryable<TransactLink, object>>>()
-                ))
-            .ReturnsAsync((IEnumerable<TransactLink>) null);
+                It.IsAny<Func<IQueryable<TransactLink>, IIncludableQueryable<TransactLink, object>>>()))
+            .ReturnsAsync((IEnumerable<TransactLink>) null!);
 
             // Act
             var result = await _handler.Handle(new GetAllTransactLinksQuery(), CancellationToken.None);

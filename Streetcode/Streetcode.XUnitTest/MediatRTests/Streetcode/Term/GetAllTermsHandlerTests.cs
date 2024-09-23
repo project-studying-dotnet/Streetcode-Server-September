@@ -7,7 +7,7 @@ using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
-
+using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
 using TermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Term;
 
 namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Term 
