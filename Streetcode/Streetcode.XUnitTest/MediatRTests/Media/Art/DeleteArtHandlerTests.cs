@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.Delete;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -15,16 +14,14 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
     public class DeleteArtHandlerTests
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
-        private readonly Mock<IBlobService> _blobServiceMock;
         private readonly Mock<ILoggerService> _loggerMock;
         private readonly DeleteArtHandler _handler;
 
         public DeleteArtHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
-            _blobServiceMock = new Mock<IBlobService>();
             _loggerMock = new Mock<ILoggerService>();
-            _handler = new DeleteArtHandler(_repositoryWrapperMock.Object, _blobServiceMock.Object, _loggerMock.Object);
+            _handler = new DeleteArtHandler(_repositoryWrapperMock.Object, _loggerMock.Object);
         }
 
         [Fact]
@@ -63,7 +60,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
                 It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>())).ReturnsAsync(art);
 
             _repositoryWrapperMock.Setup(repo => repo.ImageRepository.Delete(art.Image));
-            _blobServiceMock.Setup(blob => blob.DeleteFileInStorage("image1"));
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository.Delete(art));
             _repositoryWrapperMock.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(1);
 
