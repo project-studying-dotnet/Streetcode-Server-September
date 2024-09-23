@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
@@ -18,6 +17,7 @@ using Streetcode.DAL.Entities.Transactions;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Realizations.Base;
+using System.Text;
 
 namespace Streetcode.WebApi.Extensions
 {
@@ -41,6 +41,36 @@ namespace Streetcode.WebApi.Extensions
                 string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
 
                 var adminConfig = app.Configuration.GetSection(nameof(AdminConfiguration)).Get<AdminConfiguration>();
+
+                if (!dbContext.Users.Any())
+                {
+                    var users = new List<DAL.Entities.Users.User>
+                    {
+                        new DAL.Entities.Users.User { Name = "John", Surname = "Doe", Email = "john@example.com", Login = "john1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Jane", Surname = "Smith", Email = "jane@example.com", Login = "jane1", Password = "Password@123"},
+                        new DAL.Entities.Users.User { Name = "Alex", Surname = "Johnson", Email = "alex@example.com", Login = "alex1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Emily", Surname = "Brown", Email = "emily@example.com", Login = "emily1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Daniel", Surname = "Davis", Email = "daniel@example.com", Login = "daniel1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Michael", Surname = "Miller", Email = "michael@example.com", Login = "michael1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Sarah", Surname = "Wilson", Email = "sarah@example.com", Login = "sarah1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Chris", Surname = "Moore", Email = "chris@example.com", Login = "chris1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Anna", Surname = "Taylor", Email = "anna@example.com", Login = "anna1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "David", Surname = "Anderson", Email = "david@example.com", Login = "david1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Laura", Surname = "Thomas", Email = "laura@example.com", Login = "laura1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "James", Surname = "Jackson", Email = "james@example.com", Login = "james1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Olivia", Surname = "White", Email = "olivia@example.com", Login = "olivia1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Liam", Surname = "Harris", Email = "liam@example.com", Login = "liam1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Sophia", Surname = "Martin", Email = "sophia@example.com", Login = "sophia1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Lucas", Surname = "Thompson", Email = "lucas@example.com", Login = "lucas1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Ava", Surname = "Garcia", Email = "ava@example.com", Login = "ava1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "William", Surname = "Martinez", Email = "william@example.com", Login = "william1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Mia", Surname = "Rodriguez", Email = "mia@example.com", Login = "mia1", Password = "Password@123" },
+                        new DAL.Entities.Users.User { Name = "Henry", Surname = "Lopez", Email = "henry@example.com", Login = "henry1", Password = "Password@123" }
+                    };
+
+                    dbContext.Users.AddRange(users);
+                    await dbContext.SaveChangesAsync();
+                }
 
                 if (!dbContext.Images.Any())
                 {
