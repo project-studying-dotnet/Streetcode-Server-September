@@ -23,9 +23,7 @@ public class GetTagByIdHandler : IRequestHandler<GetTagByIdQuery, Result<TagDto>
 
     public async Task<Result<TagDto>> Handle(GetTagByIdQuery request, CancellationToken cancellationToken)
     {
-        var spec = new GetTagByIdSpec(request.Id);
-
-        var tag = await _repositoryWrapper.TagRepository.GetItemBySpecAsync(spec);
+        var tag = await _repositoryWrapper.TagRepository.GetItemBySpecAsync(new GetTagByIdSpec(request.Id));
 
         if (tag is null)
         {

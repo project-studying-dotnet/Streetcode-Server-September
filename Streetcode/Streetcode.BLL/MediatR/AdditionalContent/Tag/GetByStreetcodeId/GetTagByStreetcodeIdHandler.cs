@@ -26,10 +26,7 @@ public class GetTagByStreetcodeIdHandler : IRequestHandler<GetTagByStreetcodeIdQ
 
     public async Task<Result<IEnumerable<StreetcodeTagDto>>> Handle(GetTagByStreetcodeIdQuery request, CancellationToken cancellationToken)
     {
-
-        var spec = new GetTagByStreetcodeIdSpec(request.StreetcodeId);
-
-        var tagIndexed = await _repositoryWrapper.StreetcodeTagIndexRepository.GetItemsBySpecAsync(spec);
+        var tagIndexed = await _repositoryWrapper.StreetcodeTagIndexRepository.GetItemsBySpecAsync(new GetTagByStreetcodeIdSpec(request.StreetcodeId));
 
         if (tagIndexed is null)
         {

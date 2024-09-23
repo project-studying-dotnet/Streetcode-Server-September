@@ -25,9 +25,7 @@ public class GetAllTagsHandler : IRequestHandler<GetAllTagsQuery, Result<IEnumer
 
     public async Task<Result<IEnumerable<TagDto>>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken)
     {
-        var spec = new GetAllTagsSpec();
-
-        var tags = await _repositoryWrapper.TagRepository.GetItemsBySpecAsync(spec);
+        var tags = await _repositoryWrapper.TagRepository.GetItemsBySpecAsync(new GetAllTagsSpec());
 
         if (tags is null)
         {

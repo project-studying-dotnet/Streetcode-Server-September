@@ -24,9 +24,7 @@ public class GetTagByTitleHandler : IRequestHandler<GetTagByTitleQuery, Result<T
 
     public async Task<Result<TagDto>> Handle(GetTagByTitleQuery request, CancellationToken cancellationToken)
     {
-        var spec = new GetTagByTitleSpec(request.Title);
-
-        var tag = await _repositoryWrapper.TagRepository.GetItemBySpecAsync(spec);
+        var tag = await _repositoryWrapper.TagRepository.GetItemBySpecAsync(new GetTagByTitleSpec(request.Title));
 
         if (tag is null)
         {
