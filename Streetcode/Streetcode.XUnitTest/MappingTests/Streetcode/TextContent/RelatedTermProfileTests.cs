@@ -53,7 +53,7 @@ public class RelatedTermProfileTests
     public void RelatedTermCreateDto_ShouldMapTo_RelatedTerm()
     {
         // Arrange
-        var createDto = new RelatedTermCreateDto("word", 1);
+        var createDto = new RelatedTermCreateDto("Word", 1);
 
         // Act
         var relatedTerm = _mapper.Map<RelatedTerm>(createDto);
