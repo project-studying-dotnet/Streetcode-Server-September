@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.Dto.Toponyms;
 using Streetcode.BLL.MediatR.Toponyms.GetAll;
