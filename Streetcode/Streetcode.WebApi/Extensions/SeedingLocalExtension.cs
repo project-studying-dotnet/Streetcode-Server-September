@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
@@ -7,6 +8,7 @@ using Streetcode.DAL.Entities.Feedback;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Partners;
+using Streetcode.DAL.Entities.Role;
 using Streetcode.DAL.Entities.Sources;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
@@ -14,6 +16,7 @@ using Streetcode.DAL.Entities.Streetcode.Types;
 using Streetcode.DAL.Entities.Team;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Entities.Transactions;
+using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Realizations.Base;
@@ -30,7 +33,8 @@ namespace Streetcode.WebApi.Extensions
                 var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
                 var repo = new RepositoryWrapper(dbContext);
                 var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
-
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
                 var blobPath = app.Configuration.GetValue<string>("Blob:BlobStorePath")
                     ?? throw new InvalidOperationException("BlobStorePath is not found in the configuration.");
 
@@ -42,33 +46,63 @@ namespace Streetcode.WebApi.Extensions
 
                 var adminConfig = app.Configuration.GetSection(nameof(AdminConfiguration)).Get<AdminConfiguration>();
 
-                if (!dbContext.Users.Any())
+                //Seed Admin role
+                if (!await roleManager.RoleExistsAsync("Admin"))
                 {
-                    var users = new List<DAL.Entities.Users.User>
+                    await roleManager.CreateAsync(new Role { Name = "Admin" });
+                }
+
+                //Seed User role
+                if (!await roleManager.RoleExistsAsync("User"))
+                {
+                    await roleManager.CreateAsync(new Role { Name = "User" });
+                }
+
+
+
+                // Create Admin
+                if (dbContext.Users.Any())
+                {
+                    var adminUser = new User
                     {
-                        new DAL.Entities.Users.User { Name = "John", Surname = "Doe", Email = "john@example.com", Login = "john1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Jane", Surname = "Smith", Email = "jane@example.com", Login = "jane1", Password = "Password@123"},
-                        new DAL.Entities.Users.User { Name = "Alex", Surname = "Johnson", Email = "alex@example.com", Login = "alex1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Emily", Surname = "Brown", Email = "emily@example.com", Login = "emily1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Daniel", Surname = "Davis", Email = "daniel@example.com", Login = "daniel1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Michael", Surname = "Miller", Email = "michael@example.com", Login = "michael1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Sarah", Surname = "Wilson", Email = "sarah@example.com", Login = "sarah1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Chris", Surname = "Moore", Email = "chris@example.com", Login = "chris1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Anna", Surname = "Taylor", Email = "anna@example.com", Login = "anna1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "David", Surname = "Anderson", Email = "david@example.com", Login = "david1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Laura", Surname = "Thomas", Email = "laura@example.com", Login = "laura1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "James", Surname = "Jackson", Email = "james@example.com", Login = "james1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Olivia", Surname = "White", Email = "olivia@example.com", Login = "olivia1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Liam", Surname = "Harris", Email = "liam@example.com", Login = "liam1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Sophia", Surname = "Martin", Email = "sophia@example.com", Login = "sophia1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Lucas", Surname = "Thompson", Email = "lucas@example.com", Login = "lucas1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Ava", Surname = "Garcia", Email = "ava@example.com", Login = "ava1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "William", Surname = "Martinez", Email = "william@example.com", Login = "william1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Mia", Surname = "Rodriguez", Email = "mia@example.com", Login = "mia1", Password = "Password@123" },
-                        new DAL.Entities.Users.User { Name = "Henry", Surname = "Lopez", Email = "henry@example.com", Login = "henry1", Password = "Password@123" }
+                        Name = adminConfig.Name,
+                        Surname = adminConfig.Surname,
+                        Email = adminConfig.Email,
+                        UserName = adminConfig.Login,
+                        Role = "Admin"
                     };
 
-                    dbContext.Users.AddRange(users);
+                    var result = await userManager.CreateAsync(adminUser, adminConfig.Password);
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(adminUser, "Admin");
+                    }
+
+                    // Create users
+                    var users = new List<User>
+                    {
+                        new User { Name = "John", Surname = "Doe", Email = "john@example.com", UserName = "john1", Role = "User" },
+                        new User { Name = "Jane", Surname = "Smith", Email = "jane@example.com", UserName = "jane1", Role = "User" }
+                    };
+
+                    foreach (var user in users)
+                    {
+                        var res = await userManager.CreateAsync(user, "User@123");
+
+                        if (result.Succeeded)
+                        {
+                            // Role added
+                            await userManager.AddToRoleAsync(user, user.Role.ToString());
+                        }
+                        else
+                        {
+                            // Exception
+                            foreach (var error in res.Errors)
+                            {
+                                Console.WriteLine($"Error creating user {user.UserName}: {error.Description}");
+                            }
+                        }
+                    }
                     await dbContext.SaveChangesAsync();
                 }
 
@@ -304,21 +338,6 @@ namespace Streetcode.WebApi.Extensions
                         }
                     }
 
-                    if (!dbContext.Users.Any())
-                    {
-                        dbContext.Users.AddRange(
-                            new DAL.Entities.Users.User
-                            {
-                                Email = adminConfig.Email,
-                                Role = adminConfig.Role,
-                                Login = adminConfig.Login,
-                                Name = adminConfig.Name,
-                                Password = adminConfig.Password,
-                                Surname = adminConfig.Surname,
-                            });
-
-                        await dbContext.SaveChangesAsync();
-                    }
 
                     if (!dbContext.News.Any())
                     {
