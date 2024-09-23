@@ -22,6 +22,8 @@ using Streetcode.BLL.Services.Text;
 using Streetcode.BLL.ValidationBehavior;
 using System.Reflection;
 using FluentValidation;
+using Streetcode.BLL.Interfaces.Jwt;
+using Streetcode.BLL.Services.JwtService;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -40,6 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
 
+        services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IBlobService, BlobService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
@@ -105,6 +108,15 @@ public static class ServiceCollectionExtensions
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
             opt.CustomSchemaIds(x => x.FullName);
+            opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Please enter a valid token",
+                Name = "JWT Authentication",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "Bearer"
+            });
         });
     }
 

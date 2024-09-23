@@ -27,5 +27,6 @@ namespace Streetcode.DAL.Entities.Users
         public string Password { get; set; } = null!;
         [Required]
         public UserRole Role { get; set; }
+        public RefreshToken RefreshToken { get; set; } = null!;
     }
 }
