@@ -96,5 +96,10 @@ public class StreetcodeContentConfiguration: IEntityTypeConfiguration<Streetcode
                     .WithOne(t => t.Streetcode)
                     .HasForeignKey(t => t.StreetcodeId)
                     .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasMany(d => d.Comments)
+                    .WithOne(c => c.Streetcode)
+                    .HasForeignKey(t => t.StreetcodeId)
+                    .OnDelete(DeleteBehavior.Cascade);
     }
 }

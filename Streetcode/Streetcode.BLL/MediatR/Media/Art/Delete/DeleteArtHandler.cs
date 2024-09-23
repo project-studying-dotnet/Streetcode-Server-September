@@ -1,7 +1,6 @@
 ﻿using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -10,13 +9,11 @@ namespace Streetcode.BLL.MediatR.Media.Art.Delete
     public class DeleteArtHandler: IRequestHandler<DeleteArtCommand, Result<Unit>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly IBlobService _blobService;
         private readonly ILoggerService _logger;
 
-        public DeleteArtHandler(IRepositoryWrapper repositoryWrapper, IBlobService blobService ,ILoggerService logger) 
+        public DeleteArtHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger) 
         {
             _repositoryWrapper = repositoryWrapper;
-            _blobService = blobService;
             _logger = logger;
         }
 
@@ -38,7 +35,6 @@ namespace Streetcode.BLL.MediatR.Media.Art.Delete
             if (art.Image != null) 
             {
                 _repositoryWrapper.ImageRepository.Delete(art.Image);
-                _blobService.DeleteFileInStorage(art.Image.BlobName!);
             }
 
             _repositoryWrapper.ArtRepository.Delete(art);

@@ -17,7 +17,7 @@ namespace Streetcode.WebApi.Controllers.Streetcode.TextContent
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] RelatedTermDto relatedTerm)
+        public async Task<IActionResult> Create([FromBody] RelatedTermCreateDto relatedTerm)
         {
             return HandleResult(await Mediator.Send(new CreateRelatedTermCommand(relatedTerm)));
         }
