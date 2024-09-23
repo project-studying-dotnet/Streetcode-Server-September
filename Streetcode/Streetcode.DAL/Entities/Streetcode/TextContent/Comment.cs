@@ -19,8 +19,6 @@ public class Comment
 
     public StreetcodeContent? Streetcode { get; set; }
 
-    public int? ParentCommentId { get; set; }
-
     [Required]
     public int UserId { get; set; }
 

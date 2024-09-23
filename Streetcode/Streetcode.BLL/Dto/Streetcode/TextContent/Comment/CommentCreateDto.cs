@@ -10,8 +10,6 @@ public class CommentCreateDto
 
     public int StreetcodeId { get; set; }
 
-    public int? ParentCommentId { get; set; }
-
     public int UserId { get; set; }
 
     public DateTime DateCreated { get; set; }
