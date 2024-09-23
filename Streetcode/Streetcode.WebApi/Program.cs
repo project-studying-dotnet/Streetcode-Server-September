@@ -22,14 +22,6 @@ builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 
-builder.Services.AddDbContext<StreetcodeDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddIdentity<User, IdentityRole<int>>()
-    .AddEntityFrameworkStores<StreetcodeDbContext>()
-    .AddDefaultTokenProviders();
-
-
 var app = builder.Build();
 
 if (app.Environment.EnvironmentName == "Local")

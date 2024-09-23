@@ -19,8 +19,9 @@ using Entities.Transactions;
 using Entities.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Streetcode.DAL.Entities.Role;
 
-public class StreetcodeDbContext : IdentityDbContext<User, IdentityRole<int>, int>
+public class StreetcodeDbContext : IdentityDbContext<User, Role, int> 
 {
     public StreetcodeDbContext()
     {

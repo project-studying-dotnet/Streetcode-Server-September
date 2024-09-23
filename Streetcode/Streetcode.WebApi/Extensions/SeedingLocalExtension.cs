@@ -30,31 +30,31 @@ namespace Streetcode.WebApi.Extensions
             using (var scope = app.Services.CreateScope())
             {
                 //Seed for admin
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+                //var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                //var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
-                string[] roleNames = { "Admin", "User" };
-                foreach (var roleName in roleNames)
-                {
-                    if (!await roleManager.RoleExistsAsync(roleName))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole<int>(roleName));
-                    }
-                }
+                //string[] roleNames = { "Admin", "User" };
+                //foreach (var roleName in roleNames)
+                //{
+                //    if (!await roleManager.RoleExistsAsync(roleName))
+                //    {
+                //        await roleManager.CreateAsync(new IdentityRole<int>(roleName));
+                //    }
+                //}
 
-                var adminEmail = "admin@example.com";
-                var admin = await userManager.FindByEmailAsync(adminEmail);
-                if (admin == null)
-                {
-                    admin = new User
-                    {
-                        Name = "Admin",
-                        Email = adminEmail,
-                        Surname = "User",
-                        SecurityStamp = Guid.NewGuid().ToString()
-                    };
-                    await userManager.CreateAsync(admin, "Admin@123");
-                    await userManager.AddToRoleAsync(admin, "Admin");
+                //var adminEmail = "admin@example.com";
+                //var admin = await userManager.FindByEmailAsync(adminEmail);
+                //if (admin == null)
+                //{
+                //    admin = new User
+                //    {
+                //        Name = "Admin",
+                //        Email = adminEmail,
+                //        Surname = "User",
+                //        SecurityStamp = Guid.NewGuid().ToString()
+                //    };
+                //    await userManager.CreateAsync(admin, "Admin@123");
+                //    await userManager.AddToRoleAsync(admin, "Admin");
                     ///
 
                     var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
@@ -1473,4 +1473,4 @@ namespace Streetcode.WebApi.Extensions
             }
         }
     }
-}
+
