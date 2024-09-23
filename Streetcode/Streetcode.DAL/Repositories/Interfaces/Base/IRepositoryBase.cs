@@ -57,5 +57,5 @@ public interface IRepositoryBase<T>
         Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = default);
 
     Task<T> GetItemBySpecAsync(ISpecification<T> spec);
-    Task<IEnumerable<T>> GetItemsBySpecAsync(ISpecification<T> spec);
+    Task<IEnumerable<T>?> GetItemsBySpecAsync(ISpecification<T> spec);
 }
