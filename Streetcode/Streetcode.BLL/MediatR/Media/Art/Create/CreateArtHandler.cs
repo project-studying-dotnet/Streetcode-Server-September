@@ -23,50 +23,52 @@ namespace Streetcode.BLL.MediatR.Media.Art.Create
 
         public async Task<Result<ArtCreateDto>> Handle(CreateArtCommand request, CancellationToken cancellationToken)
         {
-            var newArt = _mapper.Map<ArtEntity>(request.newArt);
-            if (newArt is null)
+            var arts = await _repositoryWrapper.ArtRepository.GetAllAsync();
+            if (arts.Any(a => a.ImageId == request.newArt.ImageId))
             {
-                const string errorMsg = "Cannot convert null to art";
+                string errorMsg = $"Image ID: {request.newArt.ImageId} already exists in the art list. Choose another image";
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
-            
 
-            if (newArt.ImageId == 0)
+            var newArt = _mapper.Map<ArtEntity>(request.newArt);
+            if (newArt == null)
             {
-                newArt.Image = null;
+                const string errorMsg = "Cannot convert null to an art.";
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(errorMsg);
             }
 
-            var entity = await _repositoryWrapper.ArtRepository.CreateAsync(newArt);
+            newArt.StreetcodeArts.Clear();
+            newArt = await _repositoryWrapper.ArtRepository.CreateAsync(newArt);
             await _repositoryWrapper.SaveChangesAsync();
 
-            var streetcodeExists = await _repositoryWrapper.StreetcodeRepository.
-                GetFirstOrDefaultAsync(s => s.Id == request.newArt.StreetcodeId);
+            var streetcodeIds = request.newArt.Streetcodes!.Select(s => s.Id).ToList();
 
+            var streetcodes = await _repositoryWrapper.StreetcodeRepository
+                .GetAllAsync(s => streetcodeIds.Contains(s.Id));
 
-            if (streetcodeExists != null) 
-            {
-                var streetcodeArt = new StreetcodeArtEntity()
+            var streetcodeArts = streetcodes.
+                Select(sta => new StreetcodeArtEntity
                 {
-                    StreetcodeId = streetcodeExists.Id,
-                    ArtId = entity.Id
-                };
-                await _repositoryWrapper.StreetcodeArtRepository.CreateAsync(streetcodeArt);
-                await _repositoryWrapper.SaveChangesAsync();
-            }
+                    ArtId = newArt.Id,
+                    Art = newArt,
+                    StreetcodeId = sta.Id,
+                    Streetcode = sta
+                }).ToList();
 
-            var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
-            Console.WriteLine($"_______________{resultIsSuccess}_____________");
+            newArt.StreetcodeArts.AddRange(streetcodeArts);
+            bool resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
+
             if (resultIsSuccess)
             {
-                return Result.Ok(_mapper.Map<ArtCreateDto>(entity));
+                return Result.Ok(_mapper.Map<ArtCreateDto>(newArt));
             }
-            else
-            {
-                const string errorMsg = "Failed to create an art";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
+            else 
+            { const string errorMsg = "Failed to save an art";
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
+            }  
         }
     }
 }
