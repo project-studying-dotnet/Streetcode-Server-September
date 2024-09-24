@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Streetcode.BLL.Dto.Media.Art;
-using Streetcode.BLL.Dto.Streetcode;
 using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.MediatR.Media.Art.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -30,15 +29,12 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
         public async Task Handle_ReturnsOkResult_WhenArtIsCreatedSuccessfully()
         {
             // Arrange
-            var artDto = new ArtCreateDto
+            var artCreateDto = new ArtCreateDto
             {
-                Id = 1,
                 Title = "New Art",
+                Description = "Some description",
                 ImageId = 1,
-                Streetcodes = new List<StreetcodeShortDto>()
-                {
-                    new StreetcodeShortDto() { Id = 99 }
-                }
+                StreetcodeIds = new List<int>() { 1 }
             };
 
             var artEntity = new ArtEntity
@@ -47,10 +43,19 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
                 Title = "New Art",
                 ImageId = 1
             };
+
+            var artDto = new ArtDto
+            {
+                Id = 1,
+                Title = "New Art",
+                Description = "Some description",
+                ImageId = 1   
+            };
+
             var arts = new List<ArtEntity>() { new ArtEntity() { ImageId = 2 } };
             var streetcode = new StreetcodeEntity { Id = 99 };
 
-            var command = new CreateArtCommand(artDto);
+            var command = new CreateArtCommand(artCreateDto);
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<ArtEntity, bool>>>(), null)).ReturnsAsync(arts);
@@ -58,10 +63,10 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
             _repositoryWrapperMock.Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<StreetcodeEntity, bool>>>(), null)).ReturnsAsync(streetcode);
 
-            _mapperMock.Setup(m => m.Map<ArtEntity>(artDto)).Returns(artEntity);
+            _mapperMock.Setup(m => m.Map<ArtEntity>(artCreateDto)).Returns(artEntity);
             _repositoryWrapperMock.Setup(r => r.ArtRepository.CreateAsync(artEntity)).ReturnsAsync(artEntity);
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
-            _mapperMock.Setup(m => m.Map<ArtCreateDto>(artEntity)).Returns(artDto);
+            _mapperMock.Setup(m => m.Map<ArtDto>(artEntity)).Returns(artDto);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -71,18 +76,17 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
             Assert.Equal(artEntity.Id, result.Value.Id);
             Assert.Equal(artEntity.Title, result.Value.Title);
             Assert.Equal(artEntity.ImageId, result.Value.ImageId);
-            Assert.Equal(streetcode.Id, result.Value.Streetcodes![0].Id);
         }
 
         [Fact]
         public async Task Handle_ShouldThrowCustomException_WhenArtWithImageAlreadyExists()
         {
             // Arrange
-            var artDto = new ArtCreateDto { ImageId = 1 };
+            var artCreateDto = new ArtCreateDto { ImageId = 1 };
             var arts = new List<ArtEntity>() { new ArtEntity() { ImageId = 1 } };
 
-            var command = new CreateArtCommand(artDto);
-            string errorMsg = $"An art with Image Id: {artDto.ImageId} already exists. " +
+            var command = new CreateArtCommand(artCreateDto);
+            string errorMsg = $"An art with Image Id: {artCreateDto.ImageId} already exists. " +
                                "Please choose a different image.";
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetAllAsync(
@@ -103,10 +107,10 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
         public async Task Handle_ShouldThrowCustomException_WhenArtIsNull()
         {
             // Arrange
-            var artDto = new ArtCreateDto();
+            var artCreateDto = new ArtCreateDto();
             var arts = new List<ArtEntity>() { new ArtEntity() { ImageId = 1 } };
 
-            var command = new CreateArtCommand(artDto);
+            var command = new CreateArtCommand(artCreateDto);
             string errorMsg = "Cannot convert null to an art.";
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetAllAsync(
@@ -120,19 +124,19 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
 
             // Assert
             Assert.Equal(errorMsg, exception.Message);
-            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
         }
 
         [Fact]
         public async Task Handle_ShouldThrowCustomException_WhenSaveChangesFails()
         {
             // Arrange
-            var artDto = new ArtCreateDto ();
+            var artCreateDto = new ArtCreateDto ();
             var artEntity = new ArtEntity ();
             var arts = new List<ArtEntity>() { new ArtEntity() { ImageId = 1 } };
             var streetcode = new StreetcodeEntity { Id = 99 };
 
-            var command = new CreateArtCommand(artDto);
+            var command = new CreateArtCommand(artCreateDto);
             string errorMsg = "Failed to save an art";
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetAllAsync(
@@ -141,7 +145,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
             _repositoryWrapperMock.Setup(r => r.StreetcodeRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<StreetcodeEntity, bool>>>(), null)).ReturnsAsync(streetcode);
 
-            _mapperMock.Setup(m => m.Map<ArtEntity>(artDto)).Returns(artEntity);
+            _mapperMock.Setup(m => m.Map<ArtEntity>(artCreateDto)).Returns(artEntity);
             _repositoryWrapperMock.Setup(r => r.ArtRepository.CreateAsync(artEntity)).ReturnsAsync(artEntity);
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
