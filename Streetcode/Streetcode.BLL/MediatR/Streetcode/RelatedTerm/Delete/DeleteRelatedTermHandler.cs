@@ -1,51 +1,42 @@
-﻿using AutoMapper;
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.Dto.Streetcode.TextContent;
-using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete
+namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
+
+public class DeleteRelatedTermHandler : IRequestHandler<DeleteRelatedTermCommand, Result<Unit>>
 {
-    public class DeleteRelatedTermHandler : IRequestHandler<DeleteRelatedTermCommand, Result<RelatedTermDto>>
+    private readonly IRepositoryWrapper _repository;
+
+    public DeleteRelatedTermHandler(IRepositoryWrapper repository)
     {
-        private readonly IRepositoryWrapper _repository;
-        private readonly IMapper _mapper;
-        private readonly ILoggerService _logger;
-
-        public DeleteRelatedTermHandler(IRepositoryWrapper repository, IMapper mapper, ILoggerService logger)
-        {
-            _repository = repository;
-            _mapper = mapper;
-            _logger = logger;
-        }
-
-        public async Task<Result<RelatedTermDto>> Handle(DeleteRelatedTermCommand request, CancellationToken cancellationToken)
-        {
-            var relatedTerm = await _repository.RelatedTermRepository.GetFirstOrDefaultAsync(rt => rt.Word.ToLower().Equals(request.word.ToLower()));
-
-            if (relatedTerm is null)
-            {
-                string errorMsg = $"Cannot find a related term: {request.word}";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
-
-            _repository.RelatedTermRepository.Delete(relatedTerm);
-
-            var resultIsSuccess = await _repository.SaveChangesAsync() > 0;
-            var relatedTermDto = _mapper.Map<RelatedTermDto>(relatedTerm);
-            if(resultIsSuccess && relatedTermDto != null)
-            {
-                return Result.Ok(relatedTermDto);
-            }
-            else
-            {
-                const string errorMsg = "Failed to delete a related term";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
-        }
+        _repository = repository;
     }
-}
+
+    public async Task<Result<Unit>> Handle(DeleteRelatedTermCommand request, CancellationToken cancellationToken)
+    {
+        var relatedTerm =
+            await _repository.RelatedTermRepository.GetFirstOrDefaultAsync(
+                rt => rt.Word.Equals(request.Word)
+                && rt.TermId == request.TermId);
+
+        if (relatedTerm is null)
+        {
+            throw new CustomException(
+                $"Cannot find a related term: {request.Word}, termId = {request.TermId}", 
+                StatusCodes.Status404NotFound);
+        }
+
+        _repository.RelatedTermRepository.Delete(relatedTerm);
+        var resultIsSuccess = await _repository.SaveChangesAsync() > 0;
+            
+        if (!resultIsSuccess)
+        {
+            throw new CustomException("Failed to delete a related term", StatusCodes.Status500InternalServerError);
+        }
+            
+        return Result.Ok(Unit.Value);
+    }
+}       

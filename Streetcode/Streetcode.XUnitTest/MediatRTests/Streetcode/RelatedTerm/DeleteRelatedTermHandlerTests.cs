@@ -1,132 +1,100 @@
-﻿using AutoMapper;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Moq;
-using Streetcode.BLL.Dto.Streetcode.TextContent;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
-using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Xunit;
 
 using RelatedTermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
-namespace Streetcode.XUnitTest.MediatRTests.Streetcode.RelatedTerm
+namespace Streetcode.XUnitTest.MediatRTests.Streetcode.RelatedTerm;
+
+public class DeleteRelatedTermHandlerTests
 {
-    public class DeleteRelatedTermHandlerTests
+    private readonly Mock<IRepositoryWrapper> _repositoryMock;
+    private readonly DeleteRelatedTermHandler _handler;
+
+    public DeleteRelatedTermHandlerTests()
     {
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<IRepositoryWrapper> _repositoryMock;
-        private readonly Mock<ILoggerService> _loggerMock;
-        private readonly DeleteRelatedTermHandler _handler;
+        _repositoryMock = new Mock<IRepositoryWrapper>();
+        _handler = new DeleteRelatedTermHandler(_repositoryMock.Object);
+    }
 
-        public DeleteRelatedTermHandlerTests()
-        {
-            _mapperMock = new Mock<IMapper>();
-            _repositoryMock = new Mock<IRepositoryWrapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _handler = new DeleteRelatedTermHandler(_repositoryMock.Object, _mapperMock.Object, _loggerMock.Object);
-        }
+    [Fact]
+    public async Task Handle_ReturnsSuccess_WhenDTOFormed()
+    {
+        // Arrange
+        var query = new DeleteRelatedTermCommand(It.IsAny<string>(), It.IsAny<int>());
+        var entity = new RelatedTermEntity();
 
-        [Fact]
-        public async Task Handle_ReturnsSuccess_WhenDTOFormed()
-        {
-            // Arrange
-            var relatedTermsDTO = new RelatedTermDto();
-            var query = new DeleteRelatedTermCommand(It.IsAny<string>());
-            var relatedTerms = new List<RelatedTermEntity>(); 
-            var entity = new RelatedTermEntity();
-
-            _repositoryMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
+        _repositoryMock
+            .Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
-                .ReturnsAsync(entity);
+            .ReturnsAsync(entity);
+        
+        _repositoryMock
+            .Setup(r => r.SaveChangesAsync())
+            .ReturnsAsync(1);
+        
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
 
-            _repositoryMock.Setup(r => r.SaveChangesAsync())
-                .ReturnsAsync(1);
+        // Assert
+        result.IsSuccess.Should().BeTrue();
+        _repositoryMock.Verify(repo => repo.RelatedTermRepository.Delete(It.IsAny<RelatedTermEntity>()), Times.Once);
+        _repositoryMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
+    }
 
-            _mapperMock.Setup(m => m.Map<RelatedTermDto>(entity))
-                .Returns(relatedTermsDTO);
-
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
-
-            // Assert
-            result.IsSuccess.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task Handle_ReturnsError_WhenRelatedTermNotFound()
-        {
-            // Arrange
-            var relatedTermsDTO = new RelatedTermDto();
-            var query = new DeleteRelatedTermCommand(It.IsAny<string>());
-            var relatedTerms = new List<RelatedTermEntity>();
-            var entity = new RelatedTermEntity();
-
-            _repositoryMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
+    [Fact]
+    public async Task Handle_ShouldThrowCustomException_WhenRelatedTermNotFound()
+    {
+        // Arrange
+        const string Word = "word";
+        const int TermId = 1;
+        var command = new DeleteRelatedTermCommand(Word, TermId);
+    
+        _repositoryMock
+            .Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
-                .ReturnsAsync((RelatedTermEntity)null);
-
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
-
-            // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().Contain(error => error.Message == $"Cannot find a related term: {query.word}");
-            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), $"Cannot find a related term: {query.word}"), Times.Once);
-        }
-
-        [Fact]
-        public async Task Handle_ReturnsError_WhenSaveFailed()
-        {
-            // Arrange
-            var relatedTermsDTO = new RelatedTermDto();
-            var query = new DeleteRelatedTermCommand(It.IsAny<string>());
-            var relatedTerms = new List<RelatedTermEntity>();
-            var entity = new RelatedTermEntity();
-
-            _repositoryMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
+            .ReturnsAsync((RelatedTermEntity)null!);
+    
+        // Act
+        var exception =
+            await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
+    
+        // Assert
+        Assert.Equal($"Cannot find a related term: {Word}, termId = {TermId}", exception.Message);
+        Assert.Equal(StatusCodes.Status404NotFound, exception.StatusCode);
+        _repositoryMock.Verify(repo => repo.RelatedTermRepository.Delete(It.IsAny<RelatedTermEntity>()), Times.Never);
+        _repositoryMock.Verify(repo => repo.SaveChangesAsync(), Times.Never);
+    }
+    
+    [Fact]
+    public async Task Handle_ReturnsError_WhenSaveFailed()
+    {
+        // Arrange
+        const string Word = "word";
+        const int TermId = 1;
+        var command = new DeleteRelatedTermCommand(Word, TermId);
+        var entity = new RelatedTermEntity();
+    
+        _repositoryMock
+            .Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
-                .ReturnsAsync(entity);
-
-            _repositoryMock.Setup(r => r.SaveChangesAsync())
-                        .ReturnsAsync(0);
-
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
-
-            // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().Contain(error => error.Message == $"Failed to delete a related term");
-            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), $"Failed to delete a related term"), Times.Once);
-        }
-
-        [Fact]
-        public async Task Handle_ReturnsError_WhenMappingFailed()
-        {
-            // Arrange
-            var relatedTermsDTO = new RelatedTermDto();
-            var query = new DeleteRelatedTermCommand(It.IsAny<string>());
-            var relatedTerms = new List<RelatedTermEntity>();
-            var entity = new RelatedTermEntity();
-
-            _repositoryMock.Setup(r => r.RelatedTermRepository.GetFirstOrDefaultAsync(
-                 It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(), null))
-                 .ReturnsAsync(entity);
-
-            _repositoryMock.Setup(r => r.SaveChangesAsync())
-                        .ReturnsAsync(1);
-
-            _mapperMock.Setup(m => m.Map<RelatedTermDto>(entity))
-                .Returns((RelatedTermDto) null);
-
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
-
-            // Assert
-            result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().Contain(error => error.Message == $"Failed to delete a related term");
-            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), $"Failed to delete a related term"), Times.Once);
-        }
+            .ReturnsAsync(entity);
+    
+        _repositoryMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
+    
+        // Act
+        var exception =
+            await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
+    
+        // Assert
+        Assert.Equal("Failed to delete a related term", exception.Message);
+        Assert.Equal(StatusCodes.Status500InternalServerError, exception.StatusCode);
+        _repositoryMock.Verify(repo => repo.RelatedTermRepository.Delete(It.IsAny<RelatedTermEntity>()), Times.Once);
+        _repositoryMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
     }
 }
