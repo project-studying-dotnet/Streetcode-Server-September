@@ -17,10 +17,10 @@ public class CreateArtCommandValidator: AbstractValidator<CreateArtCommand>
             .GreaterThan(0)
             .WithMessage("ImageId must be a positive integer."); ;
 
-        RuleFor(x => x.newArt.Streetcodes)
+        RuleFor(x => x.newArt.StreetcodeIds)
             .NotNull()
             .WithMessage("Streetcodes list cannot be null.")
             .Must(streetcodes => streetcodes!.Count > 0)
-            .WithMessage("At least one streetcode is required.");
+            .WithMessage("At least one streetcode Id is required.");
     }
 }

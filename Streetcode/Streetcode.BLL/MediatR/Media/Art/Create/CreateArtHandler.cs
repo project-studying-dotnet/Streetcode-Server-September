@@ -10,7 +10,7 @@ using StreetcodeArtEntity = Streetcode.DAL.Entities.Streetcode.StreetcodeArt;
 
 namespace Streetcode.BLL.MediatR.Media.Art.Create
 {
-    public class CreateArtHandler : IRequestHandler<CreateArtCommand, Result<ArtCreateDto>>
+    public class CreateArtHandler : IRequestHandler<CreateArtCommand, Result<ArtDto>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -21,7 +21,7 @@ namespace Streetcode.BLL.MediatR.Media.Art.Create
             _repositoryWrapper = repositoryWrapper;
         }
 
-        public async Task<Result<ArtCreateDto>> Handle(CreateArtCommand request, CancellationToken cancellationToken)
+        public async Task<Result<ArtDto>> Handle(CreateArtCommand request, CancellationToken cancellationToken)
         {
             var arts = await _repositoryWrapper.ArtRepository.GetAllAsync();
             if (arts.Any(a => a.ImageId == request.newArt.ImageId))
@@ -34,14 +34,13 @@ namespace Streetcode.BLL.MediatR.Media.Art.Create
             var newArt = _mapper.Map<ArtEntity>(request.newArt);
             if (newArt == null)
             {
-                throw new CustomException("Cannot convert null to an art.", StatusCodes.Status204NoContent);
+                throw new CustomException("Cannot convert null to an art.", StatusCodes.Status400BadRequest);
             }
 
             newArt.StreetcodeArts.Clear();
             newArt = await _repositoryWrapper.ArtRepository.CreateAsync(newArt);
-            await _repositoryWrapper.SaveChangesAsync();
 
-            var streetcodeIds = request.newArt.Streetcodes!.Select(s => s.Id).ToList();
+            var streetcodeIds = request.newArt.StreetcodeIds!.ToList();
 
             var streetcodes = await _repositoryWrapper.StreetcodeRepository
                 .GetAllAsync(s => streetcodeIds.Contains(s.Id));
@@ -50,9 +49,7 @@ namespace Streetcode.BLL.MediatR.Media.Art.Create
                 Select(sta => new StreetcodeArtEntity
                 {
                     ArtId = newArt.Id,
-                    Art = newArt,
-                    StreetcodeId = sta.Id,
-                    Streetcode = sta
+                    StreetcodeId = sta.Id
                 }).ToList();
 
             newArt.StreetcodeArts.AddRange(streetcodeArts);
@@ -60,7 +57,7 @@ namespace Streetcode.BLL.MediatR.Media.Art.Create
 
             if (resultIsSuccess)
             {
-                return Result.Ok(_mapper.Map<ArtCreateDto>(newArt));
+                return Result.Ok(_mapper.Map<ArtDto>(newArt));
             }
             else
             {
