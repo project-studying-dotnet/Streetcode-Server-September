@@ -7,6 +7,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Media.Images;
 using Streetcode.DAL.Repositories.Interfaces.Newss;
 using Streetcode.DAL.Repositories.Interfaces.Partners;
+using Streetcode.DAL.Repositories.Interfaces.Refresh;
 using Streetcode.DAL.Repositories.Interfaces.Source;
 using Streetcode.DAL.Repositories.Interfaces.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Streetcode.TextContent;
@@ -21,6 +22,7 @@ using Streetcode.DAL.Repositories.Realizations.Media;
 using Streetcode.DAL.Repositories.Realizations.Media.Images;
 using Streetcode.DAL.Repositories.Realizations.Newss;
 using Streetcode.DAL.Repositories.Realizations.Partners;
+using Streetcode.DAL.Repositories.Realizations.Refresh;
 using Streetcode.DAL.Repositories.Realizations.Source;
 using Streetcode.DAL.Repositories.Realizations.Streetcode;
 using Streetcode.DAL.Repositories.Realizations.Streetcode.TextContent;
@@ -96,6 +98,8 @@ public class RepositoryWrapper : IRepositoryWrapper
 
     private INewsRepository? _newsRepository;
 
+    private IRefreshTokenRepository? _refreshTokenRepository;
+
     private ITeamLinkRepository? _teamLinkRepository;
 
     private ITeamPositionRepository? _teamPositionRepository;
@@ -111,6 +115,19 @@ public class RepositoryWrapper : IRepositoryWrapper
     public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
         _streetcodeDbContext = streetcodeDbContext;
+    }
+
+    public IRefreshTokenRepository RefreshTokenRepository
+    {
+        get
+        {
+            if (_refreshTokenRepository == null)
+            {
+                _refreshTokenRepository = new RefershTokenRepository(_streetcodeDbContext);
+            }
+
+            return _refreshTokenRepository; 
+        }
     }
 
     public INewsRepository NewsRepository

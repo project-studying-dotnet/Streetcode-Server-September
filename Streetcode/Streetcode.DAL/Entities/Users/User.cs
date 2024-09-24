@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
-using Streetcode.DAL.Enums;
 
 namespace Streetcode.DAL.Entities.Users
 {
@@ -15,6 +14,8 @@ namespace Streetcode.DAL.Entities.Users
         [MaxLength(50)]
         public string Surname { get; set; } = null!;
         [Required]
-        public string Role { get; set; }
+        public string? Role { get; set; }
+        public int? RefreshTokenId { get; set; } 
+        public RefreshToken? RefreshToken { get; set; } = null!;
     }
 }

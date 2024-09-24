@@ -68,6 +68,7 @@ public class StreetcodeDbContext : IdentityDbContext<User, Role, int>
     public DbSet<HistoricalContextTimeline>? HistoricalContextsTimelines { get; set; }
     public DbSet<StreetcodePartner>? StreetcodePartners { get; set; }
     public DbSet<TeamMemberPositions>? TeamMemberPosition { get; set; }
+    public DbSet<RefreshToken>? RefreshTokens { get; set; }
     public DbSet<Comment>? Comments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

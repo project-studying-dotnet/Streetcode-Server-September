@@ -19,7 +19,7 @@ namespace Streetcode.BLL.MediatR.Users.Login
 
         public UserLoginHandler(UserManager<User> userManager,
                                  SignInManager<User> signInManager,
-                                 IJwtService jwtService, 
+                                 IJwtService jwtService,
                                  IMapper mapper)
         {
             _userManager = userManager;
@@ -28,7 +28,7 @@ namespace Streetcode.BLL.MediatR.Users.Login
             _mapper = mapper;
         }
 
-        public async Task<Result<LoginResultDto>> Handle(LoginCommand command, 
+        public async Task<Result<LoginResultDto>> Handle(LoginCommand command,
                                                          CancellationToken cancellationToken)
         {
             var loginInfo = command.LoginDto;
@@ -45,11 +45,22 @@ namespace Streetcode.BLL.MediatR.Users.Login
                                          StatusCodes.Status400BadRequest);
             }
 
-            var jwtToken = await _jwtService.Create(user);
+            var jwtToken = await _jwtService.CreateJwtTokenAsync(user);
+
+            var refreshToken = await _jwtService.GetRefreshTokenByUserIdAsync(user.Id)
+                       ?? await _jwtService.CreateRefreshTokenAsync(user);
+
+            if (refreshToken.IsExpired || refreshToken.IsRevoked) //construct until expired/revoked refTokens
+                                                                  //auto-delete implemented
+            {
+                await _jwtService.DeleteRefreshTokenAsync(refreshToken.Id);
+                refreshToken = await _jwtService.CreateRefreshTokenAsync(user);
+            }
 
             var result = new LoginResultDto()
             {
-                Token = jwtToken,
+                JwtToken = jwtToken,
+                RefreshToken = refreshToken.Token,
                 User = _mapper.Map<UserDataDto>(user)
                 ?? throw new CustomException("Mapping from User to UserDataDto failed",
                                              StatusCodes.Status400BadRequest)

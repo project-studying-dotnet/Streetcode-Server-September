@@ -19,6 +19,7 @@ builder.Services.AddSwaggerServices();
 builder.Services.AddCustomServices();
 builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigureJwt(builder);
+builder.Services.ConfigureRefreshToken(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);

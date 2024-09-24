@@ -60,7 +60,7 @@ namespace Streetcode.WebApi.Extensions
 
 
 
-                // Create Admin
+                // CreateJwtTokenAsync Admin
                 if (!dbContext.Users.Any())
                 {
                     var adminUser = new User
@@ -78,7 +78,7 @@ namespace Streetcode.WebApi.Extensions
                         await userManager.AddToRoleAsync(adminUser, "Admin");
                     }
 
-                    // Create users
+                    // CreateJwtTokenAsync users
                     var users = new List<User>
                     {
                         new User { Name = "John", Surname = "Doe", Email = "john@example.com", UserName = "john1", Role = "User" },
