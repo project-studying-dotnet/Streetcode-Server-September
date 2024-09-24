@@ -27,5 +27,9 @@ public class CreateTextCommandValidator: AbstractValidator<CreateTextCommand>
             .WithMessage("Text additional text is required")
             .MaximumLength(AdditionalTextMaxLength)
             .WithMessage($"Text additional text must not exceed {AdditionalTextMaxLength} chars");
+        
+        RuleFor(x => x.TextCreateDto.StreetcodeId)
+            .GreaterThan(0)
+            .WithMessage("Text StreetcodeId must be > 0");
     }
 }
