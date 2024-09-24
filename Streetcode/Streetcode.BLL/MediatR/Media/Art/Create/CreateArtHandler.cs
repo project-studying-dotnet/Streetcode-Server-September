@@ -40,7 +40,7 @@ namespace Streetcode.BLL.MediatR.Media.Art.Create
             newArt.StreetcodeArts.Clear();
             newArt = await _repositoryWrapper.ArtRepository.CreateAsync(newArt);
 
-            var streetcodeIds = request.newArt.StreetcodeIds!.ToList();
+            var streetcodeIds = request.newArt.StreetcodeIds!;
 
             var streetcodes = await _repositoryWrapper.StreetcodeRepository
                 .GetAllAsync(s => streetcodeIds.Contains(s.Id));
