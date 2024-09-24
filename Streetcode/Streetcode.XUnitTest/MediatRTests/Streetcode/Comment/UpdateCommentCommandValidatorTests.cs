@@ -10,12 +10,10 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Comment.Update
     public class UpdateCommentCommandValidatorTests
     {
         private readonly UpdateCommentCommandValidator _validator;
-        private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
 
         public UpdateCommentCommandValidatorTests()
         {
-            _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
-            _validator = new UpdateCommentCommandValidator(_repositoryWrapperMock.Object);
+            _validator = new UpdateCommentCommandValidator();
         }
 
         [Fact]
