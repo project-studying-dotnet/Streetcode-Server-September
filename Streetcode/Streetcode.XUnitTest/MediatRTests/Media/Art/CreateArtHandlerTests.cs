@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Streetcode.BLL.Dto.Media.Art;
 using Streetcode.BLL.Dto.Streetcode;
-using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.MediatR.Media.Art.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
@@ -16,15 +17,13 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
         private readonly CreateArtHandler _handler;
 
         public CreateArtHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _handler = new CreateArtHandler(_mapperMock.Object, _repositoryWrapperMock.Object, _loggerMock.Object);
+            _handler = new CreateArtHandler(_mapperMock.Object, _repositoryWrapperMock.Object);
         }
 
         [Fact]
@@ -76,7 +75,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
         }
 
         [Fact]
-        public async Task Handle_ReturnsError_WhenArtWithImageExists()
+        public async Task Handle_ShouldThrowCustomException_WhenArtWithImageAlreadyExists()
         {
             // Arrange
             var artDto = new ArtCreateDto { ImageId = 1 };
@@ -92,16 +91,16 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
             _mapperMock.Setup(m => m.Map<ArtEntity>(command.newArt)).Returns((ArtEntity)null!);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var exception = await Assert.ThrowsAsync<CustomException>(
+                () => _handler.Handle(command, CancellationToken.None));
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            Assert.Equal(errorMsg, exception.Message);
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
         }
 
         [Fact]
-        public async Task Handle_ReturnsError_WhenArtIsNull()
+        public async Task Handle_ShouldThrowCustomException_WhenArtIsNull()
         {
             // Arrange
             var artDto = new ArtCreateDto();
@@ -116,16 +115,16 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
             _mapperMock.Setup(m => m.Map<ArtEntity>(command.newArt)).Returns((ArtEntity)null!);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var exception = await Assert.ThrowsAsync<CustomException>(
+                () => _handler.Handle(command, CancellationToken.None));
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            Assert.Equal(errorMsg, exception.Message);
+            Assert.Equal(StatusCodes.Status204NoContent, exception.StatusCode);
         }
 
         [Fact]
-        public async Task Handle_ReturnsError_WhenSaveChangesFails()
+        public async Task Handle_ShouldThrowCustomException_WhenSaveChangesFails()
         {
             // Arrange
             var artDto = new ArtCreateDto ();
@@ -147,12 +146,12 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var exception = await Assert.ThrowsAsync<CustomException>(
+                () => _handler.Handle(command, CancellationToken.None));
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(l => l.LogError(command, errorMsg), Times.Once);
+            Assert.Equal(errorMsg, exception.Message);
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
         }
     }
 }
