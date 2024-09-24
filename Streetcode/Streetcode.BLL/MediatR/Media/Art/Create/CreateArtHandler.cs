@@ -2,10 +2,10 @@
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.Interfaces.Logging;
-using ArtEntity = Streetcode.DAL.Entities.Media.Images.Art;
-using StreetcodeArtEntity = Streetcode.DAL.Entities.Streetcode.StreetcodeArt;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.Dto.Media.Art;
+using ArtEntity = Streetcode.DAL.Entities.Media.Images.Art;
+using StreetcodeArtEntity = Streetcode.DAL.Entities.Streetcode.StreetcodeArt;
 
 namespace Streetcode.BLL.MediatR.Media.Art.Create
 {
@@ -14,6 +14,7 @@ namespace Streetcode.BLL.MediatR.Media.Art.Create
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ILoggerService _logger;
+
         public CreateArtHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
         {
             _mapper = mapper;
@@ -26,7 +27,8 @@ namespace Streetcode.BLL.MediatR.Media.Art.Create
             var arts = await _repositoryWrapper.ArtRepository.GetAllAsync();
             if (arts.Any(a => a.ImageId == request.newArt.ImageId))
             {
-                string errorMsg = $"Image ID: {request.newArt.ImageId} already exists in the art list. Choose another image";
+                string errorMsg = $"An art with Image Id: {request.newArt.ImageId} already exists.\n" +
+                                   "Please choose a different image.";
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
