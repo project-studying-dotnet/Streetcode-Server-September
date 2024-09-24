@@ -83,7 +83,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
             var arts = new List<ArtEntity>() { new ArtEntity() { ImageId = 1 } };
 
             var command = new CreateArtCommand(artDto);
-            string errorMsg = $"An art with Image Id: {artDto.ImageId} already exists.\n" +
+            string errorMsg = $"An art with Image Id: {artDto.ImageId} already exists. " +
                                "Please choose a different image.";
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetAllAsync(

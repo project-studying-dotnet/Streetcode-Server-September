@@ -27,7 +27,7 @@ namespace Streetcode.BLL.MediatR.Media.Art.Create
             var arts = await _repositoryWrapper.ArtRepository.GetAllAsync();
             if (arts.Any(a => a.ImageId == request.newArt.ImageId))
             {
-                string errorMsg = $"An art with Image Id: {request.newArt.ImageId} already exists.\n" +
+                string errorMsg = $"An art with Image Id: {request.newArt.ImageId} already exists. " +
                                    "Please choose a different image.";
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
