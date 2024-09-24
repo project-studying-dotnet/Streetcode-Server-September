@@ -62,13 +62,9 @@ namespace Streetcode.BLL.Services.JwtService
 
             var handler = new JsonWebTokenHandler();
 
-            string token = handler.CreateToken(tokenDescriptor);
-            
-            if (token is null)
-            {
+            string token = handler.CreateToken(tokenDescriptor) ??
                 throw new CustomException("Failed to create JWT Token", 
                                     StatusCodes.Status500InternalServerError);
-            }
 
             return token;
         }

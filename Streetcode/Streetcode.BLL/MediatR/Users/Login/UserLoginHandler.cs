@@ -32,13 +32,9 @@ namespace Streetcode.BLL.MediatR.Users.Login
                                                          CancellationToken cancellationToken)
         {
             var loginInfo = command.LoginDto;
-            var user = await _userManager.FindByEmailAsync(loginInfo.Email);
-
-            if (user is null)
-            {
+            var user = await _userManager.FindByEmailAsync(loginInfo.Email) ??
                 throw new CustomException("User not found",
                                     StatusCodes.Status404NotFound);
-            }
 
             var signInResult = await _signInManager.PasswordSignInAsync(user,
             loginInfo.Password, false, true);

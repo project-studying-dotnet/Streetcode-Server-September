@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Streetcode.BLL.MediatR.Users.Login
 {
-    public record LoginCommand(
-        UserLoginDto LoginDto
-        ) : IRequest<Result<LoginResultDto>>;
+    public record LoginCommand(UserLoginDto LoginDto)
+                    : IRequest<Result<LoginResultDto>>;
 }
