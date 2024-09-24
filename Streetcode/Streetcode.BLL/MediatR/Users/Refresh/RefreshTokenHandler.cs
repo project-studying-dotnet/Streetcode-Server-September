@@ -34,6 +34,6 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Result<s
         var newJwtToken = await _jwtService.CreateJwtTokenAsync(user);
 
 
-        return newJwtToken;
+        return Result.Ok(newJwtToken);
     }
 }
