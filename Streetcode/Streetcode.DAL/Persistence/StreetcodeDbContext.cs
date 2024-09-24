@@ -17,8 +17,11 @@ using Entities.Timeline;
 using Entities.Toponyms;
 using Entities.Transactions;
 using Entities.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Streetcode.DAL.Entities.Role;
 
-public class StreetcodeDbContext : DbContext
+public class StreetcodeDbContext : IdentityDbContext<User, Role, int> 
 {
     public StreetcodeDbContext()
     {

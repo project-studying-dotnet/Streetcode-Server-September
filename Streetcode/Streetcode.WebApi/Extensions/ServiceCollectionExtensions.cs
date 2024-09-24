@@ -22,6 +22,9 @@ using Streetcode.BLL.Services.Text;
 using Streetcode.BLL.ValidationBehavior;
 using System.Reflection;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using Streetcode.DAL.Entities.Users;
+using Streetcode.DAL.Entities.Role;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -47,6 +50,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
         services.AddModelValidationServices();
+
+        services.AddIdentity<User, Role>()
+            .AddEntityFrameworkStores<StreetcodeDbContext>().AddDefaultTokenProviders();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)

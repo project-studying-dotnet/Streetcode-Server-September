@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Streetcode.BLL.Services.BlobStorageService;
@@ -8,6 +8,7 @@ using Streetcode.DAL.Entities.Feedback;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Partners;
+using Streetcode.DAL.Entities.Role;
 using Streetcode.DAL.Entities.Sources;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
@@ -15,9 +16,11 @@ using Streetcode.DAL.Entities.Streetcode.Types;
 using Streetcode.DAL.Entities.Team;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Entities.Transactions;
+using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Realizations.Base;
+using System.Text;
 
 namespace Streetcode.WebApi.Extensions
 {
@@ -26,12 +29,13 @@ namespace Streetcode.WebApi.Extensions
         public static async Task SeedDataAsync(this WebApplication app)
         {
             using (var scope = app.Services.CreateScope())
-            {                
+            {
                 var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
                 var repo = new RepositoryWrapper(dbContext);
                 var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
-
-                var blobPath = app.Configuration.GetValue<string>("Blob:BlobStorePath") 
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+                var blobPath = app.Configuration.GetValue<string>("Blob:BlobStorePath")
                     ?? throw new InvalidOperationException("BlobStorePath is not found in the configuration.");
 
                 Directory.CreateDirectory(blobPath);
@@ -39,9 +43,69 @@ namespace Streetcode.WebApi.Extensions
 
                 string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
                 string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
-              
+
                 var adminConfig = app.Configuration.GetSection(nameof(AdminConfiguration)).Get<AdminConfiguration>();
-                
+
+                //Seed Admin role
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                {
+                    await roleManager.CreateAsync(new Role { Name = "Admin" });
+                }
+
+                //Seed User role
+                if (!await roleManager.RoleExistsAsync("User"))
+                {
+                    await roleManager.CreateAsync(new Role { Name = "User" });
+                }
+
+
+
+                // Create Admin
+                if (!dbContext.Users.Any())
+                {
+                    var adminUser = new User
+                    {
+                        Name = adminConfig.Name,
+                        Surname = adminConfig.Surname,
+                        Email = adminConfig.Email,
+                        UserName = adminConfig.Login,
+                        Role = "Admin"
+                    };
+
+                    var result = await userManager.CreateAsync(adminUser, adminConfig.Password);
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(adminUser, "Admin");
+                    }
+
+                    // Create users
+                    var users = new List<User>
+                    {
+                        new User { Name = "John", Surname = "Doe", Email = "john@example.com", UserName = "john1", Role = "User" },
+                        new User { Name = "Jane", Surname = "Smith", Email = "jane@example.com", UserName = "jane1", Role = "User" }
+                    };
+
+                    foreach (var user in users)
+                    {
+                        var res = await userManager.CreateAsync(user, "User@123");
+
+                        if (result.Succeeded)
+                        {
+                            // Role added
+                            await userManager.AddToRoleAsync(user, user.Role.ToString());
+                        }
+                        else
+                        {
+                            // Exception
+                            foreach (var error in res.Errors)
+                            {
+                                Console.WriteLine($"Error creating user {user.UserName}: {error.Description}");
+                            }
+                        }
+                    }
+                    await dbContext.SaveChangesAsync();
+                }
+
                 if (!dbContext.Images.Any())
                 {
                     string imageJson = await File.ReadAllTextAsync(initialDataImagePath, Encoding.UTF8);
@@ -274,21 +338,6 @@ namespace Streetcode.WebApi.Extensions
                         }
                     }
 
-                    if (!dbContext.Users.Any())
-                    {
-                        dbContext.Users.AddRange(
-                            new DAL.Entities.Users.User
-                            {
-                                Email = adminConfig.Email,
-                                Role = adminConfig.Role,
-                                Login = adminConfig.Login,
-                                Name = adminConfig.Name,
-                                Password = adminConfig.Password,
-                                Surname = adminConfig.Surname,
-                            });
-
-                        await dbContext.SaveChangesAsync();
-                    }
 
                     if (!dbContext.News.Any())
                     {
