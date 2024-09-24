@@ -5,7 +5,10 @@ namespace Streetcode.BLL.MediatR.Media.Video.Create;
 
 public class CreateVideoCommandValidator: AbstractValidator<CreateVideoCommand>
 {
-    private readonly Regex _youtubeLinkRegex = new (@"^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$");
+    private readonly Regex _youtubeLinkRegex = new(
+        @"^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$",
+        RegexOptions.None,
+        TimeSpan.FromMilliseconds(100));
 
     public CreateVideoCommandValidator()
     {
