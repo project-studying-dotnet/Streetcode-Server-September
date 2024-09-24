@@ -20,7 +20,7 @@ public class CreateArtCommandValidator: AbstractValidator<CreateArtCommand>
         RuleFor(x => x.newArt.Streetcodes)
             .NotNull()
             .WithMessage("Streetcodes list cannot be null.")
-            .Must(streetcodes => streetcodes.Count > 0)
+            .Must(streetcodes => streetcodes!.Count > 0)
             .WithMessage("At least one streetcode is required.");
     }
 }
