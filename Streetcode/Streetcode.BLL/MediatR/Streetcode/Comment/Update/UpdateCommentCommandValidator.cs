@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Comment.Update
 {
     public class UpdateCommentCommandValidator : AbstractValidator<UpdateCommentCommand>
     {
-        public UpdateCommentCommandValidator(IRepositoryWrapper repositoryWrapper)
+        public UpdateCommentCommandValidator()
         {
             RuleFor(x => x.Comment.CommentContent)
                 .NotEmpty()
