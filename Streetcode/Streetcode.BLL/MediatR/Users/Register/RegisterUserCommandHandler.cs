@@ -39,8 +39,16 @@ namespace Streetcode.BLL.MediatR.Users.Register
                 return Result.Fail(result.Errors.Select(e => e.Description).ToList());
             }
 
+            if (!await _roleManager.RoleExistsAsync(userDto.Role))
+            {
+                var roleResult = await _roleManager.CreateAsync(new Role { Name = userDto.Role });
+                if (!roleResult.Succeeded)
+                {
+                    return Result.Fail(roleResult.Errors.Select(e => e.Description).ToList());
+                }
+            }
 
-            await _userManager.AddToRoleAsync(user, UserRole.User.ToString());
+            await _userManager.AddToRoleAsync(user, "User");
 
             return Result.Ok();
         }
