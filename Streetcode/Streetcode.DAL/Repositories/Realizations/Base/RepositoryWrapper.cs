@@ -1,4 +1,5 @@
 using System.Transactions;
+using Microsoft.Extensions.Caching.Distributed;
 using Repositories.Interfaces;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Interfaces.AdditionalContent;
@@ -35,6 +36,7 @@ namespace Streetcode.DAL.Repositories.Realizations.Base;
 public class RepositoryWrapper : IRepositoryWrapper
 {
     private readonly StreetcodeDbContext _streetcodeDbContext;
+    private readonly IDistributedCache _distributedCache;
 
     private IVideoRepository? _videoRepository;
 
@@ -110,9 +112,10 @@ public class RepositoryWrapper : IRepositoryWrapper
 
     private ITextRepository? _cachedTextRepository;
 
-    public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
+    public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext, IDistributedCache distributedCache)
     {
         _streetcodeDbContext = streetcodeDbContext;
+        _distributedCache = distributedCache;
     }
 
     public ITextRepository CachedTextRepository
@@ -121,7 +124,7 @@ public class RepositoryWrapper : IRepositoryWrapper
         {
             if (_cachedTextRepository is null)
             {
-                _cachedTextRepository = new CachedTextRepository(_streetcodeDbContext);
+                _cachedTextRepository = new CachedTextRepository(_streetcodeDbContext, _distributedCache);
             }
 
             return _cachedTextRepository;

@@ -14,7 +14,7 @@ public class CachedTextRepository: ITextRepository
     private readonly ITextRepository _textRepository;
     private readonly IDistributedCache _distributedCache;
     
-    public CachedTextRepository(StreetcodeDbContext streetcodeDbContext, IDistributedCache distributedCache = null!)
+    public CachedTextRepository(StreetcodeDbContext streetcodeDbContext, IDistributedCache distributedCache)
     {
         _distributedCache = distributedCache;
         _textRepository = new TextRepository(streetcodeDbContext);

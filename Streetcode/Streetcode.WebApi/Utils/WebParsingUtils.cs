@@ -2,6 +2,7 @@
 using System.IO.Compression;
 using System.Net;
 using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Polly;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
@@ -30,7 +31,7 @@ public class WebParsingUtils
 
     public WebParsingUtils(StreetcodeDbContext streetcodeContext)
     {
-        _repository = new RepositoryWrapper(streetcodeContext);
+        _repository = new RepositoryWrapper(streetcodeContext, default!);
         _streetcodeContext = streetcodeContext;
     }
 

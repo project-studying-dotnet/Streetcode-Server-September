@@ -21,6 +21,7 @@ using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Realizations.Base;
 using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Streetcode.WebApi.Extensions
 {
@@ -31,7 +32,9 @@ namespace Streetcode.WebApi.Extensions
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
-                var repo = new RepositoryWrapper(dbContext);
+                var distributedCache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+                var repo = new RepositoryWrapper(dbContext, distributedCache);
+                
                 var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
