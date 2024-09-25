@@ -14,13 +14,11 @@ public class GetCommentByStreetcodeIdHandler : IRequestHandler<GetCommentByStree
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly ILoggerService _logger;
 
-    public GetCommentByStreetcodeIdHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
+    public GetCommentByStreetcodeIdHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper)
     {
         _repositoryWrapper = repositoryWrapper;
         _mapper = mapper;
-        _logger = logger;
     }
 
     public async Task<Result<IEnumerable<CommentDto>>> Handle(GetCommentByStreetcodeIdQuery request, CancellationToken cancellationToken)

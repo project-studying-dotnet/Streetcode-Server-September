@@ -18,15 +18,13 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Comment.GetByStreetcodeId
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
         private readonly GetCommentByStreetcodeIdHandler _handler;
 
         public GetCommentByStreetcodeIdHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _handler = new GetCommentByStreetcodeIdHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
+            _handler = new GetCommentByStreetcodeIdHandler(_repositoryWrapperMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -66,8 +64,6 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Comment.GetByStreetcodeId
                 It.IsAny<Func<IQueryable<CommentEntity>, IIncludableQueryable<CommentEntity, object>>>()), Times.Once);
 
             _mapperMock.Verify(mapper => mapper.Map<IEnumerable<CommentDto>>(comments), Times.Once);
-
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -99,8 +95,6 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Comment.GetByStreetcodeId
                 It.IsAny<Func<IQueryable<CommentEntity>, IIncludableQueryable<CommentEntity, object>>>()), Times.Once);
 
             _mapperMock.Verify(mapper => mapper.Map<IEnumerable<CommentDto>>(comments), Times.Once);
-
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -126,8 +120,6 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Comment.GetByStreetcodeId
                 It.IsAny<Func<IQueryable<CommentEntity>, IIncludableQueryable<CommentEntity, object>>>()), Times.Once);
 
             _mapperMock.Verify(mapper => mapper.Map<IEnumerable<CommentDto>>(It.IsAny<IEnumerable<CommentEntity>>()), Times.Never);
-
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
         }
     }
 }
