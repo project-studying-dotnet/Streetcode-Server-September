@@ -108,9 +108,24 @@ public class RepositoryWrapper : IRepositoryWrapper
 
     private ICommentRepository? _commentRepository;
 
+    private ITextRepository? _cachedTextRepository;
+
     public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
         _streetcodeDbContext = streetcodeDbContext;
+    }
+
+    public ITextRepository CachedTextRepository
+    {
+        get
+        {
+            if (_cachedTextRepository is null)
+            {
+                _cachedTextRepository = new CachedTextRepository(_streetcodeDbContext);
+            }
+
+            return _cachedTextRepository;
+        }
     }
 
     public INewsRepository NewsRepository

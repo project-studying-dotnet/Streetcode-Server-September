@@ -77,6 +77,11 @@ public static class ServiceCollectionExtensions
             });
         });
 
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+        });
+
         services.AddHangfire(config =>
         {
             config.UseSqlServerStorage(connectionString);

@@ -24,7 +24,7 @@ public class GetAllTextsHandler : IRequestHandler<GetAllTextsQuery, Result<IEnum
 
     public async Task<Result<IEnumerable<TextDto>>> Handle(GetAllTextsQuery request, CancellationToken cancellationToken)
     {
-        var texts = await _repositoryWrapper.TextRepository.GetAllAsync();
+        var texts = await _repositoryWrapper.CachedTextRepository.GetAllAsync();
 
         if (texts is null)
         {
