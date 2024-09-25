@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore.Query;
+using FluentAssertions;
 using Moq;
 using Streetcode.BLL.Dto.AdditionalContent.Tag;
 using Streetcode.BLL.Interfaces.Logging;
@@ -7,7 +7,7 @@ using Streetcode.BLL.MediatR.AdditionalContent.Tag.GetByStreetcodeId;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
+using Streetcode.DAL.Specification.AdditionalContent.TagSpecification;
 using Xunit;
 
 using tagEntity = Streetcode.DAL.Entities.AdditionalContent.Tag;
@@ -47,29 +47,23 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
             };
 
             _repositoryWrapperMock.Setup(repo => repo.StreetcodeTagIndexRepository
-               .GetAllAsync(
-                   It.IsAny<Expression<Func<StreetcodeTagIndex, bool>>>(),
-                   It.IsAny<Func<IQueryable<StreetcodeTagIndex>, IIncludableQueryable<StreetcodeTagIndex, object>>>()))
-               .ReturnsAsync(tagEntities);
+                .GetItemsBySpecAsync(It.IsAny<GetTagByStreetcodeIdSpec>()))
+                .ReturnsAsync(tagEntities);
 
-            _mapperMock.Setup(m => m.Map<IEnumerable<StreetcodeTagDto>>(It.IsAny<IEnumerable<StreetcodeTagIndex>>()))
+            _mapperMock.Setup(m => m.Map<IEnumerable<StreetcodeTagDto>>(tagEntities))
                        .Returns(tagDtos);
 
             // Act
             var result = await _handler.Handle(new GetTagByStreetcodeIdQuery(streetcodeId), CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsSuccess);
-            Assert.Equal(tagDtos, result.Value);
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().BeEquivalentTo(tagDtos);
 
-            _repositoryWrapperMock.Verify(repo => repo.StreetcodeTagIndexRepository.GetAllAsync(
-                   It.IsAny<Expression<Func<StreetcodeTagIndex, bool>>>(),
-                   It.Is<Func<IQueryable<StreetcodeTagIndex>, IIncludableQueryable<StreetcodeTagIndex, object>>>(include => include != null)), Times.Once);
-
+            _repositoryWrapperMock.Verify(repo => repo.StreetcodeTagIndexRepository.GetItemsBySpecAsync(It.IsAny<GetTagByStreetcodeIdSpec>()), Times.Once);
             _mapperMock.Verify(m => m.Map<IEnumerable<StreetcodeTagDto>>(tagEntities), Times.Once);
             _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
         }
-
 
         [Fact]
         public async Task Handle_ShouldReturnFailResult_WhenTagsAreNull()
@@ -79,20 +73,18 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
             var errorMsg = $"Cannot find any tag by the streetcode id: {streetcodeId}";
 
             _repositoryWrapperMock.Setup(repo => repo.StreetcodeTagIndexRepository
-               .GetAllAsync(
-                   It.IsAny<Expression<Func<StreetcodeTagIndex, bool>>>(),
-                   It.IsAny<Func<IQueryable<StreetcodeTagIndex>, IIncludableQueryable<StreetcodeTagIndex, object>>>()))
-               .ReturnsAsync((IEnumerable<StreetcodeTagIndex>)null);
+                .GetItemsBySpecAsync(It.IsAny<GetTagByStreetcodeIdSpec>()))
+                .ReturnsAsync((IEnumerable<StreetcodeTagIndex>)null!);
 
             // Act
             var result = await _handler.Handle(new GetTagByStreetcodeIdQuery(streetcodeId), CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors.First().Message);
+            result.IsFailed.Should().BeTrue();
+            result.Errors.Should().ContainSingle(e => e.Message.Contains(errorMsg));
 
             _mapperMock.Verify(m => m.Map<IEnumerable<StreetcodeTagDto>>(It.IsAny<IEnumerable<StreetcodeTagIndex>>()), Times.Never);
-            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), $"Cannot find any tag by the streetcode id: {streetcodeId}"), Times.Once);
+            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), errorMsg), Times.Once);
         }
     }
 }
