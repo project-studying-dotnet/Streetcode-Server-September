@@ -49,7 +49,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Partners
 
             var testPartnerDtos = new List<PartnerDto>
             {
-                new PartnerDto { Id = 41, Title = "Partner 1" },
+                new PartnerDto { Id = 1, Title = "Partner 1" },
                 new PartnerDto { Id = 2, Title = "Partner 2" }
             };
 
