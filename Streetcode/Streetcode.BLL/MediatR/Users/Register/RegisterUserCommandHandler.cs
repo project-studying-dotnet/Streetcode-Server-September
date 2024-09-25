@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Streetcode.BLL.Dto.Users;
 using Streetcode.DAL.Entities.Role;
 using Streetcode.DAL.Entities.Users;
@@ -13,11 +14,13 @@ namespace Streetcode.BLL.MediatR.Users.Register
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
+        private readonly ILogger<RegisterUserCommandHandler> _logger;
 
-        public RegisterUserCommandHandler(UserManager<User> userManager, RoleManager<Role> roleManager)
+        public RegisterUserCommandHandler(UserManager<User> userManager, RoleManager<Role> roleManager, ILogger<RegisterUserCommandHandler> logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _logger = logger;
         }
 
         public async Task<Result<UserDto>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -30,27 +33,37 @@ namespace Streetcode.BLL.MediatR.Users.Register
                 Surname = userDto.Surname,
                 Email = userDto.Email,
                 UserName = userDto.UserName,
+                Role = userDto.Role.ToString()
             };
 
+            _logger.LogInformation($"Attempting to create user: Name={user.Name}, Email={user.Email}, Role={user.Role}");
             var result = await _userManager.CreateAsync(user, userDto.Password);
 
             if (!result.Succeeded)
             {
+                _logger.LogError($"Failed to create user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
                 return Result.Fail(result.Errors.Select(e => e.Description).ToList());
             }
 
-            if (!await _roleManager.RoleExistsAsync(userDto.Role))
+            var roleResult = await _userManager.AddToRoleAsync(user, user.Role);
+
+            if (!roleResult.Succeeded)
             {
-                var roleResult = await _roleManager.CreateAsync(new Role { Name = userDto.Role });
-                if (!roleResult.Succeeded)
-                {
-                    return Result.Fail(roleResult.Errors.Select(e => e.Description).ToList());
-                }
+                _logger.LogError($"Failed to add user to role: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
+                await _userManager.DeleteAsync(user);
+                return Result.Fail(roleResult.Errors.Select(e => e.Description).ToList());
             }
 
-            await _userManager.AddToRoleAsync(user, "User");
+            var createdUserDto = new UserDto
+            {
+                Name = user.Name,
+                Surname = user.Surname,
+                Email = user.Email,
+                UserName = user.UserName,
+                Role = Enum.Parse<UserRole>(user.Role)
+            };
 
-            return Result.Ok();
+            return Result.Ok(createdUserDto);
         }
     }
 }
