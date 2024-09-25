@@ -1,8 +1,10 @@
 using FluentValidation;
 using Hangfire;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.BLL.ValidationBehavior;
 using Streetcode.DAL.Entities.Users;
@@ -14,15 +16,33 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
 
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = "https://localhost:6000";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false,
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ClientIdPolicy", policy =>
+        policy.RequireClaim("client_id", "streedcodeClient"));
+});
+
+
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddSwaggerServices();
 builder.Services.AddCustomServices();
 builder.Services.ConfigureBlob(builder);
-builder.Services.ConfigureJwt(builder);
+//builder.Services.ConfigureJwt(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
-builder.Services.AddJwtAuthentication(builder);
+//builder.Services.AddJwtAuthentication(builder);
 
 var app = builder.Build();
 
