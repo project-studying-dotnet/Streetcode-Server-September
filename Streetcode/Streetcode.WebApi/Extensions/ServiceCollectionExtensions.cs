@@ -27,6 +27,7 @@ using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Entities.Role;
 using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.BLL.Services.JwtService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -110,18 +111,28 @@ public static class ServiceCollectionExtensions
     public static void AddSwaggerServices(this IServiceCollection services)
     {
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen(opt =>
+        services.AddSwaggerGen(option =>
         {
-            opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
-            opt.CustomSchemaIds(x => x.FullName);
-            opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            option.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
             {
+                Name = "Authorization",
+                Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
                 In = ParameterLocation.Header,
-                Description = "Please enter a valid token",
-                Name = "JWT Authentication",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
+                Type = SecuritySchemeType.ApiKey,
                 Scheme = "Bearer"
+            });
+            option.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference= new OpenApiReference
+                        {
+                            Type=ReferenceType.SecurityScheme,
+                            Id=JwtBearerDefaults.AuthenticationScheme
+                        }
+                    }, new string[]{}
+                }
             });
         });
     }

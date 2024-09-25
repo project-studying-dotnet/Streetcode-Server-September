@@ -6,6 +6,7 @@ using Streetcode.BLL.MediatR.Media.Image.GetById;
 using Streetcode.BLL.MediatR.Media.Image.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Media.Image.Create;
 using Streetcode.BLL.MediatR.Media.Image.Delete;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Streetcode.WebApi.Controllers.Media.Images;
 

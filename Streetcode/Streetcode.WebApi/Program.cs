@@ -18,11 +18,13 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddSwaggerServices();
 builder.Services.AddCustomServices();
 builder.Services.ConfigureBlob(builder);
-builder.Services.ConfigureJwt(builder);
+//builder.Services.ConfigureJwt(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
-builder.Services.AddJwtAuthentication(builder);
+//builder.Services.AddJwtAuthentication(builder);
+
+builder.AddAppAuthetication();
 
 var app = builder.Build();
 

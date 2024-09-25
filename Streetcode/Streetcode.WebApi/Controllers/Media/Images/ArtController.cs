@@ -9,12 +9,14 @@ using Streetcode.BLL.MediatR.Media.Art.GetAll;
 using Streetcode.BLL.MediatR.Media.Art.GetById;
 using Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Create;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Streetcode.WebApi.Controllers.Media.Images;
 
 public class ArtController : BaseApiController
 {
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAll()
     {
         return HandleResult(await Mediator.Send(new GetAllArtsQuery()));
@@ -33,12 +35,14 @@ public class ArtController : BaseApiController
     }
 
     [HttpPost]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> Create([FromBody] ArtCreateDto artCreateDto)
     {
         return HandleResult(await Mediator.Send(new CreateArtCommand(artCreateDto)));
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete([FromRoute] int id) 
     {
         return HandleResult(await Mediator.Send(new DeleteArtCommand(id)));
