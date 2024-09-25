@@ -34,7 +34,6 @@ namespace Streetcode.BLL.MediatR.Users.Register
                 Surname = userDto.Surname,
                 Email = userDto.Email,
                 UserName = userDto.UserName,
-                Role = "User"
             };
 
             var result = await _userManager.CreateAsync(user, userDto.Password);
@@ -42,15 +41,6 @@ namespace Streetcode.BLL.MediatR.Users.Register
             if (!result.Succeeded)
             {
                 return Result.Fail(result.Errors.Select(e => e.Description).ToList());
-            }
-
-            if (!await _roleManager.RoleExistsAsync(userDto.Role))
-            {
-                var roleResult = await _roleManager.CreateAsync(new Role { Name = userDto.Role });
-                if (!roleResult.Succeeded)
-                {
-                    return Result.Fail(roleResult.Errors.Select(e => e.Description).ToList());
-                }
             }
 
             await _userManager.AddToRoleAsync(user, "User");
