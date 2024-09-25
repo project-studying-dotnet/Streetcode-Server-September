@@ -158,12 +158,12 @@ public abstract class RepositoryBase<T> : Interfaces.Base.IRepositoryBase<T>
         return query.AsNoTracking();
     }
 
-    public async Task<T> GetItemBySpecAsync(ISpecification<T> spec)
+    public async Task<T?> GetItemBySpecAsync(ISpecification<T> spec)
     {
         return await ApplySpecification(spec).FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<T>?> GetItemsBySpecAsync(ISpecification<T> spec)
+    public async Task<IEnumerable<T>> GetItemsBySpecAsync(ISpecification<T> spec)
     {
         return await ApplySpecification(spec).ToListAsync();
     }
