@@ -4,12 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Streetcode.BLL.Dto.Users;
 using Streetcode.DAL.Entities.Role;
 using Streetcode.DAL.Entities.Users;
-using System;
+using Streetcode.DAL.Enums;
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Streetcode.BLL.MediatR.Users.Register
 {
@@ -34,7 +30,6 @@ namespace Streetcode.BLL.MediatR.Users.Register
                 Surname = userDto.Surname,
                 Email = userDto.Email,
                 UserName = userDto.UserName,
-                Role = "User"
             };
 
             var result = await _userManager.CreateAsync(user, userDto.Password);
@@ -44,16 +39,8 @@ namespace Streetcode.BLL.MediatR.Users.Register
                 return Result.Fail(result.Errors.Select(e => e.Description).ToList());
             }
 
-            if (!await _roleManager.RoleExistsAsync(userDto.Role))
-            {
-                var roleResult = await _roleManager.CreateAsync(new Role { Name = userDto.Role });
-                if (!roleResult.Succeeded)
-                {
-                    return Result.Fail(roleResult.Errors.Select(e => e.Description).ToList());
-                }
-            }
 
-            await _userManager.AddToRoleAsync(user, "User");
+            await _userManager.AddToRoleAsync(user, UserRole.User.ToString());
 
             return Result.Ok();
         }
