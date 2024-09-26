@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MimeKit.Text;
 using Streetcode.BLL.Dto.Streetcode;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Entities.Timeline;
@@ -15,12 +14,10 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
     public class GetStreetcodeByFilterHandler : IRequestHandler<GetStreetcodeByFilterQuery, Result<List<StreetcodeFilterResultDto>>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ILoggerService _logger;
 
-        public GetStreetcodeByFilterHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+        public GetStreetcodeByFilterHandler(IRepositoryWrapper repositoryWrapper)
         {
             _repositoryWrapper = repositoryWrapper;
-            _logger = logger;
         }
 
         public async Task<Result<List<StreetcodeFilterResultDto>>> Handle(GetStreetcodeByFilterQuery request, CancellationToken cancellationToken)

@@ -4,7 +4,6 @@ using MediatR;
 using Streetcode.BLL.Dto.Toponyms;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Entities.Toponyms;
-using Streetcode.BLL.Interfaces.Logging;
 
 namespace Streetcode.BLL.MediatR.Toponyms.GetAll;
 
@@ -13,13 +12,11 @@ public class GetAllToponymsHandler : IRequestHandler<GetAllToponymsQuery,
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly ILoggerService _logger;
 
-    public GetAllToponymsHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
+    public GetAllToponymsHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper)
     {
         _repositoryWrapper = repositoryWrapper;
         _mapper = mapper;
-        _logger = logger;
     }
 
     public async Task<Result<GetAllToponymsResponseDto>> Handle(GetAllToponymsQuery query, CancellationToken cancellationToken)
