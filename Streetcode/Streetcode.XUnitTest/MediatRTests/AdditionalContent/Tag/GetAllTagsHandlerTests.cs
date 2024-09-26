@@ -6,10 +6,10 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore.Query;
-using System.Linq.Expressions;
+using Streetcode.DAL.Specification.AdditionalContent.TagSpecification;
 
 using tagEntity = Streetcode.DAL.Entities.AdditionalContent.Tag;
+
 
 namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
 {
@@ -44,11 +44,8 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
                 new TagDto { Title = "Tag2" }
             };
 
-            _repositoryWrapperMock.Setup(r => r.TagRepository.GetAllAsync(
-                    It.IsAny<Expression<Func<tagEntity, bool>>>(),
-                    It.IsAny<Func<IQueryable<tagEntity>, IIncludableQueryable<tagEntity, object>>>()
-                )).ReturnsAsync(tagEntities);
-
+            _repositoryWrapperMock.Setup(r => r.TagRepository.GetItemsBySpecAsync(It.IsAny<GetAllTagsSpec>()))
+                                  .ReturnsAsync(tagEntities);
             _mapperMock.Setup(m => m.Map<IEnumerable<TagDto>>(tagEntities)).Returns(tagDtos);
 
             // Act
@@ -58,10 +55,7 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(tagDtos);
 
-            _repositoryWrapperMock.Verify(r => r.TagRepository.GetAllAsync(
-                It.IsAny<Expression<Func<tagEntity, bool>>>(),
-                It.IsAny<Func<IQueryable<tagEntity>, IIncludableQueryable<tagEntity, object>>>()
-            ), Times.Once);
+            _repositoryWrapperMock.Verify(r => r.TagRepository.GetItemsBySpecAsync(It.IsAny<GetAllTagsSpec>()), Times.Once);
             _mapperMock.Verify(m => m.Map<IEnumerable<TagDto>>(tagEntities), Times.Once);
             _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
         }
@@ -70,10 +64,8 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
         public async Task Handle_ShouldReturnFailResult_WhenTagsAreNull()
         {
             // Arrange
-            _repositoryWrapperMock.Setup(r => r.TagRepository.GetAllAsync(
-                    It.IsAny<Expression<Func<tagEntity, bool>>>(),
-                    It.IsAny<Func<IQueryable<tagEntity>, IIncludableQueryable<tagEntity, object>>>()
-                )).ReturnsAsync((IEnumerable<tagEntity>)null);
+            _repositoryWrapperMock.Setup(r => r.TagRepository.GetItemsBySpecAsync(It.IsAny<GetAllTagsSpec>()))
+                                  .ReturnsAsync((IEnumerable<tagEntity>)null!);
 
             // Act
             var result = await _handler.Handle(new GetAllTagsQuery(), CancellationToken.None);
@@ -82,11 +74,7 @@ namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag
             result.IsFailed.Should().BeTrue();
             result.Errors.Should().ContainSingle(e => e.Message.Contains("Cannot find any tags"));
 
-            _repositoryWrapperMock.Verify(r => r.TagRepository.GetAllAsync(
-                    It.IsAny<Expression<Func<tagEntity, bool>>>(),
-                    It.IsAny<Func<IQueryable<tagEntity>, IIncludableQueryable<tagEntity, object>>>()
-                ), Times.Once);
-
+            _repositoryWrapperMock.Verify(r => r.TagRepository.GetItemsBySpecAsync(It.IsAny<GetAllTagsSpec>()), Times.Once);
             _mapperMock.Verify(m => m.Map<IEnumerable<TagDto>>(It.IsAny<IEnumerable<tagEntity>>()), Times.Never);
             _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), "Cannot find any tags"), Times.Once);
         }

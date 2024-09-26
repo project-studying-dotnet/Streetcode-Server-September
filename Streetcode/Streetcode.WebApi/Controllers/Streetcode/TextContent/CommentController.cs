@@ -2,6 +2,7 @@
 using Streetcode.BLL.Dto.Streetcode.TextContent.Comment;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Create;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Delete;
+using Streetcode.BLL.MediatR.Streetcode.Comment.Update;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 
@@ -17,5 +18,11 @@ public class CommentController : BaseApiController
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new DeleteCommentCommand(id)));
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] CommentUpdateDto commentDto)
+    {
+        return HandleResult(await Mediator.Send(new UpdateCommentCommand(commentDto)));
     }
 }
