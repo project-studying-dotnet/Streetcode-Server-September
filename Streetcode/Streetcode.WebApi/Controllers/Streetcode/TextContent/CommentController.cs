@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Comment;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Create;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Delete;
+using Streetcode.BLL.MediatR.Streetcode.Comment.GetAllCommentsWithReplies;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Update;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
@@ -24,5 +27,18 @@ public class CommentController : BaseApiController
     public async Task<IActionResult> Update([FromBody] CommentUpdateDto commentDto)
     {
         return HandleResult(await Mediator.Send(new UpdateCommentCommand(commentDto)));
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetCommentsWithReplies()
+    {
+        var result = await Mediator.Send(new GetAllCommentsWithRepliesQuery());
+        if (result.IsSuccess)
+        {
+            return Ok(result.Value);
+        }
+
+        return BadRequest(result.Errors);
     }
 }

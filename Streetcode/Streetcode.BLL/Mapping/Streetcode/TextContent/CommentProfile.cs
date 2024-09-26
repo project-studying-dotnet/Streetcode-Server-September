@@ -11,5 +11,8 @@ public class CommentProfile : Profile
         CreateMap<Comment, CommentDto>().ReverseMap();
         CreateMap<Comment, CommentCreateDto>().ReverseMap();
         CreateMap<Comment, CommentUpdateDto>().ReverseMap();
+
+        CreateMap<Comment, CommentWithRepliesDto>()
+            .ForMember(dest => dest.Replies, opt => opt.MapFrom(src => src.Replies));
     }
 }

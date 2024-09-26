@@ -26,4 +26,11 @@ public class Comment
 
     [Required]
     public DateTime DateCreated { get; set; }
+
+    public int? ParentCommentId { get; set; }
+
+    [ForeignKey("ParentCommentId")]
+    public Comment? ParentComment { get; set; }
+    public ICollection<Comment> Replies { get; set; } = new List<Comment>();
+
 }

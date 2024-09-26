@@ -46,6 +46,42 @@ namespace Streetcode.WebApi.Extensions
 
                 var adminConfig = app.Configuration.GetSection(nameof(AdminConfiguration)).Get<AdminConfiguration>();
 
+                //some seed comments
+                if (!dbContext.Comments.Any())
+                {
+                    var comments = new List<Comment>();
+
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        comments.Add(new Comment
+                        {
+                            CommentContent = $"Parent comment {i}",
+                            StreetcodeId = 1,
+                            UserId = 1, 
+                            DateCreated = DateTime.Now.AddDays(-i),
+                            ParentCommentId = null
+                        });
+                    }
+
+                    for (int i = 11; i <= 20; i++)
+                    {
+                        comments.Add(new Comment
+                        {
+                            CommentContent = $"Reply to parent comment {i - 10}",
+                            StreetcodeId = 1, 
+                            UserId = 2,
+                            DateCreated = DateTime.Now.AddDays(-i),
+                            ParentCommentId = i - 10
+                        });
+                    }
+
+                    dbContext.Comments.AddRange(comments);
+                    await dbContext.SaveChangesAsync();
+                }
+
+
+
+
                 //Seed Admin role
                 if (!await roleManager.RoleExistsAsync("Admin"))
                 {
