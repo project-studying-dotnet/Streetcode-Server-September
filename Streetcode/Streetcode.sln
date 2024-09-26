@@ -22,6 +22,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{3F2A9097-08E0-4F0F-A5D7-8A027832A19F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Streedcode.Identity", "Streedcode.Identity\Streedcode.Identity.csproj", "{BF2C8208-DF83-49F0-88DB-8D4FB6E228F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,9 +58,16 @@ Global
 		{525A61D2-EA8D-40B1-B47A-5C8B3F9FD629}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{525A61D2-EA8D-40B1-B47A-5C8B3F9FD629}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{525A61D2-EA8D-40B1-B47A-5C8B3F9FD629}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF2C8208-DF83-49F0-88DB-8D4FB6E228F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF2C8208-DF83-49F0-88DB-8D4FB6E228F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF2C8208-DF83-49F0-88DB-8D4FB6E228F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF2C8208-DF83-49F0-88DB-8D4FB6E228F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BF2C8208-DF83-49F0-88DB-8D4FB6E228F7} = {3F2A9097-08E0-4F0F-A5D7-8A027832A19F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7D3D1FEF-DB8F-4A51-AD6E-0EE327AB534A}
