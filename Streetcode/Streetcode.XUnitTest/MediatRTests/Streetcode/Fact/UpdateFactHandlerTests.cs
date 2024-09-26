@@ -5,7 +5,6 @@ using Moq;
 using Xunit;
 using MediatR;
 using AutoMapper;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Update;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
@@ -21,19 +20,16 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
         private readonly UpdateFactHandler _handler;
 
         public UpdateFactHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
 
             _handler = new UpdateFactHandler(
                 _repositoryWrapperMock.Object,
-                _mapperMock.Object,
-                _loggerMock.Object);
+                _mapperMock.Object);
         }
 
         [Fact]
@@ -77,7 +73,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
 
             _repositoryWrapperMock.Verify(repo => repo.FactRepository.Update(factEntity), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]

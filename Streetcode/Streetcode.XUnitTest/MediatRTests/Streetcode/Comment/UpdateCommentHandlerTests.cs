@@ -4,7 +4,6 @@ using Xunit;
 using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Comment;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Update;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
@@ -17,15 +16,13 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Comment.Update
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
         private readonly UpdateCommentHandler _handler;
 
         public UpdateCommentHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _handler = new UpdateCommentHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
+            _handler = new UpdateCommentHandler(_repositoryWrapperMock.Object, _mapperMock.Object);
         }
 
         [Fact]

@@ -2,7 +2,6 @@
 using Xunit;
 using MediatR;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Delete;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Microsoft.AspNetCore.Http;
@@ -15,14 +14,12 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Comment.Delete;
 public class DeleteCommentHandlerTests
 {
     private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
-    private readonly Mock<ILoggerService> _loggerMock;
     private readonly DeleteCommentHandler _handler;
 
     public DeleteCommentHandlerTests()
     {
         _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
-        _loggerMock = new Mock<ILoggerService>();
-        _handler = new DeleteCommentHandler(_repositoryWrapperMock.Object, _loggerMock.Object);
+        _handler = new DeleteCommentHandler(_repositoryWrapperMock.Object);
     }
 
     [Fact]
@@ -52,7 +49,6 @@ public class DeleteCommentHandlerTests
 
         _repositoryWrapperMock.Verify(repo => repo.CommentRepository.Delete(comment), Times.Once);
         _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
-        _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]

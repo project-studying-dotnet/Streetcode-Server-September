@@ -7,7 +7,6 @@ using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -27,15 +26,13 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
         private readonly GetFactByStreetcodeIdHandler _handler;
 
         public GetFactByStreetcodeIdHandlerTest()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _handler = new GetFactByStreetcodeIdHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
+            _handler = new GetFactByStreetcodeIdHandler(_repositoryWrapperMock.Object, _mapperMock.Object);
         }
 
         [Fact]
