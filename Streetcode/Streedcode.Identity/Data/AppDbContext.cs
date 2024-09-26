@@ -5,7 +5,7 @@ using Streedcode.Identity.Models;
 
 namespace Streedcode.Identity.Data
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>
+    public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) 
         { 

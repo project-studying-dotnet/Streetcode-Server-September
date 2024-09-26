@@ -9,9 +9,9 @@ namespace Streedcode.Identity.Services.Realizations
     {
         private readonly AppDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public AuthService(AppDbContext db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AuthService(AppDbContext db, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             _db = db;
             _userManager = userManager;
