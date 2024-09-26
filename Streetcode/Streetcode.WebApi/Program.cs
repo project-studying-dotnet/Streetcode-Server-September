@@ -48,6 +48,8 @@ app.UseAuthorization();
 
 app.UseHangfireDashboard("/dash");
 
+app.UseRequestLocalization();
+
 app.UseGlobalExceptionHandler();
 
 if (app.Environment.EnvironmentName != "Local")
