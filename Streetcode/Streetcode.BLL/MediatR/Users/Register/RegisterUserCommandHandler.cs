@@ -30,8 +30,7 @@ namespace Streetcode.BLL.MediatR.Users.Register
         {
             var userDto = request.UserDto;
 
-            var user = _mapper.Map<User>(userDto);
-            user.Role = userDto.Role.ToString();
+            var user = _mapper.Map<User>(userDto);  
 
             _logger.LogInformation($"Attempting to create user: Name={user.Name}, Email={user.Email}, Role={user.Role}");
             var result = await _userManager.CreateAsync(user, userDto.Password);
@@ -52,7 +51,6 @@ namespace Streetcode.BLL.MediatR.Users.Register
             }
 
             var createdUserDto = _mapper.Map<UserDto>(user);
-            createdUserDto.Role = Enum.Parse<UserRole>(user.Role);
 
             return Result.Ok(createdUserDto);
         }
