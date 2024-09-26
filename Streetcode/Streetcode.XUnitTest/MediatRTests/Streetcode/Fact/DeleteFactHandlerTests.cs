@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Delete;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -17,16 +16,14 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Delete
     public class DeleteFactHandlerTests
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
         private readonly DeleteFactHandler _handler;
         private readonly Mock<IMapper> _mapperMock;
 
         public DeleteFactHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
-            _loggerMock = new Mock<ILoggerService>();
             _mapperMock = new Mock<IMapper>();
-            _handler = new DeleteFactHandler(_repositoryWrapperMock.Object, _loggerMock.Object);
+            _handler = new DeleteFactHandler(_repositoryWrapperMock.Object);
         }
 
         [Fact]

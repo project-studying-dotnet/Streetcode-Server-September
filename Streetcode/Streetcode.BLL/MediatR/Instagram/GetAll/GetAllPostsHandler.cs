@@ -20,6 +20,14 @@ namespace Streetcode.BLL.MediatR.Instagram.GetAll
         public async Task<Result<IEnumerable<InstagramPost>>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
         {
             var result = await _instagramService.GetPostsAsync();
+
+            if (!result.Any()) 
+            {
+                const string errorMsg = "Cannot any find any post";
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(errorMsg);
+            }
+
             return Result.Ok(result);
         }
     }

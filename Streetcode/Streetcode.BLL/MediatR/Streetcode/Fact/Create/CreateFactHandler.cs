@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 using factEntety = Streetcode.DAL.Entities.Streetcode.TextContent.Fact;
@@ -15,13 +14,11 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repository;
-        private readonly ILoggerService _logger;
 
-        public CreateFactHandler(IMapper mapper, IRepositoryWrapper repository, ILoggerService logger)
+        public CreateFactHandler(IMapper mapper, IRepositoryWrapper repository)
         {
             _mapper = mapper;
             _repository = repository;
-            _logger = logger;
         }
 
         public async Task<Result<FactDto>> Handle(CreateFactCommand request, CancellationToken cancellationToken)
