@@ -17,9 +17,7 @@ namespace Streetcode.BLL.Dto.Users
         [Required]
         [MaxLength(20)]
         public string UserName { get; set; } = null!;
-        [Required]
-        [MaxLength(20)]
-        public string Password { get; set; } = null!;
+
         [Required]
         public UserRole Role { get; set; }
     }
