@@ -8,11 +8,15 @@ public class CommentProfile : Profile
 {
     public CommentProfile()
     {
-        CreateMap<Comment, CommentDto>().ReverseMap();
+        CreateMap<Comment, CommentDto>()
+            .ForMember(dest => dest.ParentCommentId, opt => opt.MapFrom(src => src.ParentCommentId))
+            .ReverseMap();
         CreateMap<Comment, CommentCreateDto>().ReverseMap();
         CreateMap<Comment, CommentUpdateDto>().ReverseMap();
 
         CreateMap<Comment, CommentWithRepliesDto>()
-            .ForMember(dest => dest.Replies, opt => opt.MapFrom(src => src.Replies));
+            .ForMember(dest => dest.ParentCommentId, opt => opt.MapFrom(src => src.ParentCommentId))
+            .ForMember(dest => dest.Replies, opt => opt.Ignore())
+            .ReverseMap();
     }
 }

@@ -46,40 +46,39 @@ namespace Streetcode.WebApi.Extensions
 
                 var adminConfig = app.Configuration.GetSection(nameof(AdminConfiguration)).Get<AdminConfiguration>();
 
-                //some seed comments
+
+
+                //Testing comments
                 if (!dbContext.Comments.Any())
                 {
-                    var comments = new List<Comment>();
-
-                    for (int i = 1; i <= 10; i++)
+                    var parentComment = new Comment
                     {
-                        comments.Add(new Comment
+                        CommentContent = "Parent comment with 3 replies, one reply has 2 replies",
+                        StreetcodeId = 1,
+                        UserId = 1,
+                        DateCreated = DateTime.Now.AddDays(-1),
+                        ParentCommentId = null,
+                        Replies = new List<Comment>
                         {
-                            CommentContent = $"Parent comment {i}",
-                            StreetcodeId = 1,
-                            UserId = 1, 
-                            DateCreated = DateTime.Now.AddDays(-i),
-                            ParentCommentId = null
-                        });
-                    }
-
-                    for (int i = 11; i <= 20; i++)
-                    {
-                        comments.Add(new Comment
-                        {
-                            CommentContent = $"Reply to parent comment {i - 10}",
-                            StreetcodeId = 1, 
-                            UserId = 2,
-                            DateCreated = DateTime.Now.AddDays(-i),
-                            ParentCommentId = i - 10
-                        });
-                    }
-
-                    dbContext.Comments.AddRange(comments);
+                            new Comment
+                            {
+                                CommentContent = "Reply 1 with own replies",
+                                StreetcodeId = 1,
+                                UserId = 2,
+                                DateCreated = DateTime.Now.AddDays(-1),
+                                Replies = new List<Comment>
+                            {
+                                    new Comment { CommentContent = "Reply to reply 1 - 1", StreetcodeId = 1, UserId = 3, DateCreated = DateTime.Now },
+                                    new Comment { CommentContent = "Reply to reply 1 - 2", StreetcodeId = 1, UserId = 3, DateCreated = DateTime.Now }
+                            }
+                        },
+                                    new Comment { CommentContent = "Reply 2 to parent comment", StreetcodeId = 1, UserId = 2, DateCreated = DateTime.Now.AddDays(-1) },
+                                    new Comment { CommentContent = "Reply 3 to parent comment", StreetcodeId = 1, UserId = 2, DateCreated = DateTime.Now.AddDays(-1) }
+                                }
+                    };
+                    dbContext.Comments.Add(parentComment);
                     await dbContext.SaveChangesAsync();
                 }
-
-
 
 
                 //Seed Admin role

@@ -27,13 +27,29 @@ namespace Streetcode.BLL.MediatR.Streetcode.Comment.GetAllCommentsWithReplies
         {
             try
             {
-                var comments = await _repository.CommentRepository.GetAllAsync(
-                    include: q => q.Include(c => c.Replies),
-                    predicate: c => c.ParentCommentId == null);
-
+                var comments = await _repository.CommentRepository.GetAllAsync();
                 var commentDtos = _mapper.Map<List<CommentWithRepliesDto>>(comments);
+                var commentDict = commentDtos.ToDictionary(c => c.Id);
 
-                return Result.Ok(commentDtos);
+                foreach (var commentDto in commentDtos)
+                {
+                    commentDto.Replies = new List<CommentWithRepliesDto>();
+                }
+
+                foreach (var commentDto in commentDtos)
+                {
+                    if (commentDto.ParentCommentId != null)
+                    {
+                        if (commentDict.TryGetValue(commentDto.ParentCommentId.Value, out var parentComment))
+                        {
+                            parentComment.Replies.Add(commentDto);
+                        }
+                    }
+                }
+
+                var topLevelComments = commentDtos.Where(c => c.ParentCommentId == null).ToList();
+
+                return Result.Ok(topLevelComments);
             }
             catch (Exception ex)
             {
@@ -41,6 +57,5 @@ namespace Streetcode.BLL.MediatR.Streetcode.Comment.GetAllCommentsWithReplies
             }
         }
     }
-
 }
 

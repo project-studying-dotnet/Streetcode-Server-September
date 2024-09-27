@@ -30,15 +30,9 @@ public class CommentController : BaseApiController
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetCommentsWithReplies()
     {
-        var result = await Mediator.Send(new GetAllCommentsWithRepliesQuery());
-        if (result.IsSuccess)
-        {
-            return Ok(result.Value);
-        }
-
-        return BadRequest(result.Errors);
+       return HandleResult(await Mediator.Send(new GetAllCommentsWithRepliesQuery()));      
     }
 }
