@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.Dto.Toponyms;
 using Streetcode.BLL.MediatR.Toponyms.GetAll;
@@ -8,11 +9,13 @@ namespace Streetcode.WebApi.Controllers.Toponyms;
 
 public class ToponymController : BaseApiController
 {
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] GetAllToponymsRequestDto request)
     {
         return HandleResult(await Mediator.Send(new GetAllToponymsQuery(request)));
     }
+
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
@@ -20,6 +23,7 @@ public class ToponymController : BaseApiController
         return HandleResult(await Mediator.Send(new GetToponymByIdQuery(id)));
     }
 
+    [Authorize]
     [HttpGet("{streetcodeId:int}")]
     public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
     {

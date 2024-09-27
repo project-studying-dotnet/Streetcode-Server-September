@@ -1,9 +1,9 @@
 ﻿
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Streedcode.Identity.Models;
+using Streetcode.Identity.Models;
 
-namespace Streedcode.Identity.Data
+namespace Streetcode.Identity.Data
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, int>
     {
@@ -11,7 +11,6 @@ namespace Streedcode.Identity.Data
         { 
         
         }
-
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
 

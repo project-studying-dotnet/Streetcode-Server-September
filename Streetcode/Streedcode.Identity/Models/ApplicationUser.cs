@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Streedcode.Identity.Models;
+namespace Streetcode.Identity.Models;
 
 public class ApplicationUser : IdentityUser<int>
 {

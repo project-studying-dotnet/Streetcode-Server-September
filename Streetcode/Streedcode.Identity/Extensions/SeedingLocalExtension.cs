@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Streedcode.Identity.Data;
-using Streedcode.Identity.Models;
+using Streetcode.Identity.Data;
+using Streetcode.Identity.Models;
 using Streetcode.Identity.Models.Additional;
 
 namespace Streedcode.Identity.Extensions;
