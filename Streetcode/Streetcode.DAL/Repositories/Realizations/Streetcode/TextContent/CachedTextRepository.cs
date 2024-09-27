@@ -1,9 +1,11 @@
 using System.Linq.Expressions;
+using System.Net.Mime;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.DAL.Extensions;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Interfaces.Streetcode.TextContent;
 
@@ -90,33 +92,29 @@ public class CachedTextRepository: ITextRepository
         Func<IQueryable<Text>, IIncludableQueryable<Text, object>>? include = default)
     {
         const string key = "text-all";
+        
+        var allTexts = await _distributedCache.GetRecordAsync<IEnumerable<Text>>(key);
 
-        string? cachedText = await _distributedCache.GetStringAsync(key);
-
-        List<Text> allTexts;
-        if (string.IsNullOrEmpty(cachedText))
+        if (allTexts is null)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Cache miss");
             
             allTexts = (await _textRepository.GetAllAsync(predicate, include)).ToList();
-
+            
             if (!allTexts.Any())
             {
                 return allTexts;
             }
 
-            string serializedTexts = JsonConvert.SerializeObject(allTexts);
-            await _distributedCache.SetStringAsync(key, serializedTexts);
-
+            await _distributedCache.SetRecordAsync(key, allTexts);
+            
             return allTexts;
         }
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Cache hit");
-
-        allTexts = JsonConvert.DeserializeObject<List<Text>>(cachedText) 
-                   ?? throw new Exception("Error while deserializing Texts from redis json");
+        
         return allTexts;
     }
 

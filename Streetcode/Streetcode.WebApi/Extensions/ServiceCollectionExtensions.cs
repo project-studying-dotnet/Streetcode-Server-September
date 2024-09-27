@@ -80,6 +80,7 @@ public static class ServiceCollectionExtensions
         services.AddStackExchangeRedisCache(options =>
         {
             options.Configuration = configuration.GetConnectionString("Redis");
+            options.InstanceName = "Streetcode.WebApi";
         });
 
         services.AddHangfire(config =>

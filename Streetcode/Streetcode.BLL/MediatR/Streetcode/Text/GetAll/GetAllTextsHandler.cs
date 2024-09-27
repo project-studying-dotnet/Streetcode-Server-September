@@ -26,7 +26,7 @@ public class GetAllTextsHandler : IRequestHandler<GetAllTextsQuery, Result<IEnum
     {
         var texts = await _repositoryWrapper.CachedTextRepository.GetAllAsync();
 
-        if (texts is null)
+        if (!texts.Any())
         {
             const string errorMsg = $"Cannot find any text";
             _logger.LogError(request, errorMsg);
