@@ -59,5 +59,32 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Text
             Assert.Equal(textDto, result.ValueOrDefault);
             _mockMapper.Verify(m => m.Map<IEnumerable<TextDto>>(It.IsAny<IEnumerable<TextEntity>>()), Times.Once);
         }
+        
+        [Fact]
+        public async Task Handle_ReturnFailureResult_WhenTextsDoesNotExist()
+        {
+            // Arrange
+            var texts = Enumerable.Empty<TextEntity>();
+            var query = new GetAllTextsQuery();
+            _mockCacheService
+                .Setup(cache => cache.GetAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<Func<Task<IEnumerable<TextEntity>>>>(),
+                    It.IsAny<CancellationToken>(),
+                    null,
+                    null))
+                .ReturnsAsync(texts);
+    
+    
+            var textDto = new List<TextDto> { new TextDto { Id = 1, TextContent = "Some sample text" } };
+    
+            // Act
+            var result = await _handler.Handle(query, CancellationToken.None);
+    
+            // Assert
+            Assert.True(result.IsFailed);
+            _mockLogger.Verify(l => l.LogError(query, "Cannot find any text"), Times.Once);
+            _mockMapper.Verify(m => m.Map<IEnumerable<TextDto>>(It.IsAny<IEnumerable<TextEntity>>()), Times.Never);
+        }
     }
 }
