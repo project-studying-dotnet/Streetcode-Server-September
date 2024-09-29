@@ -53,6 +53,9 @@ public interface IRepositoryWrapper
     IStreetcodeToponymRepository StreetcodeToponymRepository { get; }
     IStreetcodeImageRepository StreetcodeImageRepository { get; }
     ICommentRepository CommentRepository { get; }
+    
+    ITextRepository CachedTextRepository { get; }
+    
     public int SaveChanges();
 
     public Task<int> SaveChangesAsync();
