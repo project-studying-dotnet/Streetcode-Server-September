@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Ardalis.Specification;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Distributed;
@@ -139,5 +140,15 @@ public class CachedTextRepository: ITextRepository
         Func<IQueryable<Text>, IIncludableQueryable<Text, object>>? include = default)
     {
         return _textRepository.GetFirstOrDefaultAsync(selector, predicate, include);
+    }
+
+    public async Task<Text?> GetItemBySpecAsync(ISpecification<Text> spec)
+    {
+        return await _textRepository.GetItemBySpecAsync(spec);
+    }
+
+    public async Task<IEnumerable<Text>> GetItemsBySpecAsync(ISpecification<Text> spec)
+    {
+        return await _textRepository.GetItemsBySpecAsync(spec);
     }
 }
