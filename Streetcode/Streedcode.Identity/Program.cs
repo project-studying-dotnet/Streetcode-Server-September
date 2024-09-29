@@ -7,6 +7,7 @@ using Streetcode.Identity.Services.Interfaces;
 using Streetcode.Identity.Services.Realizations;
 using Streedcode.Identity.Extensions;
 using Streetcode.Identity.Models.Mapper;
+using Streetcode.Identity.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,14 +20,16 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<IRefreshRepository, RefreshRepository>();    
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.ConfigureJwt(builder);
+builder.Services.ConfigureRefreshToken(builder);
 builder.Services.AddJwtAuthentication(builder);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerServices();
 builder.Services.AddAutoMapper(typeof(UsersProfile));
 
 var app = builder.Build();

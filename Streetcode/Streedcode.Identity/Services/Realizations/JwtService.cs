@@ -4,36 +4,43 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Streetcode.Identity.Models;
 using Streetcode.Identity.Models.Additional;
+using Streetcode.Identity.Repository;
 using Streetcode.Identity.Services.Interfaces;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Streetcode.Identity.Services.Realizations
 {
     public class JwtService : IJwtService
     {
-        private readonly JwtVariables _environment;
+        private readonly JwtVariables _jwtEnvironment;
         private readonly string _secret;
         private readonly int _expiration;
         private readonly string _issuer;
         private readonly string _audience;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RefreshVariables _refreshEnvironment;
+        private readonly int _refreshExpiration;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IRefreshRepository _refreshRepository;
 
         public JwtService(UserManager<ApplicationUser> userManager,
-                           SignInManager<ApplicationUser> signInManager,
-                           IOptions<JwtVariables> environment)
+                           IRefreshRepository refreshRepository, 
+                           IOptions<JwtVariables> jwtEnvironment,
+                           IOptions<RefreshVariables> refreshEnvironment)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
-            _environment = environment.Value;
-            _secret = _environment.Secret;
-            _expiration = _environment.ExpirationInMinutes;
-            _issuer = _environment.Issuer;
-            _audience = _environment.Audience;
+            _jwtEnvironment = jwtEnvironment.Value;
+            _secret = _jwtEnvironment.Secret;
+            _expiration = _jwtEnvironment.ExpirationInMinutes;
+            _issuer = _jwtEnvironment.Issuer;
+            _audience = _jwtEnvironment.Audience;
+            _refreshEnvironment = refreshEnvironment.Value;
+            _refreshExpiration = _refreshEnvironment.ExpirationInDays;
+            _refreshRepository = refreshRepository;
         }
 
-        public async Task<string> Create(ApplicationUser user)
+        public async Task<string> CreateJwtTokenAsync(ApplicationUser user)
         {
             string secretKey = _secret;
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -62,9 +69,85 @@ namespace Streetcode.Identity.Services.Realizations
              var handler = new JsonWebTokenHandler();
 
              string token = handler.CreateToken(tokenDescriptor)??
-                   throw new InvalidOperationException("Token generation failed"); ;
+                   throw new InvalidOperationException("Token generation failed");
 
              return token;
+        }
+
+        public async Task<RefreshToken> CreateRefreshTokenAsync(ApplicationUser user)
+        {
+            var randomNumber = new byte[64];
+
+            using (var numberGenerator = RandomNumberGenerator.Create())
+            {
+                numberGenerator.GetBytes(randomNumber);
+            }
+
+            var refreshToken = new RefreshToken
+            {
+                Token = Convert.ToBase64String(randomNumber),
+                UserId = user.Id,
+                ExpiryDate = DateTime.Now.AddDays(_refreshExpiration),
+            };
+
+            var result = await _refreshRepository.CreateAsync(refreshToken);
+
+            var resultIsSuccess = await _refreshRepository.SaveChangesAsync() > 0;
+
+            if (resultIsSuccess)
+            {
+                return result;
+            }
+            else
+            {
+                throw new InvalidOperationException("Failed to create Refresh token");
+            }
+        }
+
+        public async Task UpdateRefreshTokenAsync(RefreshToken refreshToken)
+        {
+            var existingToken = await _refreshRepository.GetByIdAsync(refreshToken.Id)
+                ?? throw new KeyNotFoundException("Refresh token not found");
+
+            existingToken.Token = refreshToken.Token;
+            existingToken.ExpiryDate = refreshToken.ExpiryDate;
+            existingToken.IsRevoked = refreshToken.IsRevoked;
+
+            _refreshRepository.Update(existingToken);
+            var resultIsSuccess = await _refreshRepository.SaveChangesAsync() > 0;
+
+            if (!resultIsSuccess)
+            {
+                throw new InvalidOperationException("Failed to update Refresh token");
+            }
+        }
+
+        public async Task DeleteRefreshTokenAsync(int id)
+        {
+            var existingToken = await _refreshRepository.GetByIdAsync(id)
+                ?? throw new KeyNotFoundException("Refresh token not found");
+
+            _refreshRepository.Delete(existingToken);
+            var resultIsSuccess = await _refreshRepository.SaveChangesAsync() > 0;
+
+            if (!resultIsSuccess)
+            {
+                throw new InvalidOperationException("Failed to delete Refresh token");
+            }
+        }
+
+        public async Task<List<RefreshToken>> GetAllRefreshsTokenByUserIdAsync(int id)
+        {
+            var result = await _refreshRepository.GetByUserIdAsync(id);
+
+            return result;
+        }
+
+        public async Task<RefreshToken> GetValidRefreshTokenByUserIdAsync(int id)
+        {
+            var result = await _refreshRepository.GetValidByUserIdAsync(id);
+
+            return result;
         }
     }
 }

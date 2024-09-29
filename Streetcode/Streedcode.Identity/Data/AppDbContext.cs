@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Streetcode.DAL.Entities.Users;
 using Streetcode.Identity.Models;
 
 namespace Streetcode.Identity.Data
@@ -13,10 +14,17 @@ namespace Streetcode.Identity.Data
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
+        public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>()
+              .HasMany(u => u.RefreshTokens) 
+                .WithOne(rt => rt.User) 
+                .HasForeignKey(rt => rt.UserId) 
+              .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
