@@ -3,7 +3,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Streetcode.BLL.Exceptions.CustomExceptions;
 
-namespace Streetcode.BLL.Services.CacheService;
+namespace Streetcode.BLL.Services.Cache;
 
 public class CacheService(IDistributedCache distributedCache) : ICacheService
 {

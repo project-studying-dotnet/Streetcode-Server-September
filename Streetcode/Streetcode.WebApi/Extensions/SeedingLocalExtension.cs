@@ -33,7 +33,6 @@ namespace Streetcode.WebApi.Extensions
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
                 var repo = new RepositoryWrapper(dbContext);
-                
                 var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
@@ -59,8 +58,6 @@ namespace Streetcode.WebApi.Extensions
                 {
                     await roleManager.CreateAsync(new Role { Name = "User" });
                 }
-
-
 
                 // Create Admin
                 if (!dbContext.Users.Any())

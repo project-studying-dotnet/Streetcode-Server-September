@@ -26,7 +26,7 @@ using Microsoft.AspNetCore.Identity;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Entities.Role;
 using Streetcode.BLL.Interfaces.Jwt;
-using Streetcode.BLL.Services.CacheService;
+using Streetcode.BLL.Services.Cache;
 using Streetcode.BLL.Services.JwtService;
 
 namespace Streetcode.WebApi.Extensions;

@@ -3,8 +3,8 @@ using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
+using Streetcode.BLL.Services.Cache;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Streetcode.BLL.Services.CacheService;
 using Xunit;
 
 using TextEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;

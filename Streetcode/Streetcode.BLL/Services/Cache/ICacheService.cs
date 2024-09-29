@@ -1,4 +1,4 @@
-namespace Streetcode.BLL.Services.CacheService;
+namespace Streetcode.BLL.Services.Cache;
 
 public interface ICacheService
 {

@@ -3,7 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.Services.CacheService;
+using Streetcode.BLL.Services.Cache;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
