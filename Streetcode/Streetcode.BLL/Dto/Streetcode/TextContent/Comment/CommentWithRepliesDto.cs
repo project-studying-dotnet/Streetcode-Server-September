@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Streetcode.BLL.Dto.Streetcode.TextContent.Comment
 {
-    public class CommentWithRepliesDto : CommentDto
+    public class CommentWithRepliesDto
     {
         public int Id { get; set; }
         public string? CommentContent { get; set; }

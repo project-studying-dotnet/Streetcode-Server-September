@@ -8,9 +8,7 @@ public class CommentProfile : Profile
 {
     public CommentProfile()
     {
-        CreateMap<Comment, CommentDto>()
-            .ForMember(dest => dest.ParentCommentId, opt => opt.MapFrom(src => src.ParentCommentId))
-            .ReverseMap();
+        CreateMap<Comment, CommentDto>().ReverseMap();
         CreateMap<Comment, CommentCreateDto>().ReverseMap();
         CreateMap<Comment, CommentUpdateDto>().ReverseMap();
 
