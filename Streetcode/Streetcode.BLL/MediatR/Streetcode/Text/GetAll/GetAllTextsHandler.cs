@@ -36,7 +36,7 @@ public class GetAllTextsHandler : IRequestHandler<GetAllTextsQuery, Result<IEnum
         var texts = await _cacheService.GetAsync<IEnumerable<Text>>(
             key,
             async () => (await _repositoryWrapper.TextRepository.GetAllAsync()).ToList(),
-            cancellationToken);
+            cancellationToken: cancellationToken);
             
         if (!texts.Any())
         {

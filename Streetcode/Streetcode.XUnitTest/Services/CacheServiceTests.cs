@@ -160,7 +160,7 @@ public class CacheServiceTests
         var bytes = Encoding.UTF8.GetBytes(expectedJson);
         
         // Act
-        await _cacheService.SetAsync(key, data, CancellationToken.None, absoluteExpireTime, unusedExpireTime);
+        await _cacheService.SetAsync(key, data, absoluteExpireTime, unusedExpireTime, CancellationToken.None);
 
         // Assert
         _distributedCache

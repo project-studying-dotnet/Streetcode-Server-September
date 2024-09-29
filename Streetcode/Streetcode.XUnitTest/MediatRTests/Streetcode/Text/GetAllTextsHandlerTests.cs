@@ -42,9 +42,9 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Text
                 .Setup(cache => cache.GetAsync(
                     It.IsAny<string>(),
                     It.IsAny<Func<Task<IEnumerable<TextEntity>>>>(),
-                    It.IsAny<CancellationToken>(),
                     null,
-                    null))
+                    null,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(texts);
     
     
@@ -70,9 +70,9 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Text
                 .Setup(cache => cache.GetAsync(
                     It.IsAny<string>(),
                     It.IsAny<Func<Task<IEnumerable<TextEntity>>>>(),
-                    It.IsAny<CancellationToken>(),
                     null,
-                    null))
+                    null,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(texts);
     
     

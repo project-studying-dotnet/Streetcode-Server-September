@@ -28,8 +28,12 @@ public class CacheService : ICacheService
             StatusCodes.Status500InternalServerError);
     }
 
-    public async Task<T> GetAsync<T>(string key, Func<Task<T>> factory, CancellationToken cancellationToken = default,
-        TimeSpan? absoluteExpireTime = null, TimeSpan? unusedExpireTime = null)
+    public async Task<T> GetAsync<T>(
+        string key, 
+        Func<Task<T>> factory,
+        TimeSpan? absoluteExpireTime = null, 
+        TimeSpan? unusedExpireTime = null, 
+        CancellationToken cancellationToken = default)
     {
         T? cachedData = await GetAsync<T>(key, cancellationToken);
         
@@ -40,7 +44,7 @@ public class CacheService : ICacheService
             
         cachedData = await factory();
         
-        await SetAsync(key, cachedData, cancellationToken);
+        await SetAsync(key, cachedData, cancellationToken: cancellationToken);
 
         return cachedData;
     }
@@ -48,9 +52,9 @@ public class CacheService : ICacheService
     public async Task SetAsync<T>(
         string key, 
         T data,
-        CancellationToken cancellationToken = default,
         TimeSpan? absoluteExpireTime = null, 
-        TimeSpan? unusedExpireTime = null)
+        TimeSpan? unusedExpireTime = null, 
+        CancellationToken cancellationToken = default)
     {
         var options = new DistributedCacheEntryOptions
         {
