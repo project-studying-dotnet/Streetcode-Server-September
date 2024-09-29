@@ -36,7 +36,6 @@ namespace Streetcode.DAL.Repositories.Realizations.Base;
 public class RepositoryWrapper : IRepositoryWrapper
 {
     private readonly StreetcodeDbContext _streetcodeDbContext;
-    private readonly IDistributedCache _distributedCache;
 
     private IVideoRepository? _videoRepository;
 
@@ -110,25 +109,9 @@ public class RepositoryWrapper : IRepositoryWrapper
 
     private ICommentRepository? _commentRepository;
 
-    private ITextRepository? _cachedTextRepository;
-
-    public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext, IDistributedCache distributedCache)
+    public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
         _streetcodeDbContext = streetcodeDbContext;
-        _distributedCache = distributedCache;
-    }
-
-    public ITextRepository CachedTextRepository
-    {
-        get
-        {
-            if (_cachedTextRepository is null)
-            {
-                _cachedTextRepository = new CachedTextRepository(_streetcodeDbContext, _distributedCache);
-            }
-
-            return _cachedTextRepository;
-        }
     }
 
     public INewsRepository NewsRepository

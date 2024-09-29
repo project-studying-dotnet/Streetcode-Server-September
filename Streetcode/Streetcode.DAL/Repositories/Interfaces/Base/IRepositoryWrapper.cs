@@ -54,8 +54,6 @@ public interface IRepositoryWrapper
     IStreetcodeImageRepository StreetcodeImageRepository { get; }
     ICommentRepository CommentRepository { get; }
     
-    ITextRepository CachedTextRepository { get; }
-    
     public int SaveChanges();
 
     public Task<int> SaveChangesAsync();

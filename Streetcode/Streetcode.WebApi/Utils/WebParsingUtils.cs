@@ -31,7 +31,7 @@ public class WebParsingUtils
 
     public WebParsingUtils(StreetcodeDbContext streetcodeContext)
     {
-        _repository = new RepositoryWrapper(streetcodeContext, default!);
+        _repository = new RepositoryWrapper(streetcodeContext);
         _streetcodeContext = streetcodeContext;
     }
 

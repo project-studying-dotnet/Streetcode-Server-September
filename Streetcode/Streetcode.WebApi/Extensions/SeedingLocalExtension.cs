@@ -32,8 +32,7 @@ namespace Streetcode.WebApi.Extensions
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<StreetcodeDbContext>();
-                var distributedCache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
-                var repo = new RepositoryWrapper(dbContext, distributedCache);
+                var repo = new RepositoryWrapper(dbContext);
                 
                 var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
