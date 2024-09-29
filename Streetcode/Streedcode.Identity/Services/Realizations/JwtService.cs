@@ -40,7 +40,8 @@ namespace Streetcode.Identity.Services.Realizations
 
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim> {
+            var claims = new List<Claim>
+            {
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Id.ToString())
             };
 
@@ -62,7 +63,7 @@ namespace Streetcode.Identity.Services.Realizations
              var handler = new JsonWebTokenHandler();
 
              string token = handler.CreateToken(tokenDescriptor)??
-                   throw new InvalidOperationException("Token generation failed"); ;
+                   throw new InvalidOperationException("Token generation failed");
 
              return token;
         }
