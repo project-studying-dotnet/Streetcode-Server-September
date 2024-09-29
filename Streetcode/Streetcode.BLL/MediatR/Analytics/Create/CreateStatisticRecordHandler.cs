@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.Analytics;
+using Streetcode.BLL.Dto.Media.Art;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.Analytics;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -27,7 +30,7 @@ public class CreateStatisticRecordHandler: IRequestHandler<CreateStatisticRecord
 
         if (statisticRecord is null)
         {
-            const string errorMsg = "Cannot convert null to StatisticRecord";
+            const string errorMsg = "Cannot convert null to a Statistic Record";
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -44,8 +47,15 @@ public class CreateStatisticRecordHandler: IRequestHandler<CreateStatisticRecord
         }
 
         await _repositoryWrapper.StatisticRecordRepository.CreateAsync(statisticRecord);
-        await _repositoryWrapper.SaveChangesAsync();
+        bool resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
 
-        return Result.Ok(_mapper.Map<StatisticRecordDto>(statisticRecord));
+        if (resultIsSuccess)
+        {
+            return Result.Ok(_mapper.Map<StatisticRecordDto>(statisticRecord));
+        }
+        else
+        {
+            throw new CustomException("Failed to save a Statistic Record", StatusCodes.Status400BadRequest);
+        }
     }
 }
