@@ -1,9 +1,7 @@
 using System.Linq.Expressions;
-using System.Net.Mime;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Extensions;
 using Streetcode.DAL.Persistence;
@@ -99,13 +97,8 @@ public class CachedTextRepository: ITextRepository
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Cache miss");
-            
+
             allTexts = (await _textRepository.GetAllAsync(predicate, include)).ToList();
-            
-            if (!allTexts.Any())
-            {
-                return allTexts;
-            }
 
             await _distributedCache.SetRecordAsync(key, allTexts);
             
