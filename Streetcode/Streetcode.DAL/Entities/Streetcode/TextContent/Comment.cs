@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Streetcode.DAL.Enums;
 
 namespace Streetcode.DAL.Entities.Streetcode.TextContent;
 
@@ -22,15 +23,15 @@ public class Comment
     [Required]
     public int UserId { get; set; }
 
-    // public User? User { get; set; }
-
     [Required]
     public DateTime DateCreated { get; set; }
 
     public int? ParentCommentId { get; set; }
+    
+    public CommentStatus Status { get; set; }
 
     [ForeignKey("ParentCommentId")]
     public Comment? ParentComment { get; set; }
+    
     public ICollection<Comment> Replies { get; set; } = new List<Comment>();
-
 }
