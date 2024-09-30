@@ -41,6 +41,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddRepositoryServices();
         services.AddFeatureManagement();
+
         var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
@@ -54,8 +55,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITextService, AddTermsToTextService>();
         services.AddModelValidationServices();
 
-        services.AddIdentity<User, Role>()
-            .AddEntityFrameworkStores<StreetcodeDbContext>().AddDefaultTokenProviders();
+        services
+            .AddIdentity<User, Role>()
+            .AddEntityFrameworkStores<StreetcodeDbContext>()
+            .AddDefaultTokenProviders();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
@@ -102,6 +105,8 @@ public static class ServiceCollectionExtensions
             opt.IncludeSubDomains = true;
             opt.MaxAge = TimeSpan.FromDays(30);
         });
+
+        services.AddLocalization();
 
         services.AddLogging();
         services.AddControllers();
