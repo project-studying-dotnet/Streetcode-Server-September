@@ -2,7 +2,6 @@
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.BLL.Util;
 
@@ -17,12 +16,11 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
-        private readonly ILoggerService _logger;
-        public UpdateOrderFactHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
+
+        public UpdateOrderFactHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
-            _logger = logger;
         }
 
         public async Task<Result<IEnumerable<FactDto>>> Handle(UpdateOrderFactCommand request, CancellationToken cancellationToken)

@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Util;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -13,11 +12,10 @@ namespace Streetcode.BLL.MediatR.Streetcode.Fact.Delete
     public class DeleteFactHandler : IRequestHandler<DeleteFactCommand, Result<Unit>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ILoggerService _logger;
-        public DeleteFactHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+
+        public DeleteFactHandler(IRepositoryWrapper repositoryWrapper)
         {
             _repositoryWrapper = repositoryWrapper;
-            _logger = logger;
         }
 
         public async Task<Result<Unit>> Handle(DeleteFactCommand request, CancellationToken cancellationToken)

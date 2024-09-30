@@ -2,7 +2,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Comment.Delete
@@ -10,11 +9,10 @@ namespace Streetcode.BLL.MediatR.Streetcode.Comment.Delete
     public class DeleteCommentHandler : IRequestHandler<DeleteCommentCommand, Result<Unit>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ILoggerService _logger;
-        public DeleteCommentHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+
+        public DeleteCommentHandler(IRepositoryWrapper repositoryWrapper)
         {
             _repositoryWrapper = repositoryWrapper;
-            _logger = logger;
         }
 
         public async Task<Result<Unit>> Handle(DeleteCommentCommand request, CancellationToken cancellationToken)

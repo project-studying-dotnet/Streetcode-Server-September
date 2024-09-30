@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -16,15 +15,13 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
     {
         private readonly Mock<IMapper> _mockMapper;
         private readonly Mock<IRepositoryWrapper> _mockRepository;
-        private readonly Mock<ILoggerService> _mockLogger;
         private readonly CreateFactHandler _handler;
 
         public CreateFactHandlerTests()
         {
             _mockMapper = new Mock<IMapper>();
             _mockRepository = new Mock<IRepositoryWrapper>();
-            _mockLogger = new Mock<ILoggerService>();
-            _handler = new CreateFactHandler(_mockMapper.Object, _mockRepository.Object, _mockLogger.Object);
+            _handler = new CreateFactHandler(_mockMapper.Object, _mockRepository.Object);
         }
 
         [Fact]

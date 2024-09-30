@@ -23,7 +23,7 @@ public class CreateStreetcodeCategoryContentHandler: IRequestHandler<CreateStree
         _mapper = mapper;
     }
     
-    public async Task<Result<Unit>> Handle(CreateStreetcodeCategoryContentCommand request, CancellationToken token)
+    public async Task<Result<Unit>> Handle(CreateStreetcodeCategoryContentCommand request, CancellationToken cancellationToken)
     {
         var streetcodeCategoryContent = _mapper.Map<StreetcodeCategoryContent>(request.CategoryContentCreateDto);
         

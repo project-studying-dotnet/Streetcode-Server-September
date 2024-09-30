@@ -2,7 +2,6 @@
 using Moq;
 using AutoMapper;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.UpdateOrder;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -18,19 +17,14 @@ public class UpdateOrderFactHandlerTests
 {
     private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
     private readonly Mock<IMapper> _mapperMock;
-    private readonly Mock<ILoggerService> _loggerMock;
     private readonly UpdateOrderFactHandler _handler;
 
     public UpdateOrderFactHandlerTests()
     {
         _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
         _mapperMock = new Mock<IMapper>();
-        _loggerMock = new Mock<ILoggerService>();
 
-        _handler = new UpdateOrderFactHandler(
-            _repositoryWrapperMock.Object,
-            _mapperMock.Object,
-            _loggerMock.Object);
+        _handler = new UpdateOrderFactHandler(_repositoryWrapperMock.Object, _mapperMock.Object);
     }
 
     [Fact]
@@ -89,7 +83,6 @@ public class UpdateOrderFactHandlerTests
 
         _repositoryWrapperMock.Verify(repo => repo.FactRepository.UpdateRange(facts), Times.Once);
         _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
-        _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), It.IsAny<string>()), Times.Never);
     }
 
     [Fact]
