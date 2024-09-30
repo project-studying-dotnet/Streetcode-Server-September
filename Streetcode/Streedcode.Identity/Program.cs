@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Streedcode.Identity.Models;
 using Streedcode.Identity.Services.Interfaces;
 using Streedcode.Identity.Services.Realizations;
+using Streedcode.Identity.MessageBroker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IRabbitMqSender, RabbitMqSender>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

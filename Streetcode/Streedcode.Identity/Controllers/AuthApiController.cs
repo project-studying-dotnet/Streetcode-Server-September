@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Streedcode.Identity.MessageBroker;
 using Streedcode.Identity.Models.Dto;
 
 namespace Streedcode.Identity.Controllers
@@ -8,10 +9,12 @@ namespace Streedcode.Identity.Controllers
     public class AuthApiController : ControllerBase
     {
         private ResponseDto _response;
+        private readonly IRabbitMqSender _messageBus;
 
-        public AuthApiController()
+        public AuthApiController(IRabbitMqSender rabbitMqSender)
         {
             _response = new();
+            _messageBus = rabbitMqSender;
         }
     }
 }
