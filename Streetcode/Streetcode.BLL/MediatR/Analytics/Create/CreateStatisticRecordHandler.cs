@@ -31,8 +31,7 @@ public class CreateStatisticRecordHandler: IRequestHandler<CreateStatisticRecord
         if (statisticRecord is null)
         {
             const string errorMsg = "Cannot convert null to a Statistic Record";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status400BadRequest);
         }
 
         var qrIds = await _repositoryWrapper.StatisticRecordRepository.GetAllAsync(
@@ -42,8 +41,7 @@ public class CreateStatisticRecordHandler: IRequestHandler<CreateStatisticRecord
         {
             string errorMsg = $"A QR table number of {statisticRecord.QrId} already exists for this streetcode. " +
                                "Please choose a different number.";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status400BadRequest);
         }
 
         await _repositoryWrapper.StatisticRecordRepository.CreateAsync(statisticRecord);

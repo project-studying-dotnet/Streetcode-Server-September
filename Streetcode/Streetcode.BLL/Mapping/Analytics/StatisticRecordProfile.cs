@@ -11,6 +11,7 @@ public class StatisticRecordProfile: Profile
     {
         CreateMap<StatisticRecord, StatisticRecordDto>().ReverseMap();
         CreateMap<StatisticRecordCreateDto, StatisticRecord>()
-           .ForMember(dest => dest.StreetcodeId, opt => opt.MapFrom(src => src.StreetcodeCoordinate.StreetcodeId));
+           .ForMember(dest => dest.StreetcodeId, opt => opt.MapFrom(
+               src => src.StreetcodeCoordinate.StreetcodeId));
     }    
 }
