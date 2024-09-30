@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Streetcode.BLL.Dto.Analytics;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Analytics.Create;
 using Streetcode.DAL.Entities.Analytics;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -18,15 +17,13 @@ namespace Streetcode.XUnitTest.MediatRTests.Analytics
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
         private readonly CreateStatisticRecordHandler _handler;
 
         public CreateStatisticRecordHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _handler = new CreateStatisticRecordHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
+            _handler = new CreateStatisticRecordHandler(_repositoryWrapperMock.Object, _mapperMock.Object);
         }
 
         [Fact]
@@ -56,17 +53,17 @@ namespace Streetcode.XUnitTest.MediatRTests.Analytics
                 Address = "Address",
                 StreetcodeId = 1 
             };
-            var statisticRecords = new List<StatisticRecord>() { new StatisticRecord() { QrId = 9, StreetcodeId = 1 } };
-
+            var statisticRecords = new List<StatisticRecord>() { new StatisticRecord() { QrId = 100, StreetcodeId = 1 } };
             var command = new CreateStatisticRecordCommand(statisticRecordCreateDto);
-
 
             _mapperMock.Setup(m => m.Map<StatisticRecord>(command.newStreetcodeRecord)).Returns(statisticRecord);
 
             _repositoryWrapperMock.Setup(r => r.StatisticRecordRepository.GetAllAsync(
                 It.IsAny<Expression<Func<StatisticRecord, bool>>>(), null)).ReturnsAsync(statisticRecords);
-            _repositoryWrapperMock.Setup(r => r.StatisticRecordRepository.CreateAsync(statisticRecord)).ReturnsAsync(statisticRecord);
+            _repositoryWrapperMock.Setup(r => r.StatisticRecordRepository.CreateAsync(statisticRecord))
+                .ReturnsAsync(statisticRecord);
             _repositoryWrapperMock.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+
             _mapperMock.Setup(m => m.Map<StatisticRecordDto>(statisticRecord)).Returns(statisticRecordDto);
 
             // Act
@@ -77,11 +74,10 @@ namespace Streetcode.XUnitTest.MediatRTests.Analytics
             Assert.Equal(statisticRecordCreateDto.QrId, result.Value.QrId);
             Assert.Equal(statisticRecordCreateDto.Address, result.Value.Address);
             Assert.Equal(statisticRecordCreateDto.StreetcodeCoordinate.StreetcodeId, result.Value.StreetcodeId);
-
         }
 
         [Fact]
-        public async Task Handle_ReturnsFail_WhenQrIdAlreadyExists()
+        public async Task Handle_ShouldThrowCustomException_WhenQrIdAlreadyExists()
         {
             // Arrange
             var statisticRecordDto = new StatisticRecordCreateDto 
@@ -106,30 +102,31 @@ namespace Streetcode.XUnitTest.MediatRTests.Analytics
                 It.IsAny<Expression<Func<StatisticRecord, bool>>>(), null)).ReturnsAsync(statisticRecords);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var exception = await Assert.ThrowsAsync<CustomException>(
+                () => _handler.Handle(command, CancellationToken.None));
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(l => l.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            Assert.Equal(errorMsg, exception.Message);
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
         }
 
         [Fact]
-        public async Task Handle_ShouldReturnError_WhenMappingReturnsNull()
+        public async Task Handle_ShouldThrowCustomException_WhenMappingReturnsNull()
         {
             // Arrange
             var statisticRecordDto = new StatisticRecordCreateDto();
-            var request = new CreateStatisticRecordCommand(statisticRecordDto);
+            var command = new CreateStatisticRecordCommand(statisticRecordDto);
+            var errorMsg = "Cannot convert null to a Statistic Record";
 
-            _mapperMock.Setup(m => m.Map<StatisticRecord>(request.newStreetcodeRecord)).Returns((StatisticRecord)null!);
+            _mapperMock.Setup(m => m.Map<StatisticRecord>(command.newStreetcodeRecord)).Returns((StatisticRecord)null!);
 
             // Act
-            var result = await _handler.Handle(request, CancellationToken.None);
+             var exception = await Assert.ThrowsAsync<CustomException>(
+                () => _handler.Handle(command, CancellationToken.None));
 
             // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal("Cannot convert null to a Statistic Record", result.Errors[0].Message);
-            _repositoryWrapperMock.Verify(r => r.StatisticRecordRepository.CreateAsync(It.IsAny<StatisticRecord>()), Times.Never);
+            Assert.Equal(errorMsg, exception.Message);
+            Assert.Equal(StatusCodes.Status400BadRequest, exception.StatusCode);
         }
 
         [Fact]
@@ -146,7 +143,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Analytics
             };
 
             var statisticRecord = new StatisticRecord() { QrId = 99, StreetcodeId = 1 };
-            var statisticRecords = new List<StatisticRecord>() { new StatisticRecord() { QrId = 9, StreetcodeId = 1 } };
+            var statisticRecords = new List<StatisticRecord>() { new StatisticRecord() { QrId = 100, StreetcodeId = 1 } };
 
             var command = new CreateStatisticRecordCommand(statisticRecordDto);
             var errorMsg = "Failed to save a Statistic Record";
@@ -155,7 +152,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Analytics
 
             _repositoryWrapperMock.Setup(repo => repo.StatisticRecordRepository.GetAllAsync(
                 It.IsAny<Expression<Func<StatisticRecord, bool>>>(), null)).ReturnsAsync(statisticRecords);
-            _repositoryWrapperMock.Setup(repo => repo.StatisticRecordRepository.CreateAsync(statisticRecord)).ReturnsAsync(statisticRecord);
+            _repositoryWrapperMock.Setup(repo => repo.StatisticRecordRepository.CreateAsync(statisticRecord))
+                .ReturnsAsync(statisticRecord);
             _repositoryWrapperMock.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(0);
 
             // Act

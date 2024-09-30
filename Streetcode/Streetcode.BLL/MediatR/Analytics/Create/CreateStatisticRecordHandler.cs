@@ -3,9 +3,7 @@ using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.Analytics;
-using Streetcode.BLL.Dto.Media.Art;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.Analytics;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -15,13 +13,11 @@ public class CreateStatisticRecordHandler: IRequestHandler<CreateStatisticRecord
 {
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly IMapper _mapper;
-    private readonly ILoggerService _logger;
 
-    public CreateStatisticRecordHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger) 
+    public CreateStatisticRecordHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper) 
     {
         _repositoryWrapper = repositoryWrapper;
         _mapper = mapper;
-        _logger = logger;
     }
 
     public async Task<Result<StatisticRecordDto>> Handle(CreateStatisticRecordCommand request, CancellationToken cancellationToken)
