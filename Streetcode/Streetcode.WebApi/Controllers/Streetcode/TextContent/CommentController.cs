@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Comment;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Approve;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Create;
@@ -43,6 +44,7 @@ public class CommentController : BaseApiController
     }
 
     [HttpPatch("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Approve([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new ApproveCommentQuery(id)));
