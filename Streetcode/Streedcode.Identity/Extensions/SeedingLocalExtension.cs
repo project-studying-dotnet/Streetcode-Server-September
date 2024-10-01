@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿    using Microsoft.AspNetCore.Identity;
 using Streetcode.Identity.Data;
 using Streetcode.Identity.Models;
 using Streetcode.Identity.Models.Additional;
@@ -45,7 +45,7 @@ public static class SeedingLocalExtension
                     await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
 
-                // Create users
+                // CreateJwtTokenAsync users
                 var users = new List<ApplicationUser>
                     {
                         new ApplicationUser { Name = "John", Surname = "Doe", Email = "john@example.com", UserName = "john1", Role = "User" },

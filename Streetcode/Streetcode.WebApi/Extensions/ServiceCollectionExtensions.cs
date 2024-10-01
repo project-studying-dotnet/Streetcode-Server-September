@@ -136,6 +136,7 @@ public static class ServiceCollectionExtensions
                 BearerFormat = "JWT",
                 Scheme = "Bearer"
             });
+          
             opt.AddSecurityRequirement(new OpenApiSecurityRequirement()
             {
                 {
