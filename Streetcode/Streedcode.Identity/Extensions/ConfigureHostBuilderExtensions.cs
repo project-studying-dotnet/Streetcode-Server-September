@@ -8,4 +8,9 @@ public static class ConfigureHostBuilderExtensions
     {
         services.Configure<JwtVariables>(builder.Configuration.GetSection("Jwt"));
     }
+    public static void ConfigureRefreshToken(this IServiceCollection services, WebApplicationBuilder builder)
+    {
+        services.Configure<RefreshVariables>(builder.Configuration.GetSection("Refresh"));
+    }
+
 }
