@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Comment;
+using Streetcode.BLL.MediatR.Streetcode.Comment.Approve;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Create;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Delete;
 using Streetcode.BLL.MediatR.Streetcode.Comment.GetAllCommentsWithReplies;
@@ -39,5 +40,11 @@ public class CommentController : BaseApiController
     public async Task<IActionResult> GetByStreetcodeId([FromRoute] int streetcodeId)
     {
         return HandleResult(await Mediator.Send(new GetCommentByStreetcodeIdQuery(streetcodeId)));
+    }
+
+    [HttpPatch("{id:int}")]
+    public async Task<IActionResult> Approve([FromRoute] int id)
+    {
+        return HandleResult(await Mediator.Send(new ApproveCommentQuery(id)));
     }
 }
