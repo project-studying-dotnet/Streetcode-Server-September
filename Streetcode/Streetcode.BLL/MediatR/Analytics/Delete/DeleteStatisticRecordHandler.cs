@@ -24,7 +24,7 @@ public class DeleteStatisticRecordHandler : IRequestHandler<DeleteStatisticRecor
 
         if (statisticRecord == null)
         {
-            string errorMsg = $"Cannot find  a Statistic Record by entered Id: {id}";
+            string errorMsg = $"Cannot find a Statistic Record by entered Id: {id}";
             throw new CustomException(errorMsg, StatusCodes.Status400BadRequest);
         }
 
