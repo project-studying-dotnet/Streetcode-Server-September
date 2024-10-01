@@ -25,14 +25,12 @@ public class CommentController : BaseApiController
     }
 
     [HttpPut]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update([FromBody] CommentUpdateDto commentDto)
     {
         return HandleResult(await Mediator.Send(new UpdateCommentCommand(commentDto)));
     }
 
     [HttpGet]
-    //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetCommentsWithReplies()
     {
        return HandleResult(await Mediator.Send(new GetAllCommentsWithRepliesQuery()));      
