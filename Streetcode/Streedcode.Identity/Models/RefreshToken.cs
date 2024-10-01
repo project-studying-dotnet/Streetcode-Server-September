@@ -1,4 +1,6 @@
-﻿namespace Streetcode.Identity.Models;
+﻿using Newtonsoft.Json;
+
+namespace Streetcode.Identity.Models;
 
 public class RefreshToken
 {
@@ -9,5 +11,7 @@ public class RefreshToken
     public bool IsExpired => DateTime.Now >= ExpiryDate;
 
     public int? UserId { get; set; }
+
+    [JsonIgnore]
     public ApplicationUser? User { get; set; }
 }

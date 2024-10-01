@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Streetcode.Identity.Models;
 using Streetcode.Identity.Models.Dto;
 using Streetcode.Identity.Services.Interfaces;
+using System.Threading;
 
 namespace Streetcode.Identity.Services.Realizations
 {
@@ -23,7 +24,7 @@ namespace Streetcode.Identity.Services.Realizations
             _mapper = mapper;
         }
 
-        public async Task<LoginResultDto> LoginAsync(LoginDto loginDto)
+        public async Task<LoginResultDto> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email) ??
                 throw new ArgumentException("User not found");
@@ -37,8 +38,7 @@ namespace Streetcode.Identity.Services.Realizations
             var jwtResult = await _jwtService.CreateJwtTokenAsync(user) ??
                 throw new InvalidOperationException("Jwt token generation failed");
 
-            var refreshToken = await _jwtService.GetValidRefreshTokenByUserIdAsync(user.Id) ??
-                                          await _jwtService.CreateRefreshTokenAsync(user);
+            var refreshToken = await _jwtService.CreateRefreshTokenAsync(user);
 
 
             var userData = _mapper.Map<UserDataDto>(user) ??
@@ -57,10 +57,10 @@ namespace Streetcode.Identity.Services.Realizations
             };
         }
 
-        public async Task<string> RefreshJwtToken(int userId)
+        public async Task<string> RefreshJwtToken(int userId, CancellationToken cancellationToken)
         {
-            var token = await _jwtService.GetValidRefreshTokenByUserIdAsync(userId) 
-                            ?? throw new KeyNotFoundException("Refresh token not found");
+            var token = await _jwtService.GetValidRefreshTokenByUserIdAsync(userId, cancellationToken) 
+                            ?? throw new KeyNotFoundException("Refresh token not found. Login again");
 
             var user = await _userManager.FindByIdAsync(token.UserId.ToString());
 

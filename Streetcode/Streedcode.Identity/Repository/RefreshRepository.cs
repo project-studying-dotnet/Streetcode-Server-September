@@ -16,13 +16,13 @@ public class RefreshRepository : IRefreshRepository
     public async Task<List<RefreshToken>> GetByUserIdAsync(int userId)
     {
         return await _context.RefreshTokens
-            .Where(rt => rt.UserId == userId)
-            .ToListAsync();
+            .Where(rt => rt.UserId == userId).ToListAsync();
     }
 
     public async Task<RefreshToken?> GetByIdAsync(int refreshTokenId)
     {
         return await _context.RefreshTokens
+            .OrderByDescending(rt => rt.ExpiryDate)
             .FirstOrDefaultAsync(rt => rt.Id == refreshTokenId);
     }
 

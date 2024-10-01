@@ -23,11 +23,13 @@ namespace Streetcode.Identity.Services.Realizations
         private readonly int _refreshExpiration;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IRefreshRepository _refreshRepository;
+        private readonly ICacheService _cacheService;
 
         public JwtService(UserManager<ApplicationUser> userManager,
                            IRefreshRepository refreshRepository, 
                            IOptions<JwtVariables> jwtEnvironment,
-                           IOptions<RefreshVariables> refreshEnvironment)
+                           IOptions<RefreshVariables> refreshEnvironment,
+                           ICacheService cacheService)
         {
             _userManager = userManager;
             _jwtEnvironment = jwtEnvironment.Value;
@@ -38,6 +40,7 @@ namespace Streetcode.Identity.Services.Realizations
             _refreshEnvironment = refreshEnvironment.Value;
             _refreshExpiration = _refreshEnvironment.ExpirationInDays;
             _refreshRepository = refreshRepository;
+            _cacheService = cacheService;
         }
 
         public async Task<string> CreateJwtTokenAsync(ApplicationUser user)
@@ -48,7 +51,7 @@ namespace Streetcode.Identity.Services.Realizations
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim> {
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -76,6 +79,9 @@ namespace Streetcode.Identity.Services.Realizations
 
         public async Task<RefreshToken> CreateRefreshTokenAsync(ApplicationUser user)
         {
+            int userid = user.Id;
+            string key = $"user-{userid}";
+
             var randomNumber = new byte[64];
 
             using (var numberGenerator = RandomNumberGenerator.Create())
@@ -96,6 +102,7 @@ namespace Streetcode.Identity.Services.Realizations
 
             if (resultIsSuccess)
             {
+                await _cacheService.SetAsync(key, refreshToken);
                 return result;
             }
             else
@@ -104,48 +111,26 @@ namespace Streetcode.Identity.Services.Realizations
             }
         }
 
-        public async Task UpdateRefreshTokenAsync(RefreshToken refreshToken)
+        public async Task<List<RefreshToken>> GetAllRefreshsTokenByUserIdAsync(int id, CancellationToken cancellationToken)
         {
-            var existingToken = await _refreshRepository.GetByIdAsync(refreshToken.Id)
-                ?? throw new KeyNotFoundException("Refresh token not found");
+            string key = $"user-{id}";
 
-            existingToken.Token = refreshToken.Token;
-            existingToken.ExpiryDate = refreshToken.ExpiryDate;
-            existingToken.IsRevoked = refreshToken.IsRevoked;
-
-            _refreshRepository.Update(existingToken);
-            var resultIsSuccess = await _refreshRepository.SaveChangesAsync() > 0;
-
-            if (!resultIsSuccess)
-            {
-                throw new InvalidOperationException("Failed to update Refresh token");
-            }
-        }
-
-        public async Task DeleteRefreshTokenAsync(int id)
-        {
-            var existingToken = await _refreshRepository.GetByIdAsync(id)
-                ?? throw new KeyNotFoundException("Refresh token not found");
-
-            _refreshRepository.Delete(existingToken);
-            var resultIsSuccess = await _refreshRepository.SaveChangesAsync() > 0;
-
-            if (!resultIsSuccess)
-            {
-                throw new InvalidOperationException("Failed to delete Refresh token");
-            }
-        }
-
-        public async Task<List<RefreshToken>> GetAllRefreshsTokenByUserIdAsync(int id)
-        {
-            var result = await _refreshRepository.GetByUserIdAsync(id);
+            var result = await _cacheService.GetAsync(
+              key,
+              async () => (await _refreshRepository.GetByUserIdAsync(id)),
+              cancellationToken: cancellationToken);
 
             return result;
         }
 
-        public async Task<RefreshToken> GetValidRefreshTokenByUserIdAsync(int id)
+        public async Task<RefreshToken> GetValidRefreshTokenByUserIdAsync(int id, CancellationToken cancellationToken)
         {
-            var result = await _refreshRepository.GetValidByUserIdAsync(id);
+            string key = $"user-{id}";
+
+            var result = await _cacheService.GetAsync(
+             key,
+             async () => (await _refreshRepository.GetValidByUserIdAsync(id)),
+             cancellationToken: cancellationToken);
 
             return result;
         }

@@ -71,9 +71,7 @@ public static class AuthenticationServiceExtensions
                     },
                     new List<string>()
                 }
-    });
         });
-
-
+    });
     }
 }

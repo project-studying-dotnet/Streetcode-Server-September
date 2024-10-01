@@ -23,6 +23,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
 builder.Services.AddScoped<IRefreshRepository, RefreshRepository>();    
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 
 builder.Services.ConfigureJwt(builder);
 builder.Services.ConfigureRefreshToken(builder);
@@ -31,6 +32,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerServices();
 builder.Services.AddAutoMapper(typeof(UsersProfile));
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "Streetcode.Identity_";
+});
 
 var app = builder.Build();
 
