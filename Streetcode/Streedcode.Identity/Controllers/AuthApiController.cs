@@ -1,17 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Streedcode.Identity.Models.Dto;
+using Streetcode.Identity.Models.Dto;
+using Streetcode.Identity.Services.Interfaces;
 
-namespace Streedcode.Identity.Controllers
+namespace Streetcode.Identity.Controllers
 {
     [Route("api/auth")]
     [ApiController]
     public class AuthApiController : ControllerBase
     {
-        private ResponseDto _response;
+        private readonly IAuthService _loginService;
 
-        public AuthApiController()
+        public AuthApiController(IAuthService loginService)
         {
-            _response = new();
+            _loginService = loginService;
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            var result = await _loginService.LoginAsync(loginDto);
+            return Ok(result);
         }
     }
 }

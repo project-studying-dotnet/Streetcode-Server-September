@@ -14,18 +14,26 @@ public static class AuthenticationServiceExtensions
         var jwtOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtVariables>>();
         JwtVariables environment = jwtOptions.Value;
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(o =>
+        services.AddAuthentication(x =>
+        {
+            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(o =>
+        {
+            o.RequireHttpsMetadata = false;
+            o.TokenValidationParameters = new TokenValidationParameters
             {
-                o.RequireHttpsMetadata = false;
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(environment.Secret)),
-                    ValidIssuer = environment.Issuer,
-                    ValidAudience = environment.Audience,
-                    ClockSkew = TimeSpan.FromMinutes(5) //tolerance to expired tokens
-                };
-            });
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(environment.Secret)),
+                ValidIssuer = environment.Issuer,
+                ValidAudience = environment.Audience,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ClockSkew = TimeSpan.FromMinutes(5)
+            };
+        });
 
         return services;
     }
