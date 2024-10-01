@@ -1,6 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.Interfaces.Logging;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Analytics.Delete;
@@ -8,12 +9,10 @@ namespace Streetcode.BLL.MediatR.Analytics.Delete;
 public class DeleteStatisticRecordHandler : IRequestHandler<DeleteStatisticRecordCommand, Result<Unit>>
 {
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly ILoggerService _logger;
 
-    public DeleteStatisticRecordHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+    public DeleteStatisticRecordHandler(IRepositoryWrapper repositoryWrapper)
     {
         _repositoryWrapper = repositoryWrapper;
-        _logger = logger;
     }
 
     public async Task<Result<Unit>> Handle(DeleteStatisticRecordCommand request, CancellationToken cancellationToken)
@@ -26,8 +25,7 @@ public class DeleteStatisticRecordHandler : IRequestHandler<DeleteStatisticRecor
         if (statisticRecord == null)
         {
             string errorMsg = $"Cannot find  a Statistic Record by entered Id: {id}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status400BadRequest);
         }
 
         var streetcodeCoordinate = await _repositoryWrapper.StreetcodeCoordinateRepository.GetFirstOrDefaultAsync(
@@ -47,9 +45,7 @@ public class DeleteStatisticRecordHandler : IRequestHandler<DeleteStatisticRecor
         }
         else
         {
-            const string errorMsg = $"Failed to delete a Statistic Record";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException("Failed to delete a Statistic Record", StatusCodes.Status400BadRequest);
         }
     }
 }
