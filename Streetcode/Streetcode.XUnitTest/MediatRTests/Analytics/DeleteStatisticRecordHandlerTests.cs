@@ -25,9 +25,9 @@ public class DeleteStatisticRecordHandlerTests
     public async Task Handle_ShouldThrowCustomException_WhenArtNotFound()
     {
         // Arrange
-        var streetcodeRecordId = 1;
-        var command = new DeleteStatisticRecordCommand(streetcodeRecordId);
-        var errorMsg = $"Cannot find a Statistic Record by entered Id: {streetcodeRecordId}";
+        var statisticRecordId = 1;
+        var command = new DeleteStatisticRecordCommand(statisticRecordId);
+        var errorMsg = $"Cannot find a Statistic Record by entered Id: {statisticRecordId}";
 
         _repositoryWrapperMock.Setup(repo => repo.StatisticRecordRepository
             .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StatisticRecord, bool>>>(), null))
@@ -78,14 +78,14 @@ public class DeleteStatisticRecordHandlerTests
     public async Task Handle_ReturnSuccess_WhenStreetcodeRecordFound()
     {
         // Arrange
-        var streetcodeRecordId = 1;
-        var streetcodeRecord = new StatisticRecord() { Id = 1, StreetcodeCoordinateId = 1 };
+        var statisticRecordId = 1;
+        var statisticRecord = new StatisticRecord() { Id = 1, StreetcodeCoordinateId = 1 };
         var streetcodeCoordinate = new StreetcodeCoordinate() { Id = 1 };
-        var command = new DeleteStatisticRecordCommand(streetcodeRecordId);
+        var command = new DeleteStatisticRecordCommand(statisticRecordId);
 
         _repositoryWrapperMock.Setup(repo => repo.StatisticRecordRepository
             .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StatisticRecord, bool>>>(), null))
-            .ReturnsAsync(streetcodeRecord);
+            .ReturnsAsync(statisticRecord);
         _repositoryWrapperMock.Setup(repo => repo.StreetcodeCoordinateRepository
             .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeCoordinate, bool>>>(), null))
             .ReturnsAsync(streetcodeCoordinate);
@@ -98,7 +98,7 @@ public class DeleteStatisticRecordHandlerTests
         // Assert
         Assert.True(result.IsSuccess);
         _repositoryWrapperMock.Verify(repo => repo.StreetcodeCoordinateRepository.Delete(streetcodeCoordinate), Times.Once);
-        _repositoryWrapperMock.Verify(repo => repo.StatisticRecordRepository.Delete(streetcodeRecord), Times.Once);
+        _repositoryWrapperMock.Verify(repo => repo.StatisticRecordRepository.Delete(statisticRecord), Times.Once);
         _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
     }
 }
