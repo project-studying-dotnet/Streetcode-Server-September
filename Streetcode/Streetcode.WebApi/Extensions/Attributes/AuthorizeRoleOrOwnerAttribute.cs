@@ -4,6 +4,8 @@ using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Security.Claims;
 
+namespace Streetcode.WebApi.Extensions.Attributes;
+
 public class AuthorizeRoleOrOwnerAttribute : Attribute, IAuthorizationFilter
 {
     private readonly string _role;

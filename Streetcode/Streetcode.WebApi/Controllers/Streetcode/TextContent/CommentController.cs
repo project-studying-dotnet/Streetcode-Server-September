@@ -6,6 +6,7 @@ using Streetcode.BLL.MediatR.Streetcode.Comment.Delete;
 using Streetcode.BLL.MediatR.Streetcode.Comment.GetAllCommentsWithReplies;
 using Streetcode.BLL.MediatR.Streetcode.Comment.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Update;
+using Streetcode.WebApi.Extensions.Attributes;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 
