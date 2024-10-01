@@ -65,7 +65,7 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAuthorizationFilter
 
         if (repositoryWrapper == null)
         {
-            context.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            throw new CustomException($"Server error", StatusCodes.Status500InternalServerError);
         }
 
         // Search comment by ID and get UserId
