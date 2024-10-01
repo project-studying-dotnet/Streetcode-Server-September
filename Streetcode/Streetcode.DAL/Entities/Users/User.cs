@@ -15,6 +15,6 @@ namespace Streetcode.DAL.Entities.Users
         [MaxLength(50)]
         public string Surname { get; set; } = null!;
         [Required]
-        public string Role { get; set; }
+        public string Role { get; set; } = null!;
     }
 }

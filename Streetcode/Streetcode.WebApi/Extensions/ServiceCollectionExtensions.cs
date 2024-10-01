@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Identity;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Entities.Role;
 using Streetcode.BLL.Interfaces.Jwt;
+using Streetcode.BLL.Services.Cache;
 using Streetcode.BLL.Services.JwtService;
 
 namespace Streetcode.WebApi.Extensions;
@@ -41,6 +42,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddRepositoryServices();
         services.AddFeatureManagement();
+
         var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
@@ -52,10 +54,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddScoped<ICacheService, CacheService>();
         services.AddModelValidationServices();
 
-        services.AddIdentity<User, Role>()
-            .AddEntityFrameworkStores<StreetcodeDbContext>().AddDefaultTokenProviders();
+        services
+            .AddIdentity<User, Role>()
+            .AddEntityFrameworkStores<StreetcodeDbContext>()
+            .AddDefaultTokenProviders();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
@@ -75,6 +80,12 @@ public static class ServiceCollectionExtensions
                 opt.MigrationsAssembly(typeof(StreetcodeDbContext).Assembly.GetName().Name);
                 opt.MigrationsHistoryTable("__EFMigrationsHistory", schema: "entity_framework");
             });
+        });
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+            options.InstanceName = "Streetcode.WebApi_";
         });
 
         services.AddHangfire(config =>
@@ -102,6 +113,8 @@ public static class ServiceCollectionExtensions
             opt.IncludeSubDomains = true;
             opt.MaxAge = TimeSpan.FromDays(30);
         });
+
+        services.AddLocalization();
 
         services.AddLogging();
         services.AddControllers();

@@ -754,6 +754,9 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("ParentCommentId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StreetcodeId")
                         .HasColumnType("int");
 
@@ -761,6 +764,8 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
 
                     b.HasIndex("StreetcodeId");
 
@@ -1165,11 +1170,6 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -1555,11 +1555,17 @@ namespace Streetcode.DAL.Persistence.Migrations
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.TextContent.Comment", b =>
                 {
+                    b.HasOne("Streetcode.DAL.Entities.Streetcode.TextContent.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId");
+
                     b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
                         .WithMany("Comments")
                         .HasForeignKey("StreetcodeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ParentComment");
 
                     b.Navigation("Streetcode");
                 });
@@ -1798,6 +1804,11 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Navigation("TransactionLink");
 
                     b.Navigation("Videos");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.TextContent.Comment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.TextContent.Term", b =>

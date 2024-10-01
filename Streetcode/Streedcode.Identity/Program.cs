@@ -47,9 +47,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-await app.SeedDataAsync();
-
 await app.ApplyMigrations();
+
+await app.SeedDataAsync();
 
 app.UseHttpsRedirection();
 
