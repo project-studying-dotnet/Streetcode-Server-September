@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Identity;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Entities.Role;
 using Streetcode.BLL.Interfaces.Jwt;
+using Streetcode.BLL.Services.Cache;
 using Streetcode.BLL.Services.JwtService;
 
 namespace Streetcode.WebApi.Extensions;
@@ -53,6 +54,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddScoped<ICacheService, CacheService>();
         services.AddModelValidationServices();
 
         services
@@ -78,6 +80,12 @@ public static class ServiceCollectionExtensions
                 opt.MigrationsAssembly(typeof(StreetcodeDbContext).Assembly.GetName().Name);
                 opt.MigrationsHistoryTable("__EFMigrationsHistory", schema: "entity_framework");
             });
+        });
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+            options.InstanceName = "Streetcode.WebApi_";
         });
 
         services.AddHangfire(config =>

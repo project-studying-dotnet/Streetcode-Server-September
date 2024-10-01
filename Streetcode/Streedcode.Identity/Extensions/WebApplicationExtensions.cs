@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Streedcode.Identity.Data;
+using Streetcode.Identity.Data;
 
 namespace Streedcode.Identity.Extensions
 {

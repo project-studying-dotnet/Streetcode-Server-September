@@ -21,6 +21,7 @@ using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Realizations.Base;
 using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Streetcode.WebApi.Extensions
 {
@@ -92,8 +93,6 @@ namespace Streetcode.WebApi.Extensions
                 {
                     await roleManager.CreateAsync(new Role { Name = "User" });
                 }
-
-
 
                 // Create Admin
                 if (!dbContext.Users.Any())

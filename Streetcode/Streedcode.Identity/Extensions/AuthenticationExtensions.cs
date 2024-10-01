@@ -1,11 +1,10 @@
-﻿using FluentResults;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Streetcode.BLL.Services.JwtService;
+using Streetcode.Identity.Models.Additional;
 using System.Text;
 
-namespace Streetcode.WebApi.Extensions;
+namespace Streetcode.Identity.Extensions;
 
 public static class AuthenticationServiceExtensions
 {
@@ -14,7 +13,7 @@ public static class AuthenticationServiceExtensions
         var jwtOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtVariables>>();
         JwtVariables environment = jwtOptions.Value;
 
-        services.AddAuthentication(x =>
+        builder.Services.AddAuthentication(x =>
         {
             x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -31,7 +30,7 @@ public static class AuthenticationServiceExtensions
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ClockSkew = TimeSpan.FromMinutes(5)
+                ClockSkew = TimeSpan.FromMinutes(5) 
             };
         });
 
