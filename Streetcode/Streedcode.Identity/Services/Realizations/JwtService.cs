@@ -42,7 +42,7 @@ namespace Streetcode.Identity.Services.Realizations
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
             var roles = await _userManager.GetRolesAsync(user);
