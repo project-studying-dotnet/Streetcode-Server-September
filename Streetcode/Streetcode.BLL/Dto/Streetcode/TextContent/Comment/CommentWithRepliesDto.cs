@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Streetcode.DAL.Enums;
 
 namespace Streetcode.BLL.Dto.Streetcode.TextContent.Comment
 {
@@ -14,6 +10,9 @@ namespace Streetcode.BLL.Dto.Streetcode.TextContent.Comment
         public int UserId { get; set; }
         public DateTime DateCreated { get; set; }
         public int? ParentCommentId { get; set; }
+        
+        public CommentStatus Status { get; set; }
+        
         public List<CommentWithRepliesDto> Replies { get; set; } = new List<CommentWithRepliesDto>();
     }
 }
