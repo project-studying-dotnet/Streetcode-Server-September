@@ -1,4 +1,4 @@
-﻿    using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Streetcode.Identity.Data;
 using Streetcode.Identity.Models;
 using Streetcode.Identity.Models.Additional;

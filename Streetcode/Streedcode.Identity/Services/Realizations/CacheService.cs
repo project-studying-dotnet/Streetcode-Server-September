@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Streetcode.BLL.Exceptions.CustomExceptions;
+using Streetcode.Identity.Exceptions;
 using Streetcode.Identity.Services.Interfaces;
 
 namespace Streetcode.Identity.Services.Realizations;
