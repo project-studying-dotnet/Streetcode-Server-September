@@ -1,7 +1,5 @@
-﻿
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.DAL.Entities.Users;
 using Streetcode.Identity.Models;
 
 namespace Streetcode.Identity.Data
