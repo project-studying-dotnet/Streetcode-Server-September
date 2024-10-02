@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Security.Claims;
+using System.Reflection;
 
-namespace Streetcode.WebApi.Extensions.Attributes;
-
-public class AuthorizeRoleOrOwnerAttribute : Attribute, IAuthorizationFilter
+public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
 {
     private readonly string _role;
     private readonly string _idParamName;
@@ -17,58 +16,115 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAuthorizationFilter
         _idParamName = idParamName;
     }
 
-    public void OnAuthorization(AuthorizationFilterContext context)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var user = context.HttpContext.User;
 
-        // Check if user is authenticated
+        // Проверяем, аутентифицирован ли пользователь
         if (!user.Identity.IsAuthenticated)
         {
             context.Result = new UnauthorizedResult();
             return;
         }
 
-        // Check if the user has the specified role (e.g., Admin)
+        // Проверяем, есть ли у пользователя требуемая роль
         var userRole = user.FindFirst(ClaimTypes.Role)?.Value;
         if (userRole == _role)
         {
-            return;  // Authorized, user is in the role (Admin)
+            await next();
+            return; // Авторизован, пользователь имеет нужную роль (например, Admin)
         }
 
-        // Otherwise, check if the user is the owner (based on ID in the JWT token)
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;  // JWT usually has the user's ID in ClaimTypes.NameIdentifier
+        // Получаем ID пользователя из токена
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
         {
             context.Result = new ForbidResult();
             return;
         }
 
-        // Extract the ID from the route data (e.g., from /api/record/{id})
-        var routeId = context.RouteData.Values[_idParamName]?.ToString();
-
-        var UserIdInComment = getUserIdFromComment(context, routeId).Result;
-
-        // If the user is the owner, allow access
-        if (userId == UserIdInComment)
+        // Пытаемся получить ID ресурса
+        if (!TryGetResourceId(context, out string resourceId))
         {
-            return;  // Authorized, user is the owner
+            context.Result = new BadRequestResult();
+            return;
         }
 
-        // If not an admin or the owner, forbid access
+        // Получаем UserId из комментария
+        var UserIdInComment = await GetUserIdFromComment(context, resourceId);
+
+        // Если пользователь является владельцем, разрешаем доступ
+        if (userId == UserIdInComment)
+        {
+            await next();
+            return; // Авторизован, пользователь является владельцем
+        }
+
+        // Если пользователь не админ и не владелец, запрещаем доступ
         context.Result = new ForbidResult();
     }
 
-    private async Task<string> getUserIdFromComment(AuthorizationFilterContext context, string id)
+    private bool TryGetResourceId(ActionExecutingContext context, out string resourceId)
     {
-        // Getting CommentRepository from services
+        resourceId = null;
+
+        // Сначала пытаемся получить ID из данных маршрута
+        if (context.RouteData.Values.TryGetValue(_idParamName, out var idValue))
+        {
+            resourceId = idValue.ToString();
+            return true;
+        }
+
+        // Если не удалось, пытаемся получить ID из аргументов действия
+        foreach (var arg in context.ActionArguments.Values)
+        {
+            if (arg == null)
+                continue;
+
+            // Проверяем, есть ли свойство с именем _idParamName
+            var property = arg.GetType().GetProperty(_idParamName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            if (property != null)
+            {
+                var value = property.GetValue(arg);
+                if (value != null)
+                {
+                    resourceId = value.ToString();
+                    return true;
+                }
+            }
+
+            // Альтернативно, ищем общие названия для ID
+            var idPropertyNames = new[] { "Id", "CommentId", "ResourceId" };
+            foreach (var propName in idPropertyNames)
+            {
+                property = arg.GetType().GetProperty(propName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                if (property != null)
+                {
+                    var value = property.GetValue(arg);
+                    if (value != null)
+                    {
+                        resourceId = value.ToString();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private async Task<string> GetUserIdFromComment(ActionExecutingContext context, string id)
+    {
+        // Получаем RepositoryWrapper из сервисов
         var repositoryWrapper = context.HttpContext.RequestServices.GetService<IRepositoryWrapper>();
 
         if (repositoryWrapper == null)
         {
-            throw new CustomException($"Server error", StatusCodes.Status500InternalServerError);
+            context.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            return null;
         }
 
-        // Search comment by ID and get UserId
+        // Ищем комментарий по ID и получаем UserId
         var comment = await repositoryWrapper.CommentRepository.GetFirstOrDefaultAsync(
             predicate: c => c.Id.ToString() == id
         );
