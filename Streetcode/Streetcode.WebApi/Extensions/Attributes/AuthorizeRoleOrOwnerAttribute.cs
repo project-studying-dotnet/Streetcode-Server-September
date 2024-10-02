@@ -20,22 +20,22 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
     {
         var user = context.HttpContext.User;
 
-        // Проверяем, аутентифицирован ли пользователь
+        // Check if the user is authenticated
         if (!user.Identity.IsAuthenticated)
         {
             context.Result = new UnauthorizedResult();
             return;
         }
 
-        // Проверяем, есть ли у пользователя требуемая роль
+        // Check if the user has the required role
         var userRole = user.FindFirst(ClaimTypes.Role)?.Value;
         if (userRole == _role)
         {
             await next();
-            return; // Авторизован, пользователь имеет нужную роль (например, Admin)
+            return; // Authorized, the user has the required role (e.g. Admin)
         }
 
-        // Получаем ID пользователя из токена
+        // Get user ID from token
         var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
         {
@@ -43,24 +43,24 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
             return;
         }
 
-        // Пытаемся получить ID ресурса
+        //  Trying to get the resource ID
         if (!TryGetResourceId(context, out string resourceId))
         {
             context.Result = new BadRequestResult();
             return;
         }
 
-        // Получаем UserId из комментария
+        // Getting UserId from comment
         var UserIdInComment = await GetUserIdFromComment(context, resourceId);
 
-        // Если пользователь является владельцем, разрешаем доступ
+        // If the user is the owner, allow access
         if (userId == UserIdInComment)
         {
             await next();
-            return; // Авторизован, пользователь является владельцем
+            return; // Authorized, the user is the owner
         }
 
-        // Если пользователь не админ и не владелец, запрещаем доступ
+        // If the user is neither admin nor owner, deny access
         context.Result = new ForbidResult();
     }
 
@@ -68,20 +68,20 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
     {
         resourceId = null;
 
-        // Сначала пытаемся получить ID из данных маршрута
+        // First we try to get the ID from the route data
         if (context.RouteData.Values.TryGetValue(_idParamName, out var idValue))
         {
             resourceId = idValue.ToString();
             return true;
         }
 
-        // Если не удалось, пытаемся получить ID из аргументов действия
+        // If unsuccessful, try to get the ID from the action arguments
         foreach (var arg in context.ActionArguments.Values)
         {
             if (arg == null)
                 continue;
 
-            // Проверяем, есть ли свойство с именем _idParamName
+            // Check if there is a property named _idParamName
             var property = arg.GetType().GetProperty(_idParamName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
             if (property != null)
             {
@@ -93,7 +93,7 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
                 }
             }
 
-            // Альтернативно, ищем общие названия для ID
+            // Alternatively, look for common names for IDs
             var idPropertyNames = new[] { "Id", "CommentId", "ResourceId" };
             foreach (var propName in idPropertyNames)
             {
@@ -115,7 +115,7 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
 
     private async Task<string> GetUserIdFromComment(ActionExecutingContext context, string id)
     {
-        // Получаем RepositoryWrapper из сервисов
+        // Getting RepositoryWrapper from services
         var repositoryWrapper = context.HttpContext.RequestServices.GetService<IRepositoryWrapper>();
 
         if (repositoryWrapper == null)
@@ -124,7 +124,7 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
             return null;
         }
 
-        // Ищем комментарий по ID и получаем UserId
+        // Search comment by ID and get UserId
         var comment = await repositoryWrapper.CommentRepository.GetFirstOrDefaultAsync(
             predicate: c => c.Id.ToString() == id
         );
