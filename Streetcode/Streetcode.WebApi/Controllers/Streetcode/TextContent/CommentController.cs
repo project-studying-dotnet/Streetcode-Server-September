@@ -7,6 +7,7 @@ using Streetcode.BLL.MediatR.Streetcode.Comment.Delete;
 using Streetcode.BLL.MediatR.Streetcode.Comment.GetAllCommentsWithReplies;
 using Streetcode.BLL.MediatR.Streetcode.Comment.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Update;
+using Streetcode.WebApi.Extensions.Attributes;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 
@@ -19,6 +20,7 @@ public class CommentController : BaseApiController
     }
 
     [HttpDelete("{id:int}")]
+    [AuthorizeRoleOrOwner("Admin")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new DeleteCommentCommand(id)));
@@ -31,7 +33,6 @@ public class CommentController : BaseApiController
     }
 
     [HttpGet]
-    //[Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetCommentsWithReplies()
     {
        return HandleResult(await Mediator.Send(new GetAllCommentsWithRepliesQuery()));      
