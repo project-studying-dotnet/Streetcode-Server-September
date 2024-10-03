@@ -169,7 +169,14 @@ public class WebParsingUtils
                 if (entry.Length > 0) //Check if the file is not empty
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
-                    entry.ExtractToFile(destinationPath, true);
+
+                    using (var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write))
+                    {
+                        using (var entryStream = entry.Open())
+                        {
+                            entryStream.CopyTo(fileStream);
+                        }
+                    }
                 }
             }
         }
