@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -133,6 +135,38 @@ namespace Streetcode.Identity.Services.Realizations
              cancellationToken: cancellationToken);
 
             return result;
+        }
+
+        public async Task DeleteInvalidTokensAsync()
+        {
+            var invalidTokens = await _refreshRepository.GetAllAsync(
+                                            rt => rt.IsRevoked == true || rt.ExpiryDate < DateTime.Now);
+
+            if (invalidTokens.Any()) { 
+                _refreshRepository.Delete(invalidTokens);
+            }
+
+            var resultIsSuccess = await _refreshRepository.SaveChangesAsync() > 0;
+
+            if (!resultIsSuccess)
+            {
+                throw new InvalidOperationException("Failed to clear invalid tokens");
+            }
+        }
+
+        public async Task UpdateTokenAsync(RefreshToken token)
+        {
+            if (token != null)
+            {
+                _refreshRepository.Update(token);
+            }
+
+            var resultIsSuccess = await _refreshRepository.SaveChangesAsync() > 0;
+
+            if (!resultIsSuccess)
+            {
+                throw new InvalidOperationException("Failed to update refresh token");
+            }
         }
     }
 }
