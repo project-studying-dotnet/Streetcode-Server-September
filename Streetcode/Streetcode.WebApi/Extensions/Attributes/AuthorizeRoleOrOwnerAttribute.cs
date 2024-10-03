@@ -5,6 +5,8 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Security.Claims;
 using System.Reflection;
 
+namespace Streetcode.WebApi.Extensions.Attributes;
+
 public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
 {
     private readonly string _role;
