@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.IO.Compression;
 using System.Net;
+using System.Security;
 using System.Text;
 using Newtonsoft.Json;
 using Polly;
@@ -14,6 +15,7 @@ namespace Streetcode.WebApi.Utils;
 
 public class WebParsingUtils
 {
+
     private const byte RegionColumn = 0;
     private const byte AdministrativeRegionOldColumn = 1;
     private const byte AdministrativeRegionNewColumn = 2;
@@ -114,8 +116,8 @@ public class WebParsingUtils
                 await streamToReadFrom.CopyToAsync(streamToWriteTo, 81920, cancellationToken);
             }
 
-            using var archive = ZipFile.OpenRead(zipPath);
-            archive.ExtractToDirectory(extractTo, overwriteFiles: true);
+            SafeExtractToDirectory(zipPath, extractTo);
+
             Console.WriteLine($"Archive received and extracted to {extractTo}");
         }
         catch (OperationCanceledException)
@@ -129,6 +131,64 @@ public class WebParsingUtils
             throw;
         }
     }
+
+    public static void SafeExtractToDirectory(string zipPath, string extractPath, long maxTotalBytes = 1_000_000_000, int maxDepth = 5) // maxTotalBytes and maxDepth ,might be modified if necessary
+    {
+        if (!Directory.Exists(extractPath))
+        {
+            Directory.CreateDirectory(extractPath);
+        }
+
+        using (var archive = ZipFile.OpenRead(zipPath))
+        {
+            long totalBytes = 0;
+            foreach(var entry in archive.Entries)
+            {
+                string destinationPath = Path.GetFullPath(Path.Combine(extractPath, entry.FullName));
+                string fullExtractPath = Path.GetFullPath(extractPath + Path.DirectorySeparatorChar);
+
+                if (!destinationPath.StartsWith(fullExtractPath)) //CHeck destination path
+                {
+                    throw new SecurityException("Potential path traversal attack detected.");
+                }
+
+                if (entry.FullName.Split(Path.AltDirectorySeparatorChar).Length > maxDepth) //Check depth of files
+                {
+                    throw new SecurityException("Maximum depth exceeded.");
+                }
+
+                if (entry.Length > int.MaxValue) //Check the size of file
+                {
+                    throw new SecurityException("File is too large.");
+                }
+
+                totalBytes += entry.Length;
+                if (totalBytes > maxTotalBytes) //Check uncompress size
+                {
+                    throw new SecurityException("Total uncompressed size is too large.");
+                }
+
+                if (entry.Length > 0) //Check if the file is not empty
+                {
+                    var directoryPath = Path.GetDirectoryName(destinationPath);
+
+                    if (directoryPath != null)
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+
+                    using (var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write))
+                    {
+                        using (var entryStream = entry.Open()) //explicity copy
+                        {
+                            entryStream.CopyTo(fileStream);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     public async Task ParseZipFileFromWebAsync()
     {
