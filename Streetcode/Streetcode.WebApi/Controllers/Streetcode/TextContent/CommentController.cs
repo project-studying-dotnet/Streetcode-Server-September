@@ -6,6 +6,7 @@ using Streetcode.BLL.MediatR.Streetcode.Comment.Create;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Delete;
 using Streetcode.BLL.MediatR.Streetcode.Comment.GetAllCommentsWithReplies;
 using Streetcode.BLL.MediatR.Streetcode.Comment.GetByStreetcodeId;
+using Streetcode.BLL.MediatR.Streetcode.Comment.GetRepliesByCommentId;
 using Streetcode.BLL.MediatR.Streetcode.Comment.Update;
 using Streetcode.WebApi.Extensions.Attributes;
 
@@ -49,5 +50,11 @@ public class CommentController : BaseApiController
     public async Task<IActionResult> Approve([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new ApproveCommentQuery(id)));
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetRepliesByCommentId([FromRoute] int id)
+    {
+        return HandleResult(await Mediator.Send(new GetRepliesByCommentIdQuery(id)));
     }
 }
