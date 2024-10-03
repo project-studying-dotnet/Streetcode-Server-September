@@ -15,6 +15,7 @@ namespace Streetcode.WebApi.Utils;
 
 public class WebParsingUtils
 {
+
     private const byte RegionColumn = 0;
     private const byte AdministrativeRegionOldColumn = 1;
     private const byte AdministrativeRegionNewColumn = 2;
@@ -131,7 +132,7 @@ public class WebParsingUtils
         }
     }
 
-    private static void SafeExtractToDirectory(string zipPath, string extractPath, long maxTotalBytes = 1_000_000_000, int maxDepth = 5) // maxTotalBytes and maxDepth ,might be modified if necessary
+    public static void SafeExtractToDirectory(string zipPath, string extractPath, long maxTotalBytes = 1_000_000_000, int maxDepth = 5) // maxTotalBytes and maxDepth ,might be modified if necessary
     {
         if (!Directory.Exists(extractPath))
         {
@@ -144,13 +145,14 @@ public class WebParsingUtils
             foreach(var entry in archive.Entries)
             {
                 string destinationPath = Path.GetFullPath(Path.Combine(extractPath, entry.FullName));
+                string fullExtractPath = Path.GetFullPath(extractPath + Path.DirectorySeparatorChar);
 
-                if (!destinationPath.StartsWith(extractPath)) //CHeck destination path
+                if (!destinationPath.StartsWith(fullExtractPath)) //CHeck destination path
                 {
                     throw new SecurityException("Potential path traversal attack detected.");
                 }
 
-                if (entry.FullName.Split(Path.DirectorySeparatorChar).Length > maxDepth) //Check depth of files
+                if (entry.FullName.Split(Path.AltDirectorySeparatorChar).Length > maxDepth) //Check depth of files
                 {
                     throw new SecurityException("Maximum depth exceeded.");
                 }
@@ -172,7 +174,7 @@ public class WebParsingUtils
 
                     using (var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write))
                     {
-                        using (var entryStream = entry.Open())
+                        using (var entryStream = entry.Open()) //explicity copy
                         {
                             entryStream.CopyTo(fileStream);
                         }
