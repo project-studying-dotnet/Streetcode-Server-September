@@ -6,7 +6,6 @@ using Streetcode.BLL.Dto.Streetcode.TextContent.Comment;
 using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.MediatR.Streetcode.Comment.GetRepliesByCommentId;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Comment.GetByStreetcodeId;
 
