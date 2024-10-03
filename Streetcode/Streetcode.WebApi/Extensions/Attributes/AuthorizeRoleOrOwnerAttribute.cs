@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Security.Claims;
+using System.Reflection;
 
 namespace Streetcode.WebApi.Extensions.Attributes;
 
-public class AuthorizeRoleOrOwnerAttribute : Attribute, IAuthorizationFilter
+public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
 {
     private readonly string _role;
     private readonly string _idParamName;
@@ -17,55 +18,112 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAuthorizationFilter
         _idParamName = idParamName;
     }
 
-    public void OnAuthorization(AuthorizationFilterContext context)
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var user = context.HttpContext.User;
 
-        // Check if user is authenticated
+        // Check if the user is authenticated
         if (!user.Identity.IsAuthenticated)
         {
             context.Result = new UnauthorizedResult();
             return;
         }
 
-        // Check if the user has the specified role (e.g., Admin)
+        // Check if the user has the required role
         var userRole = user.FindFirst(ClaimTypes.Role)?.Value;
         if (userRole == _role)
         {
-            return;  // Authorized, user is in the role (Admin)
+            await next();
+            return; // Authorized, the user has the required role (e.g. Admin)
         }
 
-        // Otherwise, check if the user is the owner (based on ID in the JWT token)
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;  // JWT usually has the user's ID in ClaimTypes.NameIdentifier
+        // Get user ID from token
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
         {
             context.Result = new ForbidResult();
             return;
         }
 
-        // Extract the ID from the route data (e.g., from /api/record/{id})
-        var routeId = context.RouteData.Values[_idParamName]?.ToString();
+        //  Trying to get the resource ID
+        if (!TryGetResourceId(context, out string resourceId))
+        {
+            context.Result = new BadRequestResult();
+            return;
+        }
 
-        var UserIdInComment = getUserIdFromComment(context, routeId).Result;
+        // Getting UserId from comment
+        var UserIdInComment = await GetUserIdFromComment(context, resourceId);
 
         // If the user is the owner, allow access
         if (userId == UserIdInComment)
         {
-            return;  // Authorized, user is the owner
+            await next();
+            return; // Authorized, the user is the owner
         }
 
-        // If not an admin or the owner, forbid access
+        // If the user is neither admin nor owner, deny access
         context.Result = new ForbidResult();
     }
 
-    private async Task<string> getUserIdFromComment(AuthorizationFilterContext context, string id)
+    private bool TryGetResourceId(ActionExecutingContext context, out string resourceId)
     {
-        // Getting CommentRepository from services
+        resourceId = null;
+
+        // First we try to get the ID from the route data
+        if (context.RouteData.Values.TryGetValue(_idParamName, out var idValue))
+        {
+            resourceId = idValue.ToString();
+            return true;
+        }
+
+        // If unsuccessful, try to get the ID from the action arguments
+        foreach (var arg in context.ActionArguments.Values)
+        {
+            if (arg == null)
+                continue;
+
+            // Check if there is a property named _idParamName
+            var property = arg.GetType().GetProperty(_idParamName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            if (property != null)
+            {
+                var value = property.GetValue(arg);
+                if (value != null)
+                {
+                    resourceId = value.ToString();
+                    return true;
+                }
+            }
+
+            // Alternatively, look for common names for IDs
+            var idPropertyNames = new[] { "Id", "CommentId", "ResourceId" };
+            foreach (var propName in idPropertyNames)
+            {
+                property = arg.GetType().GetProperty(propName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                if (property != null)
+                {
+                    var value = property.GetValue(arg);
+                    if (value != null)
+                    {
+                        resourceId = value.ToString();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private async Task<string> GetUserIdFromComment(ActionExecutingContext context, string id)
+    {
+        // Getting RepositoryWrapper from services
         var repositoryWrapper = context.HttpContext.RequestServices.GetService<IRepositoryWrapper>();
 
         if (repositoryWrapper == null)
         {
-            throw new CustomException($"Server error", StatusCodes.Status500InternalServerError);
+            context.Result = new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            return null;
         }
 
         // Search comment by ID and get UserId

@@ -27,6 +27,7 @@ public class CommentController : BaseApiController
     }
 
     [HttpPut]
+    [AuthorizeRoleOrOwner("None")]
     public async Task<IActionResult> Update([FromBody] CommentUpdateDto commentDto)
     {
         return HandleResult(await Mediator.Send(new UpdateCommentCommand(commentDto)));
