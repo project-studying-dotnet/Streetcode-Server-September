@@ -9,6 +9,7 @@ using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Microsoft.Extensions.DependencyInjection;
 using Streetcode.DAL.Repositories.Interfaces.Streetcode.TextContent;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Comment;
+using Streetcode.WebApi.Extensions.Attributes;
 
 namespace Streetcode.XUnitTest.Extensions
 {
