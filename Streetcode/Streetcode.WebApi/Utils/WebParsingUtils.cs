@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.IO.Compression;
 using System.Net;
+using System.Security;
 using System.Text;
 using Newtonsoft.Json;
 using Polly;
@@ -114,8 +115,8 @@ public class WebParsingUtils
                 await streamToReadFrom.CopyToAsync(streamToWriteTo, 81920, cancellationToken);
             }
 
-            using var archive = ZipFile.OpenRead(zipPath);
-            archive.ExtractToDirectory(extractTo, overwriteFiles: true);
+            SafeExtractToDirectory(zipPath, extractTo);
+
             Console.WriteLine($"Archive received and extracted to {extractTo}");
         }
         catch (OperationCanceledException)
@@ -129,6 +130,51 @@ public class WebParsingUtils
             throw;
         }
     }
+
+    private static void SafeExtractToDirectory(string zipPath, string extractPath, long maxTotalBytes = 1_000_000_000, int maxDepth = 5) // maxTotalBytes and maxDepth ,might be modified if necessary
+    {
+        if (!Directory.Exists(extractPath))
+        {
+            Directory.CreateDirectory(extractPath);
+        }
+
+        using (var archive = ZipFile.OpenRead(zipPath))
+        {
+            long totalBytes = 0;
+            foreach(var entry in archive.Entries)
+            {
+                string destinationPath = Path.GetFullPath(Path.Combine(extractPath, entry.FullName));
+
+                if (!destinationPath.StartsWith(extractPath)) //CHeck destination path
+                {
+                    throw new SecurityException("Potential path traversal attack detected.");
+                }
+
+                if (entry.FullName.Split(Path.DirectorySeparatorChar).Length > maxDepth) //Check depth of files
+                {
+                    throw new SecurityException("Maximum depth exceeded.");
+                }
+
+                if (entry.Length > int.MaxValue) //Check the size of file
+                {
+                    throw new SecurityException("File is too large.");
+                }
+
+                totalBytes += entry.Length;
+                if (totalBytes > maxTotalBytes) //Check uncompress size
+                {
+                    throw new SecurityException("Total uncompressed size is too large.");
+                }
+
+                if (entry.Length > 0) //Check if the file is not empty
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                    entry.ExtractToFile(destinationPath, true);
+                }
+            }
+        }
+    }
+
 
     public async Task ParseZipFileFromWebAsync()
     {
