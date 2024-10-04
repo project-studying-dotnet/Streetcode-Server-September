@@ -25,9 +25,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Entities.Role;
-using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.BLL.Services.Cache;
-using Streetcode.BLL.Services.JwtService;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -47,7 +45,6 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
 
-        services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IBlobService, BlobService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
