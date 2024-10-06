@@ -11,7 +11,7 @@ public class ExistWithUrlHandler: IRequestHandler<ExistWithUrlQuery, Result<bool
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly ILoggerService _logger;
 
-    public ExistWithUrlHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
+    public ExistWithUrlHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
     {
         _repositoryWrapper = repositoryWrapper;
         _logger = logger;
