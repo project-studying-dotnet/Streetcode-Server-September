@@ -106,8 +106,8 @@ public class GetRepliesByCommentIdHandlerTests
 
         _repositoryWrapperMock.Setup(repo => repo.CommentRepository.GetAllAsync(
             It.IsAny<Expression<Func<CommentEntity, bool>>>(),
-            It.IsAny<Func<IQueryable<CommentEntity>, IIncludableQueryable<CommentEntity, object>>>()))
-            .ReturnsAsync((IEnumerable<CommentEntity>)null);
+            null))
+            .ReturnsAsync((IEnumerable<CommentEntity>?)null!); // Suppress nullability warning
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(query, CancellationToken.None));
@@ -117,13 +117,13 @@ public class GetRepliesByCommentIdHandlerTests
 
         _repositoryWrapperMock.Verify(repo => repo.CommentRepository.GetAllAsync(
             It.Is<Expression<Func<CommentEntity, bool>>>(expr => TestExpression(expr, commentId)),
-            It.IsAny<Func<IQueryable<CommentEntity>, IIncludableQueryable<CommentEntity, object>>>()), Times.Once);
+            null), Times.Once);
 
         _mapperMock.Verify(mapper => mapper.Map<IEnumerable<CommentDto>>(It.IsAny<IEnumerable<CommentEntity>>()), Times.Never);
     }
 
     // Helper method to test the expression used in GetAllAsync
-    private bool TestExpression(Expression<Func<CommentEntity, bool>> expression, int expectedCommentId)
+    private static bool TestExpression(Expression<Func<CommentEntity, bool>> expression, int expectedCommentId)
     {
         // Compile the expression into a function
         var func = expression.Compile();
