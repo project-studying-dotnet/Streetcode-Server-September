@@ -25,10 +25,18 @@ namespace Streetcode.Identity.Controllers
         }
 
         [Authorize]
-        [HttpGet("refresh")]
-        public async Task<IActionResult> Refresh(int userId, CancellationToken cancellationToken)
+        [HttpGet("logout")]
+        public async Task<IActionResult> Logout(CancellationToken cancellationToken)
         {
-            var result = await _loginService.RefreshJwtToken(userId, cancellationToken);
+            await _loginService.LogoutAsync(cancellationToken);
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("refresh")]
+        public async Task<IActionResult> Refresh(CancellationToken cancellationToken)
+        {
+            var result = await _loginService.RefreshJwtToken(cancellationToken);
             return Ok(result);
         }
     }

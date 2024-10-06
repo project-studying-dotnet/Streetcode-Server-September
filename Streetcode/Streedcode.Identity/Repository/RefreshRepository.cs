@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Streetcode.Identity.Data;
 using Streetcode.Identity.Models;
+using System.Linq.Expressions;
 
 namespace Streetcode.Identity.Repository;
 
@@ -34,6 +35,16 @@ public class RefreshRepository : IRefreshRepository
                                      !rt.IsRevoked);
     }
 
+    public async Task<IEnumerable<RefreshToken>> GetAllAsync(Expression<Func<RefreshToken, bool>> predicate = null)
+    {
+        if (predicate != null)
+        {
+            return await _context.RefreshTokens.Where(predicate).ToListAsync();
+        }
+
+        return await _context.RefreshTokens.ToListAsync();
+    }
+
     public async Task<RefreshToken> CreateAsync(RefreshToken refreshToken)
     {
         await _context.RefreshTokens.AddAsync(refreshToken);
@@ -44,11 +55,9 @@ public class RefreshRepository : IRefreshRepository
     {
         _context.RefreshTokens.Update(refreshToken);
     }
-
-    public void Delete(RefreshToken refreshToken)
+    public void Delete(IEnumerable<RefreshToken> refreshTokens)
     {
-        _context.RefreshTokens.Remove(refreshToken);
-  
+        _context.RefreshTokens.RemoveRange(refreshTokens);
     }
 
     public async Task<int> SaveChangesAsync()
