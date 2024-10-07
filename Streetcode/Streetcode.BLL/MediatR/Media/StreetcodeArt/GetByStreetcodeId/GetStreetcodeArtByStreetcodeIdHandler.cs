@@ -2,7 +2,6 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.Media.Art;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
@@ -31,14 +30,6 @@ namespace Streetcode.BLL.MediatR.Media.StreetcodeArt.GetByStreetcodeId
 
         public async Task<Result<IEnumerable<StreetcodeArtDto>>> Handle(GetStreetcodeArtByStreetcodeIdQuery request, CancellationToken cancellationToken)
         {
-            /*
-            if ((await _repositoryWrapper.StreetcodeRepository.GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId)) is null)
-            {
-                return Result.Fail(
-                    new Error($"Cannot find a streetcode arts by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist"));
-            }
-            */
-
             var art = await _repositoryWrapper
             .StreetcodeArtRepository
             .GetAllAsync(
@@ -56,10 +47,12 @@ namespace Streetcode.BLL.MediatR.Media.StreetcodeArt.GetByStreetcodeId
 
             var artsDto = _mapper.Map<IEnumerable<StreetcodeArtDto>>(art);
 
-            foreach (var artDto in artsDto)
-            {
-                artDto.Art.Image.Base64 = _blobService.FindFileInStorageAsBase64(artDto.Art.Image.BlobName);
-            }
+            artsDto
+                .Select(artDto => artDto.Art)
+                .Where(art => art?.Image?.BlobName != null)
+                .ToList()
+                .ForEach(art => art.Image.Base64 = _blobService.FindFileInStorageAsBase64(art.Image.BlobName));
+
 
             return Result.Ok(artsDto);
         }

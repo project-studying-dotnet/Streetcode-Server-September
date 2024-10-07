@@ -16,7 +16,7 @@ public class Audio
 
     [Required]
     [MaxLength(100)]
-    public string? BlobName { get; set; }
+    public string BlobName { get; set; } = null!;
 
     [Required]
     [MaxLength(10)]

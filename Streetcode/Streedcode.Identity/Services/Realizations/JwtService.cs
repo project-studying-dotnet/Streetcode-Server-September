@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using Streetcode.Identity.Exceptions;
 using Streetcode.Identity.Models;
 using Streetcode.Identity.Models.Additional;
 using Streetcode.Identity.Repository;
@@ -26,12 +25,14 @@ namespace Streetcode.Identity.Services.Realizations
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IRefreshRepository _refreshRepository;
         private readonly ICacheService _cacheService;
+        private readonly JsonWebTokenHandler _tokenHandler;
 
         public JwtService(UserManager<ApplicationUser> userManager,
                            IRefreshRepository refreshRepository, 
                            IOptions<JwtVariables> jwtEnvironment,
                            IOptions<RefreshVariables> refreshEnvironment,
-                           ICacheService cacheService)
+                           ICacheService cacheService,
+                           JsonWebTokenHandler tokenHandler)
         {
             _userManager = userManager;
             _jwtEnvironment = jwtEnvironment.Value;
@@ -43,6 +44,7 @@ namespace Streetcode.Identity.Services.Realizations
             _refreshExpiration = _refreshEnvironment.ExpirationInDays;
             _refreshRepository = refreshRepository;
             _cacheService = cacheService;
+            _tokenHandler = tokenHandler;
         }
 
         public async Task<string> CreateJwtTokenAsync(ApplicationUser user)
@@ -71,9 +73,7 @@ namespace Streetcode.Identity.Services.Realizations
                  Audience = _audience
              };
 
-             var handler = new JsonWebTokenHandler();
-
-             string token = handler.CreateToken(tokenDescriptor)??
+             string token = _tokenHandler.CreateToken(tokenDescriptor)??
                    throw new InvalidOperationException("Token generation failed");
 
              return token;
@@ -122,7 +122,7 @@ namespace Streetcode.Identity.Services.Realizations
               async () => (await _refreshRepository.GetByUserIdAsync(id)),
               cancellationToken: cancellationToken);
 
-            return result;
+            return result ?? new List<RefreshToken>();
         }
 
         public async Task<RefreshToken> GetValidRefreshTokenByUserIdAsync(int id, CancellationToken cancellationToken)
@@ -134,13 +134,13 @@ namespace Streetcode.Identity.Services.Realizations
              async () => (await _refreshRepository.GetValidByUserIdAsync(id)),
              cancellationToken: cancellationToken);
 
-            return result;
+            return result ?? throw new CustomException("GetValidRefreshTokenByUserIdAsync return null", StatusCodes.Status204NoContent);
         }
 
         public async Task DeleteInvalidTokensAsync()
         {
             var invalidTokens = await _refreshRepository.GetAllAsync(
-                                            rt => rt.IsRevoked == true || rt.ExpiryDate < DateTime.Now);
+                                            rt => rt.IsRevoked || rt.ExpiryDate < DateTime.Now);
 
             if (invalidTokens.Any()) { 
                 _refreshRepository.Delete(invalidTokens);

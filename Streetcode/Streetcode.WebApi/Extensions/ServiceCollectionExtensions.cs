@@ -22,10 +22,6 @@ using Streetcode.BLL.Services.Text;
 using Streetcode.BLL.ValidationBehavior;
 using System.Reflection;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
-using Streetcode.DAL.Entities.Users;
-using Streetcode.DAL.Entities.Role;
-using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.BLL.Services.Cache;
 using Streetcode.BLL.Services.JwtService;
 using Azure.Storage.Blobs;
@@ -48,7 +44,6 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
 
-        services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IBlobService, BlobService>();
         services.AddScoped<BlobAzureService>();
         services.AddScoped<ILoggerService, LoggerService>();
@@ -58,11 +53,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITextService, AddTermsToTextService>();
         services.AddScoped<ICacheService, CacheService>();
         services.AddModelValidationServices();
-
-        services
-            .AddIdentity<User, Role>()
-            .AddEntityFrameworkStores<StreetcodeDbContext>()
-            .AddDefaultTokenProviders();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)

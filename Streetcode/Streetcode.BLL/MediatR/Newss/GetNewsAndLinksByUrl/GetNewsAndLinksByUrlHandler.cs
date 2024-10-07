@@ -46,8 +46,8 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
 
             var news = (await _repositoryWrapper.NewsRepository.GetAllAsync()).ToList();
             var newsIndex = news.FindIndex(x => x.Id == newsDto.Id);
-            string prevNewsLink = null;
-            string nextNewsLink = null;
+            string? prevNewsLink = null;
+            string? nextNewsLink = null;
 
             if(newsIndex != 0)
             {

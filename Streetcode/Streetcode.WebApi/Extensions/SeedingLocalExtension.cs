@@ -1227,13 +1227,22 @@ public static class SeedingLocalExtension
             {
                 UserId = 2,
                 CommentContent = "Дякую за інформацію!",
-                StreetcodeId = 2
+                StreetcodeId = 2,
+                ParentCommentId = 1
             },
             new Comment
             {
                 UserId = 1,
                 CommentContent = "Дуже цікаво!",
-                StreetcodeId = 2
+                StreetcodeId = 2,
+                ParentCommentId = 1
+            },
+            new Comment
+            {
+                UserId = 1,
+                CommentContent = "Дуже цікаво!",
+                StreetcodeId = 2,
+                ParentCommentId = 2
             });
 
         await _dbContext.SaveChangesAsync();
