@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using FluentValidation;
 using Hangfire;
 using MediatR;
@@ -22,6 +23,7 @@ builder.Services.ConfigureJwt(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
+builder.Services.ConfigureAzureBlob(builder);
 builder.Services.AddJwtAuthentication(builder);
 
 var app = builder.Build();

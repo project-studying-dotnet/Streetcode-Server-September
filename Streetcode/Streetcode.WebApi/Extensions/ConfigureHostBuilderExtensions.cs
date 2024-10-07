@@ -38,6 +38,11 @@ public static class ConfigureHostBuilderExtensions
         services.Configure<InstagramEnvirovmentVariables>(builder.Configuration.GetSection("Instagram"));
     }
 
+    public static void ConfigureAzureBlob(this IServiceCollection services, WebApplicationBuilder builder)
+    {
+        services.Configure<BlobAzureVariables>(builder.Configuration.GetSection("AzureBlobStorage"));
+    }
+
     public static void ConfigureSerilog(this IServiceCollection services, WebApplicationBuilder builder)
     {
         builder.Host.UseSerilog((ctx, services, loggerConfiguration) =>

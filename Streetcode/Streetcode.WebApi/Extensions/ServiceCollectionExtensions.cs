@@ -28,6 +28,7 @@ using Streetcode.DAL.Entities.Role;
 using Streetcode.BLL.Interfaces.Jwt;
 using Streetcode.BLL.Services.Cache;
 using Streetcode.BLL.Services.JwtService;
+using Azure.Storage.Blobs;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -49,6 +50,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped<BlobAzureService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
