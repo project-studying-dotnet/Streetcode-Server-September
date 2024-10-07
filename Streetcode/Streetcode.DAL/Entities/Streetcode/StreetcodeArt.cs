@@ -17,5 +17,5 @@ public class StreetcodeArt
     [Required]
     public int ArtId { get; set; }
 
-    public Art? Art { get; set; }
+    public Art Art { get; set; } = null!;
 }

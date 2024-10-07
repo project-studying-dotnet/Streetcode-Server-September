@@ -30,13 +30,6 @@ namespace Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId
 
         public async Task<Result<IEnumerable<ArtDto>>> Handle(GetArtsByStreetcodeIdQuery request, CancellationToken cancellationToken)
         {
-            /*
-            if ((await _repositoryWrapper.StreetcodeRepository.GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId)) is null)
-            {
-                return Result.Fail(
-                    new Error($"Cannot find a arts by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist"));
-            }
-            */
             var arts = await _repositoryWrapper.ArtRepository
                 .GetAllAsync(
                 predicate: sc => sc.StreetcodeArts.Any(s => s.StreetcodeId == request.StreetcodeId),
@@ -50,16 +43,11 @@ namespace Streetcode.BLL.MediatR.Media.Art.GetByStreetcodeId
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var imageIds = arts.Where(a => a.Image != null).Select(a => a.Image!.Id);
-
             var artsDto = _mapper.Map<IEnumerable<ArtDto>>(arts);
-            foreach (var artDto in artsDto)
-            {
-                if (artDto.Image != null && artDto.Image.BlobName != null)
-                {
-                    artDto.Image.Base64 = _blobService.FindFileInStorageAsBase64(artDto.Image.BlobName);
-                }
-            }
+            artsDto
+                .Where(artDto => artDto.Image != null && artDto.Image.BlobName != null)
+                .ToList()
+                .ForEach(artDto => artDto.Image!.Base64 = _blobService.FindFileInStorageAsBase64(artDto.Image.BlobName!));
 
             return Result.Ok(artsDto);
         }

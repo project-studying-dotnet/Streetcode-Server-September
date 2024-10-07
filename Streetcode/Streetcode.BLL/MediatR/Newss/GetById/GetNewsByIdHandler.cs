@@ -31,6 +31,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetById
                 predicate: sc => sc.Id == id,
                 include: scl => scl
                     .Include(sc => sc.Image)));
+
             if(newsDto is null)
             {
                 string errorMsg = $"No news by entered Id - {id}";

@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using Streetcode.Identity.Exceptions;
 using Streetcode.Identity.Models;
 using Streetcode.Identity.Models.Additional;
 using Streetcode.Identity.Repository;
@@ -135,13 +134,13 @@ namespace Streetcode.Identity.Services.Realizations
              async () => (await _refreshRepository.GetValidByUserIdAsync(id)),
              cancellationToken: cancellationToken);
 
-            return result;
+            return result ?? throw new CustomException("GetValidRefreshTokenByUserIdAsync return null", StatusCodes.Status204NoContent);
         }
 
         public async Task DeleteInvalidTokensAsync()
         {
             var invalidTokens = await _refreshRepository.GetAllAsync(
-                                            rt => rt.IsRevoked == true || rt.ExpiryDate < DateTime.Now);
+                                            rt => rt.IsRevoked || rt.ExpiryDate < DateTime.Now);
 
             if (invalidTokens.Any()) { 
                 _refreshRepository.Delete(invalidTokens);

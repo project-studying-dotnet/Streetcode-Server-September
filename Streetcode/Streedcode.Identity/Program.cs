@@ -77,4 +77,4 @@ recurringJobManager.AddOrUpdate<JwtService>(
     service => service.DeleteInvalidTokensAsync(),
     Cron.Daily);
 
-app.Run();
+await app.RunAsync();

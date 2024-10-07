@@ -21,7 +21,7 @@ namespace Streetcode.DAL.Entities.News
         [MaxLength(100)]
         public string URL { get; set; } = null!;
         public int? ImageId { get; set; }
-        public Image? Image { get; set; }
+        public Image Image { get; set; } = null!;
         [Required]
         public DateTime CreationDate { get; set; }
     }
