@@ -39,5 +39,13 @@ namespace Streetcode.Identity.Controllers
             var result = await _loginService.RefreshJwtToken(cancellationToken);
             return Ok(result);
         }
+
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto userDto)
+        {
+            var result = await _loginService.RegisterAsync(userDto);
+            return Ok(result);
+        }
     }
 }
