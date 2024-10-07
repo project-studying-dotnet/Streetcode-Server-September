@@ -6,4 +6,5 @@ public interface IAuthService
    public Task<LoginResultDto> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken);
    public Task LogoutAsync(CancellationToken cancellationToken);
    public Task<string> RefreshJwtToken(CancellationToken cancellationToken);
+   public Task<UserDto> RegisterAsync(RegisterDto registerDto);
 }

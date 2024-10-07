@@ -26,12 +26,14 @@ namespace Streetcode.Identity.Services.Realizations
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IRefreshRepository _refreshRepository;
         private readonly ICacheService _cacheService;
+        private readonly JsonWebTokenHandler _tokenHandler;
 
         public JwtService(UserManager<ApplicationUser> userManager,
                            IRefreshRepository refreshRepository, 
                            IOptions<JwtVariables> jwtEnvironment,
                            IOptions<RefreshVariables> refreshEnvironment,
-                           ICacheService cacheService)
+                           ICacheService cacheService,
+                           JsonWebTokenHandler tokenHandler)
         {
             _userManager = userManager;
             _jwtEnvironment = jwtEnvironment.Value;
@@ -43,6 +45,7 @@ namespace Streetcode.Identity.Services.Realizations
             _refreshExpiration = _refreshEnvironment.ExpirationInDays;
             _refreshRepository = refreshRepository;
             _cacheService = cacheService;
+            _tokenHandler = tokenHandler;
         }
 
         public async Task<string> CreateJwtTokenAsync(ApplicationUser user)
@@ -71,9 +74,7 @@ namespace Streetcode.Identity.Services.Realizations
                  Audience = _audience
              };
 
-             var handler = new JsonWebTokenHandler();
-
-             string token = handler.CreateToken(tokenDescriptor)??
+             string token = _tokenHandler.CreateToken(tokenDescriptor)??
                    throw new InvalidOperationException("Token generation failed");
 
              return token;
@@ -122,7 +123,7 @@ namespace Streetcode.Identity.Services.Realizations
               async () => (await _refreshRepository.GetByUserIdAsync(id)),
               cancellationToken: cancellationToken);
 
-            return result;
+            return result ?? new List<RefreshToken>();
         }
 
         public async Task<RefreshToken> GetValidRefreshTokenByUserIdAsync(int id, CancellationToken cancellationToken)

@@ -4,11 +4,9 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Comment;
 using Streetcode.BLL.Exceptions.CustomExceptions;
-using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Streetcode.Comment.GetByStreetcodeId;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
+namespace Streetcode.BLL.MediatR.Streetcode.Comment.GetByStreetcodeId;
 
 public class GetCommentByStreetcodeIdHandler : IRequestHandler<GetCommentByStreetcodeIdQuery, Result<IEnumerable<CommentDto>>>
 {

@@ -1,15 +1,7 @@
-using FluentValidation;
 using Hangfire;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Services.BlobStorageService;
-using Streetcode.BLL.ValidationBehavior;
-using Streetcode.DAL.Entities.Users;
-using Streetcode.DAL.Persistence;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
