@@ -43,7 +43,6 @@ public class GetAudioByStreetcodeIdQueryHandler : IRequestHandler<GetAudioByStre
         if (streetcode.Audio != null)
         {
             AudioDto audioDto = _mapper.Map<AudioDto>(streetcode.Audio);
-            audioDto = _mapper.Map<AudioDto>(streetcode.Audio);
             audioDto.Base64 = _blobService.FindFileInStorageAsBase64(audioDto.BlobName);
             result.WithValue(audioDto);
         }

@@ -20,13 +20,13 @@ public class Image
 
     [Required]
     [MaxLength(100)]
-    public string? BlobName { get; set; }
+    public string BlobName { get; set; } = null!;
 
     [Required]
     [MaxLength(10)]
     public string? MimeType { get; set; }
 
-    public ImageDetails? ImageDetails { get; set; }
+    public ImageDetails ImageDetails { get; set; } = null!;
 
     public List<StreetcodeContent> Streetcodes { get; set; } = new ();
 
