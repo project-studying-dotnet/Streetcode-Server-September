@@ -109,7 +109,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Fact.Delete
 
             _repositoryWrapperMock.Setup(repo => repo.FactRepository.GetAllAsync(
                 It.IsAny<Expression<Func<FactEntity, bool>>>(),
-                null))
+                null))!
                 .ReturnsAsync((IEnumerable<FactEntity>)null);
 
             // Act & Assert

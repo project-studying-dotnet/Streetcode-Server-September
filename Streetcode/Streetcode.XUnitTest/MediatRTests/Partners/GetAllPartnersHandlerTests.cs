@@ -82,7 +82,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Partners
             // Arrange
             _repositoryWrapperMock.Setup(repo => repo.PartnersRepository.GetAllAsync(
                 It.IsAny<Expression<Func<Partner, bool>>>(),
-                It.IsAny<Func<IQueryable<Partner>, IIncludableQueryable<Partner, object>>>())).ReturnsAsync((IEnumerable<Partner>)null);
+                It.IsAny<Func<IQueryable<Partner>, IIncludableQueryable<Partner, object>>>()))!.ReturnsAsync((IEnumerable<Partner>)null);
 
             var query = new GetAllPartnersQuery();
             const string errorMsg = "Cannot find any partners";

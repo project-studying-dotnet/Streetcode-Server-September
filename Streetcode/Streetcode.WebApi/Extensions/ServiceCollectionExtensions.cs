@@ -58,7 +58,7 @@ public static class ServiceCollectionExtensions
             ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not found in the configuration.");
 
         var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>()
-            ?? throw new InvalidOperationException("EmailConfiguration section is missing in the configuration."); ;
+            ?? throw new InvalidOperationException("EmailConfiguration section is missing in the configuration.");
 
         services.AddSingleton(emailConfig);
 

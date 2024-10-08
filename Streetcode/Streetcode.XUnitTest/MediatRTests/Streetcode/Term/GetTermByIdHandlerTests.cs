@@ -70,7 +70,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Term
             // Check the call by ID
             _repositoryWrapperMock.Verify<Task<TermEntity>>(repo => repo.TermRepository.GetFirstOrDefaultAsync(
                 It.Is<Expression<Func<TermEntity, bool>>>(exp => exp.Compile().Invoke(new TermEntity { Id = request.Id })),
-                null), Times.Once);
+                null)!, Times.Once);
 
             _mapperMock.Verify(m => m.Map<TermDto>(term), Times.Once);
         }

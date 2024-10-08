@@ -67,7 +67,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
                 null))
                 .ReturnsAsync(existingFacts);
 
-            FactEntity createdFact = null;
+            FactEntity? createdFact = null;
             _mockRepository.Setup(r => r.FactRepository.CreateAsync(It.IsAny<FactEntity>()))
                 .Callback<FactEntity>(f => createdFact = f)
                 .ReturnsAsync((FactEntity f) =>
@@ -150,7 +150,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
                 null))
                 .ReturnsAsync(existingFacts);
 
-            FactEntity createdFact = null;
+            FactEntity? createdFact = null;
             _mockRepository.Setup(r => r.FactRepository.CreateAsync(It.IsAny<FactEntity>()))
                 .Callback<FactEntity>(f => createdFact = f)
                 .ReturnsAsync((FactEntity f) =>
@@ -170,7 +170,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
             _mockRepository.Verify(r => r.FactRepository.CreateAsync(factEntity), Times.Once);
             _mockRepository.Verify(r => r.SaveChangesAsync(), Times.Once);
 
-            Assert.Equal(3, createdFact.SortOrder);
+            Assert.Equal(3, createdFact!.SortOrder);
             Assert.Equal(123, createdFact.StreetcodeId);
         }
     }
