@@ -11,10 +11,10 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Streedcode.Identity/Streetcode.Identity.csproj", "Streedcode.Identity/"]
+COPY ["Streetcode.Identity/Streetcode.Identity.csproj", "Streedcode.Identity/"]
 RUN dotnet restore "./Streedcode.Identity/Streetcode.Identity.csproj"
 COPY . .
-WORKDIR "/src/Streedcode.Identity"
+WORKDIR "/src/Streetcode.Identity"
 RUN dotnet build "./Streetcode.Identity.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
@@ -26,4 +26,8 @@ RUN dotnet publish "./Streetcode.Identity.csproj" -c $BUILD_CONFIGURATION -o /ap
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+RUN useradd -m appuser
+USER appuser
+
 ENTRYPOINT ["dotnet", "Streetcode.Identity.dll"]

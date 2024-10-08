@@ -29,4 +29,8 @@ RUN dotnet publish "./Streetcode.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+RUN useradd -m appuser
+USER appuser
+
 ENTRYPOINT ["dotnet", "Streetcode.WebApi.dll"]
