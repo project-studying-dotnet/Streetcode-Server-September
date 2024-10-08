@@ -30,21 +30,18 @@ public class GetTextByStreetcodeIdHandler : IRequestHandler<GetTextByStreetcodeI
         var text = await _repositoryWrapper.TextRepository
             .GetFirstOrDefaultAsync(text => text.StreetcodeId == request.StreetcodeId);
 
-        if (text is null)
+        if (text is null && await _repositoryWrapper.StreetcodeRepository
+            .GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId) == null)
         {
-            if (await _repositoryWrapper.StreetcodeRepository
-                 .GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId) == null)
-            {
-                string errorMsg = $"Cannot find a transaction link by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
+            string errorMsg = $"Cannot find a transaction link by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist";
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
         }
 
         NullResult<TextDto?> result = new NullResult<TextDto?>();
         if (text != null)
         {
-            text.TextContent = await _textService.AddTermsTag(text?.TextContent ?? "");
+            text.TextContent = await _textService.AddTermsTag(text.TextContent ?? "");
             result.WithValue(_mapper.Map<TextDto?>(text));
         }
 
