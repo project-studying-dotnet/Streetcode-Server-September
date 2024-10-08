@@ -38,12 +38,9 @@ namespace Streetcode.BLL.MediatR.Streetcode.Comment.GetAllCommentsWithReplies
 
                 foreach (var commentDto in commentDtos)
                 {
-                    if (commentDto.ParentCommentId != null)
+                    if (commentDto.ParentCommentId != null && commentDict.TryGetValue(commentDto.ParentCommentId.Value, out var parentComment))
                     {
-                        if (commentDict.TryGetValue(commentDto.ParentCommentId.Value, out var parentComment))
-                        {
-                            parentComment.Replies.Add(commentDto);
-                        }
+                        parentComment.Replies.Add(commentDto);
                     }
                 }
 
