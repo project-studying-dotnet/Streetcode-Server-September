@@ -100,10 +100,9 @@ namespace Streetcode.BLL.Services.Text
             return MarkTermWithDescription(clearedWord, relatedTerm.Term.Description!);
         }
 
-        private static (string _clearedWord, string _extras) CleanWord(string word)
+        private static (string, string) CleanWord(string word)
         {
-            var clearedWord = word.Split(['.', ','])[0];
-
+            var clearedWord = word.Split(new[] { '.', ',' })[0];
             var extras = string.Empty;
 
             if (!word.Equals(clearedWord))
