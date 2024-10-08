@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Storage.Blobs;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
@@ -10,17 +12,18 @@ namespace Streetcode.WebApi.Controllers.Blob;
 public class BlobAzureController : ControllerBase
 {
     private readonly BlobAzureService _blobServiceAzure;
+    private readonly BlobServiceClient _blobServiceClient;
 
-    public BlobAzureController(BlobAzureService blobServiceAzure)
+    public BlobAzureController(IOptions<BlobAzureVariables> environment)
     {
-        _blobServiceAzure = blobServiceAzure;
+        _blobServiceClient = new BlobServiceClient(environment.Value.ConnectionString);
+        _blobServiceAzure = new BlobAzureService(environment, _blobServiceClient);
     }
 
     [HttpPost("upload")]
     public IActionResult UploadFile([FromForm] string base64File, [FromForm] string fileName)
     {
-        var mimeType = _blobServiceAzure.GetMimeType(fileName);
-        var fileUrl = _blobServiceAzure.SaveFileInStorage(base64File, fileName, mimeType);
+        var fileUrl = _blobServiceAzure.SaveFileInStorage(base64File, fileName);
         return Ok(new { fileUrl });
     }
 

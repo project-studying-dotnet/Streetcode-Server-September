@@ -3,27 +3,26 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Streetcode.BLL.Exceptions.CustomExceptions;
+using Streetcode.BLL.Interfaces.BlobStorage;
 
 namespace Streetcode.BLL.Services.BlobStorageService;
 
-public class BlobAzureService 
+public class BlobAzureService
 {
     private readonly BlobServiceClient _blobServiceClient;
     private readonly BlobContainerClient _containerClient;
 
     private readonly BlobAzureVariables _environment;
-    private readonly string _connectionString;
     private readonly string _containerName;
 
-    public BlobAzureService(IOptions<BlobAzureVariables> environment)
-    {
-        _environment = environment.Value;
-        _connectionString = _environment.ConnectionString; 
-        _containerName = _environment.ContainerName;
+    public BlobAzureService(IOptions<BlobAzureVariables> environment, BlobServiceClient blobServiceClient)
+    { 
+      _environment = environment.Value;
+      _containerName = _environment.ContainerName;
 
-        _blobServiceClient = new BlobServiceClient(_connectionString);
-        _containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
-        _containerClient.CreateIfNotExists();
+      _blobServiceClient = blobServiceClient;
+      _containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
+      _containerClient.CreateIfNotExists();
     }
 
     public void DeleteFileInStorage(string name)
@@ -52,8 +51,10 @@ public class BlobAzureService
         return memoryStream;
     }
 
-    public string SaveFileInStorage(string base64, string name, string mimeType)
+    public string SaveFileInStorage(string base64, string name, string mimeType = null!)
     {
+        mimeType = GetMimeType(name);
+
         byte[] fileData = Convert.FromBase64String(base64);
         var blobClient = _containerClient.GetBlobClient(name);
 
