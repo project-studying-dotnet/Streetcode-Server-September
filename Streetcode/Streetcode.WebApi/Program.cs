@@ -1,15 +1,9 @@
+using Azure.Storage.Blobs;
 using FluentValidation;
 using Hangfire;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Services.BlobStorageService;
-using Streetcode.BLL.ValidationBehavior;
-using Streetcode.DAL.Entities.Users;
-using Streetcode.DAL.Persistence;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
@@ -22,6 +16,7 @@ builder.Services.ConfigureJwt(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
+builder.Services.ConfigureAzureBlob(builder);
 builder.Services.AddJwtAuthentication(builder);
 
 var app = builder.Build();

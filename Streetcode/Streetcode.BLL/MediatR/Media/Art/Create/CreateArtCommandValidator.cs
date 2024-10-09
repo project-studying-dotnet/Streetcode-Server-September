@@ -15,7 +15,7 @@ public class CreateArtCommandValidator: AbstractValidator<CreateArtCommand>
 
         RuleFor(x => x.newArt.ImageId)
             .GreaterThan(0)
-            .WithMessage("ImageId must be a positive integer."); ;
+            .WithMessage("ImageId must be a positive integer.");
 
         RuleFor(x => x.newArt.StreetcodeIds)
             .NotNull()

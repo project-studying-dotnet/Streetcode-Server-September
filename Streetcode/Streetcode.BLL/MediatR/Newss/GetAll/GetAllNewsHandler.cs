@@ -6,7 +6,6 @@ using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 
 namespace Streetcode.BLL.MediatR.Newss.GetAll
 {
@@ -29,6 +28,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetAll
         {
             var news = await _repositoryWrapper.NewsRepository.GetAllAsync(
                 include: cat => cat.Include(img => img.Image));
+
             if (news == null)
             {
                 const string errorMsg = "There are no news in the database";
@@ -38,13 +38,10 @@ namespace Streetcode.BLL.MediatR.Newss.GetAll
 
             var newsDtos = _mapper.Map<IEnumerable<NewsDto>>(news);
 
-            foreach (var dto in newsDtos)
-            {
-                if(dto.Image is not null)
-                {
-                    dto.Image.Base64 = _blobService.FindFileInStorageAsBase64(dto.Image.BlobName);
-                }
-            }
+            newsDtos
+                .Where(dto => dto.Image is not null)
+                .ToList()
+                .ForEach(dto => dto.Image!.Base64 = _blobService.FindFileInStorageAsBase64(dto.Image.BlobName));
 
             return Result.Ok(newsDtos);
         }

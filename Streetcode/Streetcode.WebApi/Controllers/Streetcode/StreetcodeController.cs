@@ -12,6 +12,7 @@ using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetShortById;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllStreetcodesMainPage;
 using Microsoft.AspNetCore.Authorization;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.ExistWithUrl;
 
 namespace Streetcode.WebApi.Controllers.Streetcode;
 
@@ -76,5 +77,11 @@ public class StreetcodeController : BaseApiController
     public async Task<IActionResult> Create([FromBody] StreetcodeMainBlockCreateDto streetcodeMainBlockCreateDto)
     {
         return HandleResult(await Mediator.Send(new CreateStreetcodeMainBlockCommand(streetcodeMainBlockCreateDto)));
+    }
+
+    [HttpGet("{url}")]
+    public async Task<IActionResult> ExistWithUrl([FromRoute] string url)
+    {
+        return HandleResult(await Mediator.Send(new ExistWithUrlQuery(url)));
     }
 }
