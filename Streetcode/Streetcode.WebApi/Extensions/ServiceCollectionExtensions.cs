@@ -23,6 +23,8 @@ using Streetcode.BLL.ValidationBehavior;
 using System.Reflection;
 using FluentValidation;
 using Streetcode.BLL.Services.Cache;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Options;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -41,8 +43,8 @@ public static class ServiceCollectionExtensions
         var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
-
         services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped<BlobAzureService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
