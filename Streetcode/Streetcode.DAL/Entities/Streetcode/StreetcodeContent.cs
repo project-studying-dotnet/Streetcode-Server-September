@@ -60,6 +60,9 @@ public class StreetcodeContent
 
     public int? AudioId { get; set; }
 
+    [MaxLength(33)]
+    public string? BriefDescription { get; set; }
+
     public Text? Text { get; set; }
 
     public Audio? Audio { get; set; }

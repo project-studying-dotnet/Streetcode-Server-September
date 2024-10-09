@@ -1467,22 +1467,22 @@ public static class SeedingLocalExtension
             new StreetcodeImage
             {
                 ImageId = 1,
-                StreetcodeId = 1,
+                StreetcodeId = 1
             },
             new StreetcodeImage
             {
                 ImageId = 5,
-                StreetcodeId = 1,
+                StreetcodeId = 1
             },
             new StreetcodeImage
             {
                 ImageId = 1,
-                StreetcodeId = 2,
+                StreetcodeId = 2
             },
             new StreetcodeImage
             {
                 ImageId = 23,
-                StreetcodeId = 2,
+                StreetcodeId = 2
             });
 
         await _dbContext.SaveChangesAsync();
