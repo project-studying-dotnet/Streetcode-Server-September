@@ -72,7 +72,7 @@ public class StreetcodeController : BaseApiController
     }
 
     [HttpPost]
-    // [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] StreetcodeMainBlockCreateDto streetcodeMainBlockCreateDto)
     {
         return HandleResult(await Mediator.Send(new CreateStreetcodeMainBlockCommand(streetcodeMainBlockCreateDto)));
