@@ -1,7 +1,7 @@
 ﻿namespace Streetcode.DAL.Enums
 {
     [Flags]
-    public enum UserRole
+    public enum UserRoles
     {
        None = 0,
        Admin = 1,
