@@ -41,7 +41,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
                 return Result.Fail(new Error(errorMessage));
             }
 
-            if (!request.timelineItemCreateDto.HistoricalContexts.Any())
+            if (!request.timelineItemCreateDto.HistoricalContexts!.Any())
             {
                 await _repository.TimelineRepository.CreateAsync(newTimelineItem);
                 await _repository.SaveChangesAsync();
@@ -52,7 +52,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
             await _repository.TimelineRepository.CreateAsync(newTimelineItem);
             await _repository.SaveChangesAsync();
 
-            var historicalContextIds = request.timelineItemCreateDto.HistoricalContexts.Select(hc => hc.Id).ToList();
+            var historicalContextIds = request.timelineItemCreateDto.HistoricalContexts!.Select(hc => hc.Id).ToList();
 
             var historicalContexts = await _repository.HistoricalContextRepository
                 .GetAllAsync(hc => historicalContextIds.Contains(hc.Id));                  

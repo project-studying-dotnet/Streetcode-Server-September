@@ -30,7 +30,7 @@ namespace Streetcode.BLL.MediatR.Team.GetById
                 .GetSingleOrDefaultAsync(
                     predicate: p => p.Id == request.Id,
                     include: x => x.Include(x => x.TeamMemberLinks)
-                    .Include(x => x.Positions));
+                    .Include(x => x.Positions!));
 
             if (team is null)
             {

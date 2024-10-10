@@ -63,7 +63,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.RelatedTerm
 
             _repositoryMock.Setup(r => r.RelatedTermRepository.GetAllAsync(
                 It.IsAny<Expression<Func<RelatedTermEntity, bool>>>(),
-                It.IsAny<Func<IQueryable<RelatedTermEntity>, IIncludableQueryable<RelatedTermEntity, object>>>()))
+                It.IsAny<Func<IQueryable<RelatedTermEntity>, IIncludableQueryable<RelatedTermEntity, object>>>()))!
              .ReturnsAsync((IEnumerable<RelatedTermEntity>)null);
 
             // Act

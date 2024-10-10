@@ -42,11 +42,12 @@ public class GetCategoriesByStreetcodeIdHandler : IRequestHandler<GetCategoriesB
 
         var mappedSrcCategories = _mapper.Map<IEnumerable<SourceLinkCategoryDto>>(srcCategories);
 
-        foreach (var srcCategory in mappedSrcCategories)
+        var updatedCategories = mappedSrcCategories.Select(srcCategory =>
         {
-            srcCategory.Image.Base64 = _blobService.FindFileInStorageAsBase64(srcCategory.Image.BlobName);
-        }
+            srcCategory.Image!.Base64 = _blobService.FindFileInStorageAsBase64(srcCategory.Image.BlobName);
+            return srcCategory;
+        });
 
-        return Result.Ok(mappedSrcCategories);
+        return Result.Ok(updatedCategories);
     }
 }

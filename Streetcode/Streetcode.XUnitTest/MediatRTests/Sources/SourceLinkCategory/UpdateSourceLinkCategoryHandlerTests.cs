@@ -74,7 +74,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
 
             //Assert 
             Assert.False(result.IsSuccess);
-            Assert.Equal("Category content not found", result.Errors.FirstOrDefault().Message);
+            Assert.Equal("Category content not found", result.Errors.FirstOrDefault()!.Message);
 
             _loggerMock.Verify(logger => logger.LogError(command, "Category content not found"), Times.Once);
             _repositoryMock.Verify(repo => repo.StreetcodeCategoryContentRepository
@@ -103,7 +103,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.Equal("Failed to update category content", result.Errors.FirstOrDefault().Message);
+            Assert.Equal("Failed to update category content", result.Errors.FirstOrDefault()!.Message);
 
             _loggerMock.Verify(logger => logger.LogError(command, "Failed to update category content"), Times.Once);
             _repositoryMock.Verify(repo => repo.StreetcodeCategoryContentRepository.Update(existingEntity), Times.Once);

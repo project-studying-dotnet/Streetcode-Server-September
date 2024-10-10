@@ -29,7 +29,7 @@ public class StreetcodeContent
     public int Index { get; set; }
 
     [MaxLength(650)]
-    public string? Teaser { get; set; }
+    public string Teaser { get; set; } = null!;
 
     [Required]
     [MaxLength(50)]
@@ -42,10 +42,10 @@ public class StreetcodeContent
 
     [Required]
     [MaxLength(100)]
-    public string? Title { get; set; }
+    public string Title { get; set; } = null!;
     [Required]
     [MaxLength(150)]
-    public string? TransliterationUrl { get; set; }
+    public string TransliterationUrl { get; set; } = null!;
 
     public int ViewCount { get; set; }
 

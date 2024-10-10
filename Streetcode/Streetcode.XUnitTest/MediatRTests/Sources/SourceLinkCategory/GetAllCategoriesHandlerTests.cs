@@ -63,7 +63,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
 
             foreach (var dto in mappedCategories)
             {
-                _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(dto.Image.BlobName), Times.Once);
+                _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(dto.Image!.BlobName), Times.Once);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
             // Arrange
             _repositoryWrapperMock.Setup(repo => repo.SourceCategoryRepository
                .GetAllAsync(It.IsAny<Expression<Func<SrcLinkCategory, bool>>>(),
-               It.IsAny<Func<IQueryable<SrcLinkCategory>, IIncludableQueryable<SrcLinkCategory, object>>>()))
+               It.IsAny<Func<IQueryable<SrcLinkCategory>, IIncludableQueryable<SrcLinkCategory, object>>>()))!
             .ReturnsAsync((IEnumerable<SrcLinkCategory>)null);
 
             // Act

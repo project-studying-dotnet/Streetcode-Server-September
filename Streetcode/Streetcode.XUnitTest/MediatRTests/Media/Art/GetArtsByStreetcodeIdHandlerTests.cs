@@ -76,7 +76,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetAllAsync(
                                         It.IsAny<Expression<Func<ArtEntity, bool>>>(),
-                                        It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))
+                                        It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))!
                                  .ReturnsAsync((IEnumerable<ArtEntity>) null);
 
             //Act

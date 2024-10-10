@@ -73,7 +73,7 @@ namespace Streetcode.XUnitTest.MediatRTests.News
             _repositoryWrapperMock.Setup(repo => repo.NewsRepository
                .GetAllAsync(
                    It.IsAny<Expression<Func<NewsEntity, bool>>>(),
-                   It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))
+                   It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))!
                .ReturnsAsync((IEnumerable<NewsEntity>)null);
 
             // Act
