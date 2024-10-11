@@ -29,20 +29,16 @@
         "STREETCODE_ENVIRONMENT": "IntegrationTests"
       }
     },
-    "Docker": {
+    "Container (Dockerfile)": {
       "commandName": "Docker",
-      "launchBrowser": false,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "https://+:443;http://+:80"
+      },
       "publishAllPorts": true,
       "useSSL": true
     }
   },
-  "$schema": "https://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:5000;https://localhost:5001"
-    }
-  }
+  "$schema": "https://json.schemastore.org/launchsettings.json"
 }
