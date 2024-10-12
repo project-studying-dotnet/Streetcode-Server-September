@@ -19,7 +19,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
         _mapper = mapper;
     }
 
-    public async Task<Result<GetAllStreetcodesResponseDto>> Handle(GetAllStreetcodesQuery query, CancellationToken cancellationToken)
+    public Task<Result<GetAllStreetcodesResponseDto>> Handle(GetAllStreetcodesQuery query, CancellationToken cancellationToken)
     {
         var filterRequest = query.request;
 
@@ -51,26 +51,25 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
             Streetcodes = streetcodeDtos
         };
 
-        return Result.Ok(response);
+        return Task.FromResult(Result.Ok(response));
     }
 
-    private void FindStreetcodesWithMatchTitle(
+    private static void FindStreetcodesWithMatchTitle(
         ref IQueryable<StreetcodeContent> streetcodes,
         string title)
     {
-        streetcodes = streetcodes.Where(s => s.Title
+        streetcodes = streetcodes.Where(s => s.Title!
             .ToLower()
             .Contains(title
             .ToLower()) || s.Index
             .ToString() == title);
     }
 
-    private void FindFilteredStreetcodes(
+    private static void FindFilteredStreetcodes(
         ref IQueryable<StreetcodeContent> streetcodes,
         string filter)
     {
         var filterParams = filter.Split(':');
-        var filterColumn = filterParams[0];
         var filterValue = filterParams[1];
 
         streetcodes = streetcodes
@@ -79,7 +78,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
             .AsQueryable();
     }
 
-    private void FindSortedStreetcodes(
+    private static void FindSortedStreetcodes(
         ref IQueryable<StreetcodeContent> streetcodes,
         string sort)
     {
@@ -88,7 +87,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
         var sortColumn = sort.Trim();
         var sortDirection = "asc";
 
-        if (sortColumn.StartsWith("-"))
+        if (sortColumn.StartsWith('-'))
         {
             sortDirection = "desc";
             sortColumn = sortColumn.Substring(1);
@@ -107,7 +106,7 @@ public class GetAllStreetcodesHandler : IRequestHandler<GetAllStreetcodesQuery, 
         };
     }
 
-    private int ApplyPagination(
+    private static int ApplyPagination(
         ref IQueryable<StreetcodeContent> streetcodes,
         int amount,
         int page)

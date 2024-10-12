@@ -2,10 +2,8 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.Streetcode.RelatedFigure;
 using Streetcode.DAL.Entities.Streetcode;
-using Streetcode.DAL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -58,7 +56,7 @@ public class GetRelatedFiguresByStreetcodeIdHandler : IRequestHandler<GetRelated
         return Result.Ok(_mapper.Map<IEnumerable<RelatedFigureDto>>(relatedFigures));
     }
 
-    private IQueryable<int> GetRelatedFigureIdsByStreetcodeId(int StreetcodeId)
+    private IQueryable<int>? GetRelatedFigureIdsByStreetcodeId(int StreetcodeId)
     {
         try
         {

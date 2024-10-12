@@ -57,7 +57,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Sources.SourceLinkCategory
             _repositoryWrapperMock.Setup(repo => repo.SourceCategoryRepository
                 .GetAllAsync(
                     It.IsAny<Expression<Func<SrcLinkCategory, bool>>>(),
-                    null))
+                    null))!
                 .ReturnsAsync((IEnumerable<SrcLinkCategory>) null);
 
             // Act

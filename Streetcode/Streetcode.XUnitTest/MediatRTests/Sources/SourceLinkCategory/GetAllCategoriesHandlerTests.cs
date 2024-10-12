@@ -78,7 +78,7 @@ public class GetAllCategoriesHandlerTests
         // Arrange
         _repositoryWrapperMock.Setup(repo => repo.SourceCategoryRepository
                .GetAllAsync(It.IsAny<Expression<Func<SrcLinkCategory, bool>>>(),
-               It.IsAny<Func<IQueryable<SrcLinkCategory>, IIncludableQueryable<SrcLinkCategory, object>>>()))
+               It.IsAny<Func<IQueryable<SrcLinkCategory>, IIncludableQueryable<SrcLinkCategory, object>>>()))!
             .ReturnsAsync((IEnumerable<SrcLinkCategory>)null);
 
         // Act & Assert

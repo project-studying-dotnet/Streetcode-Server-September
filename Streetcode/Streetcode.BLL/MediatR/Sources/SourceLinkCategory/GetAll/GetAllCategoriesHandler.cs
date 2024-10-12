@@ -37,12 +37,17 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetAll
 
             var dtos = _mapper.Map<IEnumerable<SourceLinkCategoryDto>>(allCategories);
 
-            foreach (var dto in dtos)
+            var updatedDtos = dtos.Select(dto =>
             {
                 dto.Image.Base64 = _blobAzureService.FindFileInStorageAsBase64(dto.Image.BlobName);
             }
+=======
+                dto.Image!.Base64 = _blobService.FindFileInStorageAsBase64(dto.Image.BlobName);
+                return dto;
+            });
+>>>>>>> dev
 
-            return Result.Ok(dtos);
+            return Result.Ok(updatedDtos);
         }
     }
 }

@@ -55,7 +55,7 @@ public class LogoutAsyncTests
     {
         // Arrange
         var userIdClaim = "1";
-        _httpContextAccessorMock.Setup(h => h.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier))
+        _httpContextAccessorMock.Setup(h => h.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier))
                                 .Returns(new Claim(ClaimTypes.NameIdentifier, userIdClaim));
         var refreshToken = new RefreshToken { UserId = 1, IsRevoked = false };
 
@@ -74,8 +74,8 @@ public class LogoutAsyncTests
     public async Task LogoutAsync_UserNotFound_ThrowsUnauthorizedException()
     {
         // Arrange
-        _httpContextAccessorMock.Setup(h => h.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier))
-                                .Returns((Claim) null);
+        _httpContextAccessorMock.Setup(h => h.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier))
+                                .Returns((Claim)null);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _authService.LogoutAsync(CancellationToken.None));

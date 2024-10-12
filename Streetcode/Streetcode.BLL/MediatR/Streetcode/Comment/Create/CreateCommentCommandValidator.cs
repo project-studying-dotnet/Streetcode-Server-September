@@ -27,14 +27,5 @@ public class CreateCommentCommandValidator : AbstractValidator<CreateCommentComm
         RuleFor(x => x.Comment.DateCreated)
             .NotEmpty()
             .WithMessage("Date of creation commet is required");
-
-        /*RuleFor(x => x.Comment.UserId)
-            .Must((userId, _) =>
-            {
-                return repositoryWrapper.UserRepository
-                    .GetFirstOrDefaultAsync(user => user.Id == userId.Comment.UserId)
-                    .Result != null;
-            })
-            .WithMessage("User Id doesn't exist");*/
     }
 }
