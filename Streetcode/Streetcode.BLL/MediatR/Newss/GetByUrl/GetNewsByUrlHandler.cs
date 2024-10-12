@@ -3,10 +3,10 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.Dto.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.DAL.Entities.News;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.Interfaces.Logging;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 
 namespace Streetcode.BLL.MediatR.Newss.GetByUrl
 {
@@ -14,14 +14,12 @@ namespace Streetcode.BLL.MediatR.Newss.GetByUrl
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly IBlobService _blobService;
-        private readonly ILoggerService _logger;
-        public GetNewsByUrlHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, IBlobService blobService, ILoggerService logger)
+        private readonly IBlobAzureService _blobAzureService;
+        public GetNewsByUrlHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, IBlobAzureService blobAzureService)
         {
             _mapper = mapper;
             _repositoryWrapper = repositoryWrapper;
-            _blobService = blobService;
-            _logger = logger;
+            _blobAzureService = blobAzureService;
         }
 
         public async Task<Result<NewsDto>> Handle(GetNewsByUrlQuery request, CancellationToken cancellationToken)
@@ -34,13 +32,12 @@ namespace Streetcode.BLL.MediatR.Newss.GetByUrl
             if(newsDto is null)
             {
                 string errorMsg = $"No news by entered Url - {url}";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(errorMsg);
+                throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
             }
 
             if (newsDto.Image is not null)
             {
-                newsDto.Image.Base64 = _blobService.FindFileInStorageAsBase64(newsDto.Image.BlobName);
+                newsDto.Image.Base64 = _blobAzureService.FindFileInStorageAsBase64(newsDto.Image.BlobName);
             }
 
             return Result.Ok(newsDto);

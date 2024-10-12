@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Streetcode.BLL.Dto.Media.Images;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using System;
 
 namespace Streetcode.BLL.MediatR.Media.Image.Create;
 
@@ -12,48 +14,43 @@ public class CreateImageHandler : IRequestHandler<CreateImageCommand, Result<Ima
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly IBlobService _blobService;
-    private readonly ILoggerService _logger;
+    private readonly IBlobAzureService _blobAzureService;
 
     public CreateImageHandler(
-        IBlobService blobService,
+        IBlobAzureService blobAzureService,
         IRepositoryWrapper repositoryWrapper,
-        IMapper mapper,
-        ILoggerService logger)
+        IMapper mapper)
     {
-        _blobService = blobService;
         _repositoryWrapper = repositoryWrapper;
         _mapper = mapper;
-        _logger = logger;
+        _blobAzureService = blobAzureService;
     }
 
     public async Task<Result<ImageDto>> Handle(CreateImageCommand request, CancellationToken cancellationToken)
     {
-        string hashBlobStorageName = _blobService.SaveFileInStorage(
+        _blobAzureService.SaveFileInStorage(
             request.Image.BaseFormat,
-            request.Image.Title,
-            request.Image.Extension);
+            request.Image.Title, string.Empty);
 
         var image = _mapper.Map<DAL.Entities.Media.Images.Image>(request.Image);
 
-        image.BlobName = $"{hashBlobStorageName}.{request.Image.Extension}";
+        image.BlobName = request.Image.Title;
 
         await _repositoryWrapper.ImageRepository.CreateAsync(image);
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
 
         var createdImage = _mapper.Map<ImageDto>(image);
 
-        createdImage.Base64 = _blobService.FindFileInStorageAsBase64(createdImage.BlobName);
+        createdImage.Base64 = _blobAzureService.FindFileInStorageAsBase64(createdImage.BlobName);
 
-        if(resultIsSuccess)
+        if (resultIsSuccess)
         {
             return Result.Ok(createdImage);
         }
         else
         {
             const string errorMsg = "Failed to create an image";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status500InternalServerError);
         }
     }
 }

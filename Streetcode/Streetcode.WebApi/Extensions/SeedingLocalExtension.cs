@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
@@ -25,9 +26,12 @@ public static class SeedingLocalExtension
 {
     private static StreetcodeDbContext _dbContext = null!;
     private static RepositoryWrapper _repositoryWrapper= null!;
-    private static BlobService _blobService = null!;
+    private static BlobAzureService _blobAzureService = null!;
+    private static BlobServiceClient _blobServiceClient = null!;
     private static string _blobPath = null!;
-    
+    private static string _blobAzurePath = null!;
+    private static string _blobContainer = null!;
+
     public static async Task SeedDataAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -61,10 +65,12 @@ public static class SeedingLocalExtension
     private static void CreateBlobService(WebApplication app)
     {
         var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
-        
+        var blobAzureOptions = app.Services.GetRequiredService<IOptions<BlobAzureVariables>>();
+
         CreateRepository();
-        
-        _blobService = new BlobService(blobOptions, _repositoryWrapper);
+
+        _blobServiceClient = new BlobServiceClient(blobAzureOptions.Value.ConnectionString);
+        _blobAzureService = new BlobAzureService(blobAzureOptions, _blobServiceClient);
     }
 
     private static void CreateRepository() => _repositoryWrapper = new RepositoryWrapper(_dbContext);
@@ -80,14 +86,7 @@ public static class SeedingLocalExtension
         
         foreach (var img in imageFromJson)
         {
-            string filePath = Path.Combine(blobPath, img.BlobName!);
-
-            if (File.Exists(filePath) || img.Base64 is null)
-                continue;
-            
-            var imageName = img.BlobName!.Split('.')[0];
-            var imageExtension = img.BlobName.Split('.')[1];
-            _blobService.SaveFileInStorageBase64(img.Base64, imageName, imageExtension);
+            _blobAzureService.SaveFileInStorage(img.Base64, img.BlobName);
         }
         
         _dbContext.Images!.AddRange(imageFromJson);
@@ -103,21 +102,25 @@ public static class SeedingLocalExtension
             new ImageDetails()
             {
                 ImageId = 6,
+                Title = "Some Image",
                 Alt = "Additional inforamtaion for  wow-fact photo 1"
             },
             new ImageDetails()
             {
                 ImageId = 16,
+                Title = "Awesome Image",
                 Alt = "Additional inforamtaion for  wow-fact photo 2"
             },
             new ImageDetails()
             {
                 ImageId = 17,
+                Title = "Blob Image",
                 Alt = "Additional inforamtaion for  wow-fact photo 3"
             },
             new ImageDetails()
             {
                 ImageId = 19,
+                Title = "Lovely Image",
                 Alt = "Additional inforamtaion for  wow-fact photo 3"
             },
         });
@@ -136,14 +139,7 @@ public static class SeedingLocalExtension
         
         foreach (var audio in audiosfromJson)
         {
-            string filePath = Path.Combine(blobPath, audio.BlobName!);
-            
-            if (File.Exists(filePath) || audio.Base64 is null) 
-                continue;
-            
-            var audioName = audio.BlobName!.Split('.')[0];
-            var audioExtension = audio.BlobName.Split('.')[1];
-            _blobService.SaveFileInStorageBase64(audio.Base64, audioName, audioExtension);
+            _blobAzureService.SaveFileInStorage(audio.Base64, audio.BlobName);
         }
         
         _dbContext.Audios!.AddRange(audiosfromJson);

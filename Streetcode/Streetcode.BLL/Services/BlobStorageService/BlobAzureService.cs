@@ -7,11 +7,10 @@ using Streetcode.BLL.Interfaces.BlobStorage;
 
 namespace Streetcode.BLL.Services.BlobStorageService;
 
-public class BlobAzureService
+public class BlobAzureService : IBlobAzureService
 {
     private readonly BlobServiceClient _blobServiceClient;
     private readonly BlobContainerClient _containerClient;
-
     private readonly BlobAzureVariables _environment;
     private readonly string _containerName;
 

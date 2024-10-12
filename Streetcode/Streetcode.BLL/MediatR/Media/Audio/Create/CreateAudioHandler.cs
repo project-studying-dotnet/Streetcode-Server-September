@@ -1,10 +1,17 @@
 ﻿using AutoMapper;
+using Azure.Storage.Blobs;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Streetcode.BLL.Dto.Media.Audio;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using System;
+using static StackExchange.Redis.Role;
 
 namespace Streetcode.BLL.MediatR.Media.Audio.Create;
 
@@ -12,31 +19,28 @@ public class CreateAudioHandler : IRequestHandler<CreateAudioCommand, Result<Aud
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly IBlobService _blobService;
-    private readonly ILoggerService _logger;
+    private readonly IBlobAzureService _blobAzureService;
 
     public CreateAudioHandler(
-        IBlobService blobService,
-        IRepositoryWrapper repositoryWrapper,
         IMapper mapper,
-        ILoggerService logger)
+        IRepositoryWrapper repositoryWrapper,
+        IBlobAzureService blobAzureService)
     {
-        _blobService = blobService;
         _repositoryWrapper = repositoryWrapper;
         _mapper = mapper;
-        _logger = logger;
+        _blobAzureService = blobAzureService;
     }
 
     public async Task<Result<AudioDto>> Handle(CreateAudioCommand request, CancellationToken cancellationToken)
     {
-        string hashBlobStorageName = _blobService.SaveFileInStorage(
+        _blobAzureService.SaveFileInStorage(
             request.Audio.BaseFormat,
             request.Audio.Title,
-            request.Audio.Extension);
+            string.Empty);
 
         var audio = _mapper.Map<DAL.Entities.Media.Audio>(request.Audio);
 
-        audio.BlobName = $"{hashBlobStorageName}.{request.Audio.Extension}";
+        audio.BlobName = request.Audio.Title;
 
         await _repositoryWrapper.AudioRepository.CreateAsync(audio);
 
@@ -51,8 +55,7 @@ public class CreateAudioHandler : IRequestHandler<CreateAudioCommand, Result<Aud
         else
         {
             const string errorMsg = $"Failed to create an audio";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status500InternalServerError);
         }
     }
 }
