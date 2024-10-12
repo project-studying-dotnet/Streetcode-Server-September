@@ -106,7 +106,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.Comment.GetByStreetcodeId
 
             _repositoryWrapperMock.Setup(repo => repo.CommentRepository.GetAllAsync(
                 It.IsAny<Expression<Func<CommentEntity, bool>>>(),
-                It.IsAny<Func<IQueryable<CommentEntity>, IIncludableQueryable<CommentEntity, object>>>()))!
+                It.IsAny<Func<IQueryable<CommentEntity>, IIncludableQueryable<CommentEntity, object>>>()))
                 .ReturnsAsync((IEnumerable<CommentEntity>)null); // Возвращаем null
 
             // Act & Assert

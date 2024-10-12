@@ -33,16 +33,16 @@ namespace Streetcode.XUnitTest.Extensions
             };
 
             var actionExecutingContext = new ActionExecutingContext(
-                 actionContext,
-                 new List<IFilterMetadata>(),
-                 new Dictionary<string, object?>(),
-                 controller: null!
-             );
+                actionContext,
+                new List<IFilterMetadata>(),
+                new Dictionary<string, object>(),
+                controller: null
+            );
 
             var actionExecutedContext = new ActionExecutedContext(
                 actionContext,
                 new List<IFilterMetadata>(),
-                controller: null!
+                controller: null
             );
 
             var next = new ActionExecutionDelegate(() => Task.FromResult(actionExecutedContext));
@@ -80,14 +80,14 @@ namespace Streetcode.XUnitTest.Extensions
             var actionExecutingContext = new ActionExecutingContext(
                 actionContext,
                 new List<IFilterMetadata>(),
-                new Dictionary<string, object?>(),
-                controller: null!
+                new Dictionary<string, object>(),
+                controller: null
             );
 
             var actionExecutedContext = new ActionExecutedContext(
                 actionContext,
                 new List<IFilterMetadata>(),
-                controller: null!
+                controller: null
             );
 
             var next = new ActionExecutionDelegate(() => Task.FromResult(actionExecutedContext));
@@ -127,14 +127,14 @@ namespace Streetcode.XUnitTest.Extensions
             var actionExecutingContext = new ActionExecutingContext(
                 actionContext,
                 new List<IFilterMetadata>(),
-                new Dictionary<string, object?>(),
-                controller: null!
+                new Dictionary<string, object>(),
+                controller: null
             );
 
             var actionExecutedContext = new ActionExecutedContext(
                 actionContext,
                 new List<IFilterMetadata>(),
-                controller: null!
+                controller: null
             );
 
             var next = new ActionExecutionDelegate(() => Task.FromResult(actionExecutedContext));
@@ -188,14 +188,14 @@ namespace Streetcode.XUnitTest.Extensions
             var actionExecutingContext = new ActionExecutingContext(
                 actionContext,
                 new List<IFilterMetadata>(),
-                new Dictionary<string, object?>(),
-                controller: null!
+                new Dictionary<string, object>(),
+                controller: null
             );
 
             var actionExecutedContext = new ActionExecutedContext(
                 actionContext,
                 new List<IFilterMetadata>(),
-                controller: null!
+                controller: null
             );
 
             var next = new ActionExecutionDelegate(() => Task.FromResult(actionExecutedContext));
@@ -253,14 +253,14 @@ namespace Streetcode.XUnitTest.Extensions
             var actionExecutingContext = new ActionExecutingContext(
                 actionContext,
                 new List<IFilterMetadata>(),
-                actionArguments!,
-                controller: null!
+                actionArguments,
+                controller: null
             );
 
             var actionExecutedContext = new ActionExecutedContext(
                 actionContext,
                 new List<IFilterMetadata>(),
-                controller: null!
+                controller: null
             );
 
             var next = new ActionExecutionDelegate(() => Task.FromResult(actionExecutedContext));
@@ -284,6 +284,18 @@ namespace Streetcode.XUnitTest.Extensions
 
             // Assert
             Assert.Null(actionExecutingContext.Result);
+        }
+
+        private AuthorizationFilterContext CreateAuthorizationFilterContext(HttpContext httpContext)
+        {
+            var actionContext = new ActionContext
+            {
+                HttpContext = httpContext,
+                RouteData = new Microsoft.AspNetCore.Routing.RouteData(),
+                ActionDescriptor = new Microsoft.AspNetCore.Mvc.Abstractions.ActionDescriptor()
+            };
+
+            return new AuthorizationFilterContext(actionContext, new List<IFilterMetadata>());
         }
     }
 }

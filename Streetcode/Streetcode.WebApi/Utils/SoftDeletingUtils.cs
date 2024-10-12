@@ -1,7 +1,6 @@
 ﻿using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.Exceptions.CustomExceptions;
 namespace Streetcode.WebApi.Utils;
 
 public class SoftDeletingUtils
@@ -21,7 +20,7 @@ public class SoftDeletingUtils
             include: s => s.Include(x => x.Observers)
                            .Include(x => x.Targets));
 
-        if (streetcodes is null || !streetcodes.Any())
+        if (streetcodes is null || streetcodes.Count() == 0)
         {
             return;
         }
@@ -34,7 +33,7 @@ public class SoftDeletingUtils
 
             if (!resultIsSuccess)
             {
-                throw new CustomException("Failed to delete a streetcode", StatusCodes.Status500InternalServerError);
+                throw new Exception("Failed to delete a streetcode");
             }
         }
     }

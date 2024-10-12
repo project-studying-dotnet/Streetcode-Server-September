@@ -81,7 +81,6 @@ namespace Streetcode.XUnitTest.MediatRTests.News
                      It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))
                 .ReturnsAsync((IEnumerable<NewsEntity>)null);
 
-
             // Act and Assert
             var exception = await Assert.ThrowsAsync<CustomException>(async () =>
                 await _handler.Handle(new GetAllNewsQuery(), CancellationToken.None));

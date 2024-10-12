@@ -28,12 +28,15 @@ public class GetTransactLinkByStreetcodeIdHandler : IRequestHandler<GetTransactL
         var transactLink = await _repositoryWrapper.TransactLinksRepository
             .GetFirstOrDefaultAsync(f => f.StreetcodeId == request.StreetcodeId);
 
-        if (transactLink is null && await _repositoryWrapper.StreetcodeRepository
-                .GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId) == null)
+        if (transactLink is null)
         {
-            string errorMsg = $"Cannot find a transaction link by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            if (await _repositoryWrapper.StreetcodeRepository
+                .GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId) == null)
+            {
+                string errorMsg = $"Cannot find a transaction link by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist";
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
+            }
         }
 
         NullResult<TransactLinkDto?> result = new NullResult<TransactLinkDto?>();

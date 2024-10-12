@@ -2,7 +2,7 @@
 
 namespace Streetcode.BLL.Util
 {
-    public static class DateToStringConverter
+    public class DateToStringConverter
     {
         public static string FromDateToString(DateTime date, DateViewPattern pattern)
         {

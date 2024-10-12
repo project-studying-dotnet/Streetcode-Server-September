@@ -192,6 +192,7 @@ public class WebParsingUtils
 
     public async Task ParseZipFileFromWebAsync()
     {
+        var projRootDirectory = Directory.GetParent(Environment.CurrentDirectory)?.FullName!;
         var zipPath = $"houses.zip";
         var extractTo = $"/root/build/StreetCode/Streetcode/Streetcode.DAL";
 
@@ -258,8 +259,8 @@ public class WebParsingUtils
         var alreadyParsedRowsToWrite = allLinesFromDataCsv.Distinct().ToList();
 
         var remainsToParse = forParsingRows.Except(alreadyParsedRows)
-            .Select(x => x.Split(';').ToList())
-            .Take(20) // take it of if you want to start global parse
+            .Select(x => x.Split(';').ToList()).ToList()
+            .Take(20) // TODO take it of if you want to start global parse
             .ToList();
 
         var toBeDeleted = alreadyParsedRows.Except(forParsingRows).ToList();
@@ -295,13 +296,14 @@ public class WebParsingUtils
             Console.WriteLine("\n" + addressRow);
             Console.WriteLine($"Coordinates[{latitude}-{longitude}]");
 
-            var newRow = new StringBuilder();
+            var newRow = string.Empty;
             for (int i = 0; i <= AddressColumn; i++)
             {
-                newRow.Append($"{row[i]};");
+                newRow += $"{row[i]};";
             }
-            newRow.Append($"{latitude};{longitude}");
-            Console.WriteLine(newRow.ToString());
+
+            newRow += $"{latitude};{longitude}";
+            Console.WriteLine(newRow);
 
             await File.AppendAllTextAsync(csvPath, newRow + "\n", Encoding.GetEncoding(1251));
         }
@@ -407,10 +409,15 @@ public class WebParsingUtils
     // Following method returns name of the street optimized in such kind of way that will allow OSM Nominatim find its coordinates
     private static (string, string) OptimizeStreetname(string streetname)
     {
-        var prefix = StreetTypeMap.Keys.FirstOrDefault(p => streetname.Contains(p));
-        return prefix is not null
-            ? (streetname.Substring(prefix.Length).Trim(), StreetTypeMap[prefix])
-            : (string.Empty, string.Empty);
+        foreach (var prefix in StreetTypeMap.Keys)
+        {
+            if (streetname.Contains(prefix))
+            {
+                return (streetname.Substring(prefix.Length).Trim(), StreetTypeMap[prefix]);
+            }
+        }
+
+        return (string.Empty, string.Empty);
     }
 
     // Following method parses JSON from OSM Nominatim API and returns lat/lon tuple

@@ -10,8 +10,6 @@ using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter;
 using Streetcode.BLL.Dto.AdditionalContent.Filter;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetShortById;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllStreetcodesMainPage;
-using Microsoft.AspNetCore.Authorization;
-using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.ExistWithUrl;
 
 namespace Streetcode.WebApi.Controllers.Streetcode;
@@ -70,13 +68,6 @@ public class StreetcodeController : BaseApiController
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new GetStreetcodeByIdQuery(id)));
-    }
-
-    [HttpPost]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create([FromBody] StreetcodeMainBlockCreateDto streetcodeMainBlockCreateDto)
-    {
-        return HandleResult(await Mediator.Send(new CreateStreetcodeMainBlockCommand(streetcodeMainBlockCreateDto)));
     }
 
     [HttpGet("{url}")]

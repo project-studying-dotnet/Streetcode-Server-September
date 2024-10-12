@@ -671,10 +671,6 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Property<int?>("AudioId")
                         .HasColumnType("int");
 
-                    b.Property<string>("BriefDescription")
-                        .HasMaxLength(33)
-                        .HasColumnType("nvarchar(33)");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")

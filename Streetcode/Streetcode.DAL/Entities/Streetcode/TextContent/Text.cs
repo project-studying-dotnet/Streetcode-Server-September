@@ -11,7 +11,7 @@ public class Text
     public int Id { get; set; }
     [Required]
     [MaxLength(300)]
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; }
     [Required]
     [MaxLength(15000)]
     public string? TextContent { get; set; }

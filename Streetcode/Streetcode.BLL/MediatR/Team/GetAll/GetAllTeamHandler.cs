@@ -24,10 +24,8 @@ namespace Streetcode.BLL.MediatR.Team.GetAll
         public async Task<Result<IEnumerable<TeamMemberDto>>> Handle(GetAllTeamQuery request, CancellationToken cancellationToken)
         {
             var team = await _repositoryWrapper
-                                .TeamRepository
-                                .GetAllAsync(include: x => x
-                                    .Include(x => x.Positions)
-                                    .Include(x => x.TeamMemberLinks!));
+                .TeamRepository
+                .GetAllAsync(include: x => x.Include(x => x.Positions).Include(x => x.TeamMemberLinks));
 
             if (team is null)
             {

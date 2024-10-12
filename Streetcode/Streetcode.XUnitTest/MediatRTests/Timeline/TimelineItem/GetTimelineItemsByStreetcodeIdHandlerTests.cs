@@ -35,7 +35,7 @@ public class GetTimelineItemsByStreetcodeIdHandlerTests
         _repositoryWrapperMock.Setup(repo => repo.TimelineRepository
             .GetAllAsync(
                 It.Is<Expression<Func<TimelineItemEntity, bool>>>(exp => exp.Compile().Invoke(new TimelineItemEntity { StreetcodeId = request.StreetcodeId })),
-                It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))!
+                It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
             .ReturnsAsync((IEnumerable<TimelineItemEntity>)null);
 
         // Act

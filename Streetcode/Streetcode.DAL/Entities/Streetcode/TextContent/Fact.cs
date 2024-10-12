@@ -14,11 +14,11 @@ public class Fact
 
     [Required]
     [MaxLength(100)]
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; }
 
     [Required]
     [MaxLength(600)]
-    public string FactContent { get; set; } = null!;
+    public string? FactContent { get; set; }
 
     [Required]
     public int SortOrder { get; set; }

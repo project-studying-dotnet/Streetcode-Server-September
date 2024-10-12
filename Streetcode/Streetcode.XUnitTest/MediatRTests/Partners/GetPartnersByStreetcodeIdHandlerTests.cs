@@ -209,7 +209,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Partners
             _repositoryWrapperMock.Setup(repo => repo.PartnersRepository.GetAllAsync(
                 It.IsAny<Expression<Func<Partner, bool>>>(),
                 It.IsAny<Func<IQueryable<Partner>, IIncludableQueryable<Partner, object>>>()
-            ))!.ReturnsAsync((IEnumerable<Partner>)null);
+            )).ReturnsAsync((IEnumerable<Partner>)null);
 
             var query = new GetPartnersByStreetcodeIdQuery(testStreetcodeId);
             string errorMsg = $"Cannot find a partners by a streetcode id: {testStreetcodeId}";

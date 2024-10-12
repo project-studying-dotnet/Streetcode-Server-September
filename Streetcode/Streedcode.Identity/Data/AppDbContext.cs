@@ -14,11 +14,11 @@ namespace Streetcode.Identity.Data
         public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
         public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
-            builder.Entity<ApplicationUser>()
+            modelBuilder.Entity<ApplicationUser>()
               .HasMany(u => u.RefreshTokens) 
                 .WithOne(rt => rt.User) 
                 .HasForeignKey(rt => rt.UserId) 

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 
 namespace DbUpdate;
-public static class Program
+public class Program
 {
     static int Main(string[] args)
     {
@@ -23,6 +23,7 @@ public static class Program
         string pathToScript = "";
 
         Console.WriteLine("Enter '-m' to MIGRATE or '-s' to SEED db:");
+        pathToScript = Console.ReadLine() ?? string.Empty;
 
         pathToScript = migrationPath;
 

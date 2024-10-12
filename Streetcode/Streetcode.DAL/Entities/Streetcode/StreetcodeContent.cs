@@ -29,7 +29,7 @@ public class StreetcodeContent
     public int Index { get; set; }
 
     [MaxLength(650)]
-    public string Teaser { get; set; } = null!;
+    public string? Teaser { get; set; }
 
     [Required]
     [MaxLength(50)]
@@ -42,10 +42,10 @@ public class StreetcodeContent
 
     [Required]
     [MaxLength(100)]
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; }
     [Required]
     [MaxLength(150)]
-    public string TransliterationUrl { get; set; } = null!;
+    public string? TransliterationUrl { get; set; }
 
     public int ViewCount { get; set; }
 
@@ -59,9 +59,6 @@ public class StreetcodeContent
     public DateTime? EventEndOrPersonDeathDate { get; set; }
 
     public int? AudioId { get; set; }
-
-    [MaxLength(33)]
-    public string? BriefDescription { get; set; }
 
     public Text? Text { get; set; }
 

@@ -33,7 +33,7 @@ public class GetAllTimelineItemsHandlerTests
         _repositoryWrapperMock.Setup(repo => repo.TimelineRepository
                 .GetAllAsync(
                     It.IsAny<Expression<Func<TimelineItemEntity, bool>>>(),
-                    It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))!
+                    It.IsAny<Func<IQueryable<TimelineItemEntity>, IIncludableQueryable<TimelineItemEntity, object>>>()))
                 .ReturnsAsync((IEnumerable<TimelineItemEntity>)null);
 
         // Act

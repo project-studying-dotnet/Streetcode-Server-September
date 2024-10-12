@@ -2,9 +2,9 @@
 using Streetcode.DAL.Enums;
 namespace Streetcode.WebApi.Attributes
 {
-    public class AuthorizeRolesAttribute : AuthorizeAttribute
+    public class AuthorizeRoles : AuthorizeAttribute
     {
-        public AuthorizeRolesAttribute(params UserRoles[] userRoles)
+        public AuthorizeRoles(params UserRole[] userRoles)
         {
             Roles = string.Join(",", userRoles.Select(r => r.ToString()).ToArray());
         }

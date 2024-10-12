@@ -45,7 +45,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Fact
             _repositoryWrapperMock.Setup(repo => repo.FactRepository
                .GetAllAsync(
                    It.IsAny<Expression<Func<FactEntity, bool>>>(),
-                   It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))!
+                   It.IsAny<Func<IQueryable<FactEntity>, IIncludableQueryable<FactEntity, object>>>()))
                .ReturnsAsync((IEnumerable<FactEntity>)null);
 
             // Act & Assert

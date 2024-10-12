@@ -64,9 +64,9 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
             //Arrange
             var error = $"Cannot find any arts";
 
-            _repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetAllAsync(It.IsAny<Expression<Func<ArtEntity, bool>>>()!,
-                                            It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))!
-                                  .ReturnsAsync((IEnumerable<ArtEntity>)null);
+            _repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetAllAsync(It.IsAny<Expression<Func<ArtEntity, bool>>>(),
+                                            It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))
+                                  .ReturnsAsync((IEnumerable<ArtEntity>) null);
 
             //Act
             var result = await _handler.Handle(new GetAllArtsQuery(), CancellationToken.None);

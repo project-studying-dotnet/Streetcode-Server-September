@@ -10,7 +10,7 @@ namespace Streetcode.BLL.Util
         public static void UpdateFactOrder(List<Fact> facts, int factId, int newSortOrder = int.MaxValue)
         {
             // Find the fact to move.
-            var factToMove = facts.Find(f => f.Id == factId) ?? 
+            var factToMove = facts.FirstOrDefault(f => f.Id == factId) ?? 
                 throw new CustomException($"Fact with Id {factId} not found", StatusCodes.Status204NoContent);
 
             var currentSortOrder = factToMove.SortOrder;

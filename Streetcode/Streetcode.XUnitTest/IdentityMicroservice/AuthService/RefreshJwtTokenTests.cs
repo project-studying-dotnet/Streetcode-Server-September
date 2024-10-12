@@ -54,7 +54,7 @@ public class RefreshJwtTokenTests
     {
         // Arrange
         var userIdClaim = "1";
-        _httpContextAccessorMock.Setup(h => h.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier))
+        _httpContextAccessorMock.Setup(h => h.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier))
                                 .Returns(new Claim(ClaimTypes.NameIdentifier, userIdClaim));
         var refreshToken = new RefreshToken { UserId = 1 };
 
@@ -75,7 +75,7 @@ public class RefreshJwtTokenTests
     public async Task RefreshJwtToken_UserNotAuthenticated_ThrowsUnauthorizedAccessException()
     {
         // Arrange
-        _httpContextAccessorMock.Setup(h => h.HttpContext!.User.FindFirst(ClaimTypes.NameIdentifier))
+        _httpContextAccessorMock.Setup(h => h.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier))
                                 .Returns((Claim)null);
 
         // Act & Assert
@@ -92,7 +92,7 @@ public class RefreshJwtTokenTests
         _httpContextAccessorMock.Setup(h => h.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier))
                                 .Returns(new Claim(ClaimTypes.NameIdentifier, userIdClaim));
 
-        _jwtServiceMock.Setup(js => js.GetValidRefreshTokenByUserIdAsync(1, CancellationToken.None))!
+        _jwtServiceMock.Setup(js => js.GetValidRefreshTokenByUserIdAsync(1, CancellationToken.None))
                        .ReturnsAsync((RefreshToken)null);
 
         // Act & Assert

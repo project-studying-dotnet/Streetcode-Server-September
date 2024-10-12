@@ -14,29 +14,29 @@ namespace Streetcode.BLL.Services.Logging
 
         public void LogInformation(string msg)
         {
-            _logger.Information(msg);
+            _logger.Information($"{msg}");
         }
 
         public void LogWarning(string msg)
         {
-            _logger.Warning(msg);
+            _logger.Warning($"{msg}");
         }
 
         public void LogTrace(string msg)
         {
-            _logger.Information(msg);
+            _logger.Information($"{msg}");
         }
 
         public void LogDebug(string msg)
         {
-            _logger.Debug(msg);
+            _logger.Debug($"{msg}");
         }
 
-        public void LogError(object request, string errorMsg)
+        public void LogError(object request, string erroMsg)
         {
             string requestType = request.GetType().ToString();
             string requestClass = requestType.Substring(requestType.LastIndexOf('.') + 1);
-            _logger.Error("{RequestClass} handled with the error: {ErrorMsg}", requestClass, errorMsg);
+            _logger.Error($"{requestClass} handled with the error: {erroMsg}");
         }
     }
 }

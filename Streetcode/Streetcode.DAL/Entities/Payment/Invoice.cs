@@ -23,5 +23,20 @@ namespace Streetcode.DAL.Entities.Payment
 
         [JsonProperty("redirectUrl")]
         public string RedirectUrl { get; set; }
+
+        // [JsonProperty("webHookUrl")]
+        // public string WebhookUrl { get; set; }
+
+        // [JsonProperty("validity")]
+        // public long Validity { get; set; }
+
+        // [JsonProperty("paymentType")]
+        // public string PaymentType { get; set; }
+
+        // [JsonProperty("qrId")]
+        // public string QrId { get; set; }
+
+        // [JsonProperty("saveCardData")]
+        // public SaveCardData SaveCardData { get; set; }
     }
 }

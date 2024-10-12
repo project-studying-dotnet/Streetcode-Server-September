@@ -23,7 +23,7 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
         var user = context.HttpContext.User;
 
         // Check if the user is authenticated
-        if (!user.Identity!.IsAuthenticated)
+        if (!user.Identity.IsAuthenticated)
         {
             context.Result = new UnauthorizedResult();
             return;
@@ -66,14 +66,14 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
         context.Result = new ForbidResult();
     }
 
-    private bool TryGetResourceId(ActionExecutingContext context, out string? resourceId)
+    private bool TryGetResourceId(ActionExecutingContext context, out string resourceId)
     {
         resourceId = null;
 
         // First we try to get the ID from the route data
         if (context.RouteData.Values.TryGetValue(_idParamName, out var idValue))
         {
-            resourceId = idValue!.ToString();
+            resourceId = idValue.ToString();
             return true;
         }
 
@@ -90,7 +90,7 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
                 var value = property.GetValue(arg);
                 if (value != null)
                 {
-                    resourceId = value!.ToString();
+                    resourceId = value.ToString();
                     return true;
                 }
             }
@@ -105,7 +105,7 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
                     var value = property.GetValue(arg);
                     if (value != null)
                     {
-                        resourceId = value!.ToString();
+                        resourceId = value.ToString();
                         return true;
                     }
                 }
@@ -115,7 +115,7 @@ public class AuthorizeRoleOrOwnerAttribute : Attribute, IAsyncActionFilter
         return false;
     }
 
-    private static async Task<string?> GetUserIdFromComment(ActionExecutingContext context, string id)
+    private async Task<string> GetUserIdFromComment(ActionExecutingContext context, string id)
     {
         // Getting RepositoryWrapper from services
         var repositoryWrapper = context.HttpContext.RequestServices.GetService<IRepositoryWrapper>();

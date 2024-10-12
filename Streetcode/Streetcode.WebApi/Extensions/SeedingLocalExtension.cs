@@ -78,15 +78,8 @@ public static class SeedingLocalExtension
     private static async Task SeedImages(string blobPath)
     {
         if (_dbContext.Images!.Any()) return;
-
-        var isInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-
-        string initialDataImagePath =
-            (isInDocker != null &&
-             isInDocker.Equals("true", StringComparison.OrdinalIgnoreCase))
-            ? "../src/Streetcode.DAL/InitialData/images.json" // Шлях у контейнері Docker
-            : "../Streetcode.DAL/InitialData/images.json"; // Локальний шлях
-
+        
+        const string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
         string imageJson = await File.ReadAllTextAsync(initialDataImagePath, Encoding.UTF8);
         var imageFromJson = JsonConvert.DeserializeObject<List<Image>>(imageJson)
                             ?? throw new ArgumentException("Can not deserialize images from json");
@@ -138,15 +131,8 @@ public static class SeedingLocalExtension
     private static async Task SeedAudios(string blobPath)
     {
         if (_dbContext.Audios!.Any()) return;
-
-        var isInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
-
-        string initialDataAudioPath =
-            (isInDocker != null &&
-             isInDocker.Equals("true", StringComparison.OrdinalIgnoreCase))
-            ? "../src/Streetcode.DAL/InitialData/audios.json" // Шлях у контейнері Docker
-            : "../Streetcode.DAL/InitialData/audios.json"; // Локальний шлях
-
+        
+        const string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
         string audiosJson = await File.ReadAllTextAsync(initialDataAudioPath, Encoding.UTF8);
         var audiosfromJson = JsonConvert.DeserializeObject<List<Audio>>(audiosJson)
                              ?? throw new ArgumentException("Can not deserialize audio from json");
@@ -1486,22 +1472,22 @@ public static class SeedingLocalExtension
             new StreetcodeImage
             {
                 ImageId = 1,
-                StreetcodeId = 1
+                StreetcodeId = 1,
             },
             new StreetcodeImage
             {
                 ImageId = 5,
-                StreetcodeId = 1
+                StreetcodeId = 1,
             },
             new StreetcodeImage
             {
                 ImageId = 1,
-                StreetcodeId = 2
+                StreetcodeId = 2,
             },
             new StreetcodeImage
             {
                 ImageId = 23,
-                StreetcodeId = 2
+                StreetcodeId = 2,
             });
 
         await _dbContext.SaveChangesAsync();
