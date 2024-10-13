@@ -60,7 +60,7 @@ public class AddStreetcodeToFavouritesHandlerTests
     }
 
     // Helper method to extract cookie value from Set-Cookie header
-    private string GetCookieValueFromSetCookieHeader(string setCookieHeader, string cookieName)
+    private static string GetCookieValueFromSetCookieHeader(string setCookieHeader, string cookieName)
     {
         var cookies = setCookieHeader.Split(',');
         foreach (var cookie in cookies)
