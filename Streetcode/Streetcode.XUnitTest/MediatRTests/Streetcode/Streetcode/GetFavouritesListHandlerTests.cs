@@ -56,7 +56,7 @@ public class GetFavouritesListHandlerTests
         var cookiesMock = new Mock<IRequestCookieCollection>();
 
         // Simulate absence of the cookie
-        cookiesMock.Setup(c => c[cookieName]).Returns((string)null);
+        cookiesMock.Setup(c => c[cookieName]).Returns((string)null!);
         requestMock.Setup(r => r.Cookies).Returns(cookiesMock.Object);
         httpContextMock.Setup(c => c.Request).Returns(requestMock.Object);
 
@@ -102,7 +102,7 @@ public class GetFavouritesListHandlerTests
         // Arrange
         var query = new GetFavouritesListQuery();
 
-        _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext)null);
+        _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext)null!);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(query, CancellationToken.None));
