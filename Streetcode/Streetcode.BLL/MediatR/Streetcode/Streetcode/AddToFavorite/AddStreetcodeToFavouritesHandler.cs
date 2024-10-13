@@ -50,7 +50,9 @@ public class AddStreetcodeToFavouritesHandler : IRequestHandler<AddStreetcodeToF
         var newCookieValue = string.Join(",", favourites);
         context.Response.Cookies.Append(CookieName, newCookieValue, new CookieOptions
         {
-            Expires = DateTime.Now.AddYears(1) // Set the cookie to expire in 1 year
+            Expires = DateTime.Now.AddYears(1),
+            Secure = true,
+            HttpOnly = true
         });
 
         return Result.Ok(Unit.Value);
