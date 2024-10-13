@@ -43,7 +43,7 @@ public class GetCategoriesByStreetcodeIdHandler : IRequestHandler<GetCategoriesB
 
         var updatedCategories = mappedSrcCategories.Select(srcCategory =>
         {
-            srcCategory.Image!.Base64 = _blobService.FindFileInStorageAsBase64(srcCategory.Image.BlobName);
+            srcCategory.Image!.Base64 = _blobAzureService.FindFileInStorageAsBase64(srcCategory.Image.BlobName);
             return srcCategory;
         });
 

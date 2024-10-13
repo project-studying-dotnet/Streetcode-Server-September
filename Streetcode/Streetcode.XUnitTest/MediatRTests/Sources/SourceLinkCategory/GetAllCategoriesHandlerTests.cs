@@ -70,7 +70,6 @@ public class GetAllCategoriesHandlerTests
             {
                 _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(dto.Image!.BlobName), Times.Once);
             }
-        }
     }
 
     [Fact]
@@ -83,7 +82,7 @@ public class GetAllCategoriesHandlerTests
             .ReturnsAsync((IEnumerable<SrcLinkCategory>)null);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<CustomException>(() => 
+        var exception = await Assert.ThrowsAsync<CustomException>(() =>
                         _handler.Handle(new GetAllCategoriesQuery(), CancellationToken.None));
 
         Assert.Equal("Categories is null", exception.Message);

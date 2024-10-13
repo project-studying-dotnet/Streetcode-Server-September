@@ -39,7 +39,7 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetAll
 
             var updatedDtos = dtos.Select(dto =>
             {
-                dto.Image!.Base64 = _blobService.FindFileInStorageAsBase64(dto.Image.BlobName);
+                dto.Image!.Base64 = _blobAzureService.FindFileInStorageAsBase64(dto.Image.BlobName);
                 return dto;
             });
 
