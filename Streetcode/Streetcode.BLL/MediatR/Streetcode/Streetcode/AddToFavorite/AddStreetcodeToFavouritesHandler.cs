@@ -32,8 +32,8 @@ public class AddStreetcodeToFavouritesHandler : IRequestHandler<AddStreetcodeToF
         var context = _httpContextAccessor.HttpContext ?? throw new CustomException("No HttpContext in request", StatusCodes.Status400BadRequest);
 
         var favouritesCookie = context.Request.Cookies[CookieName];
-        List<int> favourites = [];
-        
+        var favourites = new List<int>();
+
         if (!string.IsNullOrEmpty(favouritesCookie))
         {
             // Parse the existing favourites from the cookie
