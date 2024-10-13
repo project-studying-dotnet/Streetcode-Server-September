@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Authorization;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.ExistWithUrl;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.AddToFavorite;
-using System.Security.Policy;
 
 namespace Streetcode.WebApi.Controllers.Streetcode;
 
