@@ -1,0 +1,20 @@
+name: Deploy to Azure
+on:
+  workflow_run:
+    workflows: ["SonarCloud"]
+    types:
+      - completed
+
+env:
+  AZURE_WEBAPI_NAME: "app-streetcode-webapi-eu-prop-001"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    steps:
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPI_NAME }}
+          publish-profile: $${{ secrets.AZURE_WEBAPI_PUBLISH_PROFILE }} #not added to secrets yet
