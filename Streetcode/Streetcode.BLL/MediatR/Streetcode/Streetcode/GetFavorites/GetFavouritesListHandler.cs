@@ -24,7 +24,6 @@ public class GetFavouritesListHandler : IRequestHandler<GetFavouritesListQuery, 
 
         if (!string.IsNullOrEmpty(favouritesCookie))
         {
-            // Разбираем существующий список избранного из куки
             favourites = favouritesCookie.Split(',').Select(int.Parse).ToList();
         }
 
