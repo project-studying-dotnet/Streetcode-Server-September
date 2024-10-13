@@ -84,8 +84,8 @@ public class AuthServiceTests
     {
         // Arrange
         var loginDto = new LoginDto { Email = "unknown@example.com", Password = "password123" };
-
-        _userManagerMock.Setup(um => um.FindByEmailAsync(loginDto.Email)).ReturnsAsync((ApplicationUser)null);
+        
+        _userManagerMock.Setup(um => um!.FindByEmailAsync(loginDto.Email))!.ReturnsAsync((ApplicationUser)null);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<ArgumentException>(() => _authService.LoginAsync(loginDto, CancellationToken.None));

@@ -40,19 +40,21 @@ public static class AuthenticationServiceExtensions
 
     public static void AddSwaggerServices(this IServiceCollection services)
     {
+        var securityType = "Bearer";
+
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(opt =>
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
             opt.CustomSchemaIds(x => x.FullName);
-            opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            opt.AddSecurityDefinition(securityType, new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
                 Description = "Please enter a valid token",
                 Name = "JWT Authentication",
                 Type = SecuritySchemeType.Http,
                 BearerFormat = "JWT",
-                Scheme = "Bearer"
+                Scheme = securityType
             });
 
             opt.AddSecurityRequirement(new OpenApiSecurityRequirement()
@@ -63,10 +65,10 @@ public static class AuthenticationServiceExtensions
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
+                            Id = securityType
                         },
                         Scheme = "oauth2",
-                        Name = "Bearer",
+                        Name = securityType,
                         In = ParameterLocation.Header
                     },
                     new List<string>()

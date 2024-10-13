@@ -76,10 +76,10 @@ namespace Streetcode.XUnitTest.MediatRTests.News
             const string expectedErrorMsg = "There are no news in the database";
 
             _repositoryWrapperMock.Setup(repo => repo.NewsRepository
-                 .GetAllAsync(
-                     It.IsAny<Expression<Func<NewsEntity, bool>>>(),
-                     It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))
-                .ReturnsAsync((IEnumerable<NewsEntity>)null);
+               .GetAllAsync(
+                   It.IsAny<Expression<Func<NewsEntity, bool>>>(),
+                   It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))!
+               .ReturnsAsync((IEnumerable<NewsEntity>)null);
 
             // Act and Assert
             var exception = await Assert.ThrowsAsync<CustomException>(async () =>

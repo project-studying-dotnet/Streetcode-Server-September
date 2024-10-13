@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.Dto.Streetcode.TextContent;
 using Streetcode.BLL.Dto.Streetcode.TextContent.Term;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId;
-using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Update;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent
 {
@@ -20,12 +18,6 @@ namespace Streetcode.WebApi.Controllers.Streetcode.TextContent
         public async Task<IActionResult> Create([FromBody] RelatedTermCreateDto relatedTerm)
         {
             return HandleResult(await Mediator.Send(new CreateRelatedTermCommand(relatedTerm)));
-        }
-
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] RelatedTermDto relatedTerm)
-        {
-            return HandleResult(await Mediator.Send(new UpdateRelatedTermCommand(id, relatedTerm)));
         }
 
         [HttpDelete("{word}/{termId:int}")]

@@ -43,7 +43,7 @@ public class BlobService : IBlobService
         return base64;
     }
 
-    public string SaveFileInStorage(string base64, string name, string extension)
+    public string SaveFileInStorage(string base64, string name, string mimeType)
     {
         byte[] imageBytes = Convert.FromBase64String(base64);
         string createdFileName = $"{DateTime.Now}{name}"
@@ -54,7 +54,7 @@ public class BlobService : IBlobService
         string hashBlobStorageName = HashFunction(createdFileName);
 
         Directory.CreateDirectory(_blobPath);
-        EncryptFile(imageBytes, extension, hashBlobStorageName);
+        EncryptFile(imageBytes, mimeType, hashBlobStorageName);
 
         return hashBlobStorageName;
     }
@@ -119,7 +119,7 @@ public class BlobService : IBlobService
         return paths.Select(p => Path.GetFileName(p));
     }
 
-    private string HashFunction(string createdFileName)
+    private static string HashFunction(string createdFileName)
     {
         using (var hash = SHA256.Create())
         {
@@ -132,21 +132,30 @@ public class BlobService : IBlobService
     private void EncryptFile(byte[] imageBytes, string type, string name)
     {
         byte[] keyBytes = Encoding.UTF8.GetBytes(_keyCrypt);
-
         byte[] iv = new byte[16];
-        using (var rng = new RNGCryptoServiceProvider())
-        {
-            rng.GetBytes(iv);
-        }
+        RandomNumberGenerator.Fill(iv);
 
         byte[] encryptedBytes;
-        using (Aes aes = Aes.Create())
+        using(Aes aes = Aes.Create())
         {
             aes.KeySize = 256;
             aes.Key = keyBytes;
-            aes.IV = iv;
-            ICryptoTransform encryptor = aes.CreateEncryptor();
+
+            // Генерація випадкового IV
+            aes.GenerateIV();
+            byte[] ivInUsing = aes.IV;
+
+            // Створення шифрувального об'єкта з динамічно згенерованим IV
+            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
             encryptedBytes = encryptor.TransformFinalBlock(imageBytes, 0, imageBytes.Length);
+
+            // Збереження IV разом із зашифрованими даними (наприклад, на початку масиву)
+            byte[] result = new byte[ivInUsing.Length + encryptedBytes.Length];
+            Buffer.BlockCopy(ivInUsing, 0, result, 0, ivInUsing.Length);
+            Buffer.BlockCopy(encryptedBytes, 0, result, ivInUsing.Length, encryptedBytes.Length);
+
+            encryptedBytes = result; // Повернення зашифрованих даних із збереженим IV
         }
 
         byte[] encryptedData = new byte[encryptedBytes.Length + iv.Length];

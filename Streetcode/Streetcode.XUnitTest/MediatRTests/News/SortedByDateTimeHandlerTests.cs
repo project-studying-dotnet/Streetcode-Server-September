@@ -130,9 +130,9 @@ namespace Streetcode.XUnitTest.MediatRTests.News
 
             // Mock the repository to return null, simulating no news found in the database
             _repositoryWrapperMock.Setup(repo => repo.NewsRepository
-                 .GetAllAsync(
-                     It.IsAny<Expression<Func<NewsEntity, bool>>>(),
-                     It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))
+                .GetAllAsync(
+                    It.IsAny<Expression<Func<NewsEntity, bool>>>(),
+                    It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))!
                 .ReturnsAsync((IEnumerable<NewsEntity>)null);
 
             // Act & Assert

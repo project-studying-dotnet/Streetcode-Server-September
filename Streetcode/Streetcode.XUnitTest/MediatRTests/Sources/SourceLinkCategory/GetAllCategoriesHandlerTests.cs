@@ -66,9 +66,10 @@ public class GetAllCategoriesHandlerTests
         Assert.NotNull(result.Value);
         Assert.Equal(mappedCategories.Count, result.Value.Count());
 
-        foreach (var dto in mappedCategories)
-        {
-            _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(dto.Image.BlobName), Times.Once);
+            foreach (var dto in mappedCategories)
+            {
+                _blobServiceMock.Verify(b => b.FindFileInStorageAsBase64(dto.Image!.BlobName), Times.Once);
+            }
         }
     }
 
@@ -78,7 +79,7 @@ public class GetAllCategoriesHandlerTests
         // Arrange
         _repositoryWrapperMock.Setup(repo => repo.SourceCategoryRepository
                .GetAllAsync(It.IsAny<Expression<Func<SrcLinkCategory, bool>>>(),
-               It.IsAny<Func<IQueryable<SrcLinkCategory>, IIncludableQueryable<SrcLinkCategory, object>>>()))
+               It.IsAny<Func<IQueryable<SrcLinkCategory>, IIncludableQueryable<SrcLinkCategory, object>>>()))!
             .ReturnsAsync((IEnumerable<SrcLinkCategory>)null);
 
         // Act & Assert
