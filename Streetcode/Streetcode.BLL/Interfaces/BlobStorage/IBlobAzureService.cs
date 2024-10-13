@@ -8,7 +8,7 @@ namespace Streetcode.BLL.Interfaces.BlobStorage;
 
 public interface IBlobAzureService
 {
-    public string SaveFileInStorage(string base64, string name, string? mimeType);
+    public string SaveFileInStorage(string base64, string name, string mimeType);
     public MemoryStream FindFileInStorageAsMemoryStream(string name);
     public string UpdateFileInStorage(
         string previousBlobName,

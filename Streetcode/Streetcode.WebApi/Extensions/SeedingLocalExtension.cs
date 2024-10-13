@@ -25,12 +25,9 @@ namespace Streetcode.WebApi.Extensions;
 public static class SeedingLocalExtension
 {
     private static StreetcodeDbContext _dbContext = null!;
-    private static RepositoryWrapper _repositoryWrapper= null!;
     private static BlobAzureService _blobAzureService = null!;
     private static BlobServiceClient _blobServiceClient = null!;
     private static string _blobPath = null!;
-    private static string _blobAzurePath = null!;
-    private static string _blobContainer = null!;
 
     public static async Task SeedDataAsync(this WebApplication app)
     {
@@ -40,9 +37,9 @@ public static class SeedingLocalExtension
         CreateBlobStorageFolder(app);
         CreateBlobService(app);
         
-        await SeedImages(_blobPath);
+        await SeedImages();
         await SeedImageDetails();
-        await SeedAudios(_blobPath);
+        await SeedAudios();
         await SeedNews();
         await SeedResponses();
         await SeedTerms();
@@ -67,15 +64,11 @@ public static class SeedingLocalExtension
         var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
         var blobAzureOptions = app.Services.GetRequiredService<IOptions<BlobAzureVariables>>();
 
-        CreateRepository();
-
         _blobServiceClient = new BlobServiceClient(blobAzureOptions.Value.ConnectionString);
         _blobAzureService = new BlobAzureService(blobAzureOptions, _blobServiceClient);
     }
-
-    private static void CreateRepository() => _repositoryWrapper = new RepositoryWrapper(_dbContext);
     
-    private static async Task SeedImages(string blobPath)
+    private static async Task SeedImages()
     {
         if (_dbContext.Images!.Any()) return;
 
@@ -135,7 +128,7 @@ public static class SeedingLocalExtension
         await _dbContext.SaveChangesAsync();
     }
 
-    private static async Task SeedAudios(string blobPath)
+    private static async Task SeedAudios()
     {
         if (_dbContext.Audios!.Any()) return;
 
