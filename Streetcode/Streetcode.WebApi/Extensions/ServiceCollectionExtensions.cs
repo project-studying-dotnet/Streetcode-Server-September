@@ -43,6 +43,9 @@ public static class ServiceCollectionExtensions
         var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
+
+        services.AddHttpContextAccessor();
+
         services.AddScoped<IBlobService, BlobService>();
         services.AddScoped<BlobAzureService>();
         services.AddScoped<ILoggerService, LoggerService>();
