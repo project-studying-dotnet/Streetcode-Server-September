@@ -22,6 +22,8 @@ public class LogoutAsyncTests
     private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private readonly Mock<IUserClaimsPrincipalFactory<ApplicationUser>> _claimsPrincipalFactoryMock;
     private readonly Mock<IConfiguration> _configurationMock;
+    private readonly Mock<IConfigurationSection> _configurationSectionMock;
+    private readonly string _emailMessageTopic = "email-topic-test";
 
     public LogoutAsyncTests()
     {
@@ -43,6 +45,11 @@ public class LogoutAsyncTests
         _jwtServiceMock = new Mock<IJwtService>();
         _mapperMock = new Mock<IMapper>();
         _configurationMock = new Mock<IConfiguration>();
+        _configurationSectionMock = new Mock<IConfigurationSection>();
+
+        _configurationSectionMock.Setup(x => x.Value).Returns(_emailMessageTopic);
+        _configurationMock.Setup(config => config.GetSection("ServiceBusSettings:EmailMessageTopic"))
+                          .Returns(_configurationSectionMock.Object);
 
         _authService = new AuthServiceClass(
             _userManagerMock.Object,

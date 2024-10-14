@@ -10,6 +10,7 @@ using Streetcode.Identity.Models.Enums;
 
 using AuthServiceClass = Streetcode.Identity.Services.Realizations.AuthService;
 using Microsoft.Extensions.Configuration;
+using Streetcode.Identity.Models.AzureBus;
 
 namespace Streetcode.XUnitTest.IdentityMicroservice.AuthService;
 
@@ -23,6 +24,9 @@ public class RegisterAsyncTests
     private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private readonly Mock<IUserClaimsPrincipalFactory<ApplicationUser>> _claimsPrincipalFactoryMock;
     private readonly Mock<IConfiguration> _configurationMock;
+    private readonly Mock<IConfigurationSection> _configurationSectionMock;
+    private readonly Mock<IAzureBusService> _azureBusServiceMock;
+    private readonly string _emailMessageTopic = "email-topic-test";
     public RegisterAsyncTests()
     {
         _userManagerMock = new Mock<UserManager<ApplicationUser>>(
@@ -42,7 +46,13 @@ public class RegisterAsyncTests
 
         _jwtServiceMock = new Mock<IJwtService>();
         _mapperMock = new Mock<IMapper>();
+        _azureBusServiceMock = new Mock<IAzureBusService>();
         _configurationMock = new Mock<IConfiguration>();
+        _configurationSectionMock = new Mock<IConfigurationSection>();
+
+        _configurationSectionMock.Setup(x => x.Value).Returns(_emailMessageTopic);
+        _configurationMock.Setup(config => config.GetSection("ServiceBusSettings:EmailMessageTopic"))
+                          .Returns(_configurationSectionMock.Object);
 
         _authService = new AuthServiceClass(
             _userManagerMock.Object,
@@ -51,7 +61,7 @@ public class RegisterAsyncTests
             _mapperMock.Object,
             _httpContextAccessorMock.Object,
             _configurationMock.Object,
-            null
+            _azureBusServiceMock.Object
         );
     }
 
@@ -88,6 +98,11 @@ public class RegisterAsyncTests
 
         _userManagerMock.Verify(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()), Times.Once);
         _userManagerMock.Verify(x => x.AddToRoleAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()), Times.Once);
+
+        _azureBusServiceMock.Verify(x => x.PublishMessage(
+            It.Is<AzureRegisterMailDto>(m => m.To == userDto.Email),
+            _emailMessageTopic
+        ), Times.Once);
     }
 
     [Fact]
