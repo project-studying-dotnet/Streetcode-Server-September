@@ -1,14 +1,12 @@
 ﻿using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.DeleteHard
 {
-    public class DeleteHardStreetcodeHandler:IRequestHandler<DeleteHardStreetcodeCommand, Result<Unit>>
+    public class DeleteHardStreetcodeHandler : IRequestHandler<DeleteHardStreetcodeCommand, Result<Unit>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
 
@@ -19,20 +17,23 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.DeleteHard
 
         public async Task<Result<Unit>> Handle(DeleteHardStreetcodeCommand request, CancellationToken cancellationToken)
         {
-            // Спочатку видаляємо пов'язані записи
-            await _repositoryWrapper.RelatedFigureRepository
-                .Where(rf => rf.ObserverId == request.Id || rf.TargetId == request.Id)
-                .ExecuteDeleteAsync(cancellationToken);
+            // Видалення пов'язаних записів
+            var relatedFigures = await _repositoryWrapper.RelatedFigureRepository
+                .GetAllAsync(rf => rf.ObserverId == request.Id || rf.TargetId == request.Id);
 
-            // Тепер видаляємо сам streetcode
-            var streetcode = await _repositoryWrapper.StreetcodeRepository.FindAsync(request.Id);
+            _repositoryWrapper.RelatedFigureRepository.DeleteRange(relatedFigures);
+
+            // Видалення самого streetcode
+            var streetcode = await _repositoryWrapper.StreetcodeRepository
+                .GetFirstOrDefaultAsync(s => s.Id == request.Id);
+
             if (streetcode == null)
             {
                 throw new CustomException($"No streetcode found with Id - {request.Id}", StatusCodes.Status204NoContent);
             }
 
-            _context.Streetcodes.Remove(streetcode);
-            var resultIsSuccess = await _context.SaveChangesAsync(cancellationToken) > 0;
+            _repositoryWrapper.StreetcodeRepository.Delete(streetcode);
+            var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
 
             if (resultIsSuccess)
             {
