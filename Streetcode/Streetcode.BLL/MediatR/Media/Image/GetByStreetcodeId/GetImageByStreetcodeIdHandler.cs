@@ -31,8 +31,7 @@ public class GetImageByStreetcodeIdHandler : IRequestHandler<GetImageByStreetcod
             .GetAllAsync(
             f => f.Streetcodes.Any(s => s.Id == request.StreetcodeId),
               include: q => q.Include(img => img.ImageDetails)))
-                                         .Where(img => img.ImageDetails != null)
-                                         .OrderBy(img => img.ImageDetails.Title);
+                                         .OrderBy(img => img.ImageDetails?.Title);
 
         if (!images.Any())
         {
