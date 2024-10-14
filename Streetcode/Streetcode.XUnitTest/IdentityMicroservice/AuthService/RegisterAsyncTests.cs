@@ -9,6 +9,7 @@ using Xunit;
 using Streetcode.Identity.Models.Enums;
 
 using AuthServiceClass = Streetcode.Identity.Services.Realizations.AuthService;
+using Microsoft.Extensions.Configuration;
 
 namespace Streetcode.XUnitTest.IdentityMicroservice.AuthService;
 
@@ -21,6 +22,7 @@ public class RegisterAsyncTests
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private readonly Mock<IUserClaimsPrincipalFactory<ApplicationUser>> _claimsPrincipalFactoryMock;
+    private readonly Mock<IConfiguration> _configurationMock;
     public RegisterAsyncTests()
     {
         _userManagerMock = new Mock<UserManager<ApplicationUser>>(
@@ -40,13 +42,16 @@ public class RegisterAsyncTests
 
         _jwtServiceMock = new Mock<IJwtService>();
         _mapperMock = new Mock<IMapper>();
+        _configurationMock = new Mock<IConfiguration>();
 
         _authService = new AuthServiceClass(
             _userManagerMock.Object,
             _signInManagerMock.Object,
             _jwtServiceMock.Object,
             _mapperMock.Object,
-            _httpContextAccessorMock.Object
+            _httpContextAccessorMock.Object,
+            _configurationMock.Object,
+            null
         );
     }
 

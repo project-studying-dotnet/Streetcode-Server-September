@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using Streetcode.Identity.Models;
 using Streetcode.Identity.Services.Interfaces;
@@ -19,6 +20,7 @@ public class RefreshJwtTokenTests
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private readonly Mock<IUserClaimsPrincipalFactory<ApplicationUser>> _claimsPrincipalFactoryMock;
+    private readonly Mock<IConfiguration> _configurationMock;
 
     public RefreshJwtTokenTests()
     {
@@ -39,13 +41,16 @@ public class RefreshJwtTokenTests
 
         _jwtServiceMock = new Mock<IJwtService>();
         _mapperMock = new Mock<IMapper>();
+        _configurationMock = new Mock<IConfiguration>();
 
         _authService = new AuthServiceClass(
             _userManagerMock.Object,
             _signInManagerMock.Object,
             _jwtServiceMock.Object,
             _mapperMock.Object,
-            _httpContextAccessorMock.Object
+            _httpContextAccessorMock.Object,
+            _configurationMock.Object,
+            null
         );
     }
 
