@@ -15,6 +15,7 @@ using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.ExistWithUrl;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.AddToFavorite;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetFavouritesList;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.RemoveFromFavourites;
 
 namespace Streetcode.WebApi.Controllers.Streetcode;
 
@@ -97,5 +98,11 @@ public class StreetcodeController : BaseApiController
     public async Task<IActionResult> GetFavouritesList()
     {
         return HandleResult(await Mediator.Send(new GetFavouritesListQuery()));
+    }
+
+    [HttpPost("remove")]
+    public async Task<IActionResult> RemoveFromFavourites([FromBody] int streetcodeId)
+    {
+        return HandleResult(await Mediator.Send(new RemoveStreetcodeFromFavouritesCommand(streetcodeId)));
     }
 }
