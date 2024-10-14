@@ -68,7 +68,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetCode.RemoveFromFavourites
         public async Task Handle_HttpContextIsNull_ThrowsCustomException()
         {
             // Arrange
-            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext)null);
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext)null!);
 
             var command = new RemoveStreetcodeFromFavouritesCommand(1);
 
