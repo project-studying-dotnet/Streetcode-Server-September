@@ -9,6 +9,7 @@ using Streedcode.Identity.Extensions;
 using Streetcode.Identity.Models.Mapper;
 using Streetcode.Identity.Repository;
 using Hangfire;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddScoped<IRefreshRepository, RefreshRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddSingleton<JsonWebTokenHandler>();
 
 builder.Services.ConfigureJwt(builder);
 builder.Services.ConfigureRefreshToken(builder);
@@ -75,4 +77,4 @@ recurringJobManager.AddOrUpdate<JwtService>(
     service => service.DeleteInvalidTokensAsync(),
     Cron.Daily);
 
-app.Run();
+await app.RunAsync();

@@ -9,20 +9,20 @@ using Xunit;
 
 using NewsEntity = Streetcode.DAL.Entities.News.News;
 using ImageEntity = Streetcode.DAL.Entities.Media.Images.Image;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 
 namespace Streetcode.XUnitTest.MediatRTests.News
 {
     public class DeleteNewsHandlerTests
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
         private readonly DeleteNewsHandler _handler;
 
         public DeleteNewsHandlerTests() 
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _handler = new DeleteNewsHandler(_repositoryWrapperMock.Object, _loggerMock.Object);
+            _handler = new DeleteNewsHandler(_repositoryWrapperMock.Object);
         }
 
         [Fact]
@@ -73,55 +73,50 @@ namespace Streetcode.XUnitTest.MediatRTests.News
             _repositoryWrapperMock.Verify(repo => repo.ImageRepository.Delete(It.Is<Image>(img => img.Id == 1)), Times.Once);
             _repositoryWrapperMock.Verify(repo => repo.SaveChangesAsync(), Times.Once);
         }
-    
 
         [Fact]
-        public async Task Handle_ReturnFail_WhenNewsNotFound()
+        public async Task Handle_ThrowsCustomException_WhenNewsNotFound()
         {
+            // Arrange
             var newsId = 1;
             var command = new DeleteNewsCommand(newsId);
             var expectedErrorMsg = $"No news found by entered Id - {newsId}";
-            
+
             _repositoryWrapperMock.Setup(repo => repo.NewsRepository
                 .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<NewsEntity, bool>>>(), null))
                 .ReturnsAsync((NewsEntity)null);
 
-            _repositoryWrapperMock.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(0);
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
             // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal(expectedErrorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(logger => logger.LogError(command, expectedErrorMsg), Times.Once);
+            Assert.Equal(expectedErrorMsg, exception.Message);
+            Assert.Equal(StatusCodes.Status404NotFound, exception.StatusCode);
             _repositoryWrapperMock.Verify(repo => repo.NewsRepository.Delete(It.IsAny<NewsEntity>()), Times.Never);
         }
 
         [Fact]
-        public async Task Handle_ReturnFail_WhenSaveChangesFailed()
+        public async Task Handle_ThrowsCustomException_WhenSaveChangesFailed()
         {
             // Arrange
             var newsId = 1;
             var command = new DeleteNewsCommand(newsId);
             var expectedErrorMsg = "Failed to delete news";
-            var news = new NewsEntity() { Id = 1, Title = "Test News" };
+            var news = new NewsEntity { Id = 1, Title = "Test News" };
 
             _repositoryWrapperMock.Setup(repo => repo.NewsRepository
-                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<NewsEntity, bool>>>(),
-                null)).ReturnsAsync(news);
+                .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<NewsEntity, bool>>>(), null))
+                .ReturnsAsync(news);
 
             _repositoryWrapperMock.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(0);
 
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));
 
             // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal(expectedErrorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(logger => logger.LogError(command, expectedErrorMsg), Times.Once);
+            Assert.Equal(expectedErrorMsg, exception.Message);
+            Assert.Equal(StatusCodes.Status500InternalServerError, exception.StatusCode);
             _repositoryWrapperMock.Verify(repo => repo.NewsRepository.Delete(news), Times.Once);
         }
-    
     }
 }

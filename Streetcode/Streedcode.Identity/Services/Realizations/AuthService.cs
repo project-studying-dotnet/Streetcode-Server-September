@@ -101,5 +101,31 @@ namespace Streetcode.Identity.Services.Realizations
 
             return newJwtToken;
         }
+
+        public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
+        {
+            var userDto = registerDto;
+
+            var user = _mapper.Map<ApplicationUser>(userDto);
+
+            var result = await _userManager.CreateAsync(user, userDto.Password);
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException("Failed to create user");
+            }
+
+            var roleResult = await _userManager.AddToRoleAsync(user, user.Role);
+
+            if (!roleResult.Succeeded)
+            {
+                throw new InvalidOperationException("Failed to add user to role");
+            }
+
+            var createdUserDto = _mapper.Map<UserDto>(user) ??
+                throw new ArgumentException("Failed to map");
+
+            return createdUserDto;
+        }
     }
 }

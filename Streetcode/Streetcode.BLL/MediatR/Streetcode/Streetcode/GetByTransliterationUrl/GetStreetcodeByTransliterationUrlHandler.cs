@@ -38,7 +38,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByTransliterationUrl
             var tagIndexed = await _repository.StreetcodeTagIndexRepository
                                             .GetAllAsync(
                                                 t => t.StreetcodeId == streetcode.Id,
-                                                include: q => q.Include(ti => ti.Tag));
+                                                include: q => q.Include(ti => ti.Tag!));
 
             var streetcodeDto = _mapper.Map<StreetcodeDto>(streetcode);
             streetcodeDto.Tags = _mapper.Map<List<StreetcodeTagDto>>(tagIndexed);

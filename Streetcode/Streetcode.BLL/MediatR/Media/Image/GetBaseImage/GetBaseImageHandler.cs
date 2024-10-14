@@ -1,22 +1,21 @@
 ﻿using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Image.GetBaseImage;
 
 public class GetBaseImageHandler : IRequestHandler<GetBaseImageQuery, Result<MemoryStream>>
 {
-    private readonly IBlobService _blobStorage;
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly ILoggerService _logger;
+    private readonly IBlobAzureService _blobAzureService;
 
-    public GetBaseImageHandler(IBlobService blobService, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+    public GetBaseImageHandler(IRepositoryWrapper repositoryWrapper, IBlobAzureService blobAzureService)
     {
-        _blobStorage = blobService;
         _repositoryWrapper = repositoryWrapper;
-        _logger = logger;
+        _blobAzureService = blobAzureService;
     }
 
     public async Task<Result<MemoryStream>> Handle(GetBaseImageQuery request, CancellationToken cancellationToken)
@@ -26,10 +25,9 @@ public class GetBaseImageHandler : IRequestHandler<GetBaseImageQuery, Result<Mem
         if (image is null)
         {
             string errorMsg = $"Cannot find an image with corresponding id: {request.Id}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
         }
 
-        return _blobStorage.FindFileInStorageAsMemoryStream(image.BlobName);
+        return _blobAzureService.FindFileInStorageAsMemoryStream(image.BlobName);
     }
 }

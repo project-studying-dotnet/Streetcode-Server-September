@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Azure.Storage.Blobs;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
@@ -24,10 +25,10 @@ namespace Streetcode.WebApi.Extensions;
 public static class SeedingLocalExtension
 {
     private static StreetcodeDbContext _dbContext = null!;
-    private static RepositoryWrapper _repositoryWrapper= null!;
-    private static BlobService _blobService = null!;
+    private static BlobAzureService _blobAzureService = null!;
+    private static BlobServiceClient _blobServiceClient = null!;
     private static string _blobPath = null!;
-    
+
     public static async Task SeedDataAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -36,9 +37,9 @@ public static class SeedingLocalExtension
         CreateBlobStorageFolder(app);
         CreateBlobService(app);
         
-        await SeedImages(_blobPath);
+        await SeedImages();
         await SeedImageDetails();
-        await SeedAudios(_blobPath);
+        await SeedAudios();
         await SeedNews();
         await SeedResponses();
         await SeedTerms();
@@ -61,33 +62,31 @@ public static class SeedingLocalExtension
     private static void CreateBlobService(WebApplication app)
     {
         var blobOptions = app.Services.GetRequiredService<IOptions<BlobEnvironmentVariables>>();
-        
-        CreateRepository();
-        
-        _blobService = new BlobService(blobOptions, _repositoryWrapper);
-    }
+        var blobAzureOptions = app.Services.GetRequiredService<IOptions<BlobAzureVariables>>();
 
-    private static void CreateRepository() => _repositoryWrapper = new RepositoryWrapper(_dbContext);
+        _blobServiceClient = new BlobServiceClient(blobAzureOptions.Value.ConnectionString);
+        _blobAzureService = new BlobAzureService(blobAzureOptions, _blobServiceClient);
+    }
     
-    private static async Task SeedImages(string blobPath)
+    private static async Task SeedImages()
     {
         if (_dbContext.Images!.Any()) return;
-        
-        const string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
+
+        var isInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+
+        string initialDataImagePath =
+            (isInDocker != null &&
+             isInDocker.Equals("true", StringComparison.OrdinalIgnoreCase))
+            ? "../src/Streetcode.DAL/InitialData/images.json" // Шлях у контейнері Docker
+            : "../Streetcode.DAL/InitialData/images.json"; // Локальний шлях
+
         string imageJson = await File.ReadAllTextAsync(initialDataImagePath, Encoding.UTF8);
         var imageFromJson = JsonConvert.DeserializeObject<List<Image>>(imageJson)
                             ?? throw new ArgumentException("Can not deserialize images from json");
         
         foreach (var img in imageFromJson)
         {
-            string filePath = Path.Combine(blobPath, img.BlobName!);
-
-            if (File.Exists(filePath) || img.Base64 is null)
-                continue;
-            
-            var imageName = img.BlobName!.Split('.')[0];
-            var imageExtension = img.BlobName.Split('.')[1];
-            _blobService.SaveFileInStorageBase64(img.Base64, imageName, imageExtension);
+            _blobAzureService.SaveFileInStorage(img.Base64, img.BlobName, string.Empty);
         }
         
         _dbContext.Images!.AddRange(imageFromJson);
@@ -103,21 +102,25 @@ public static class SeedingLocalExtension
             new ImageDetails()
             {
                 ImageId = 6,
+                Title = "Some Image",
                 Alt = "Additional inforamtaion for  wow-fact photo 1"
             },
             new ImageDetails()
             {
                 ImageId = 16,
+                Title = "Awesome Image",
                 Alt = "Additional inforamtaion for  wow-fact photo 2"
             },
             new ImageDetails()
             {
                 ImageId = 17,
+                Title = "Blob Image",
                 Alt = "Additional inforamtaion for  wow-fact photo 3"
             },
             new ImageDetails()
             {
                 ImageId = 19,
+                Title = "Lovely Image",
                 Alt = "Additional inforamtaion for  wow-fact photo 3"
             },
         });
@@ -125,25 +128,25 @@ public static class SeedingLocalExtension
         await _dbContext.SaveChangesAsync();
     }
 
-    private static async Task SeedAudios(string blobPath)
+    private static async Task SeedAudios()
     {
         if (_dbContext.Audios!.Any()) return;
-        
-        const string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
+
+        var isInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+
+        string initialDataAudioPath =
+            (isInDocker != null &&
+             isInDocker.Equals("true", StringComparison.OrdinalIgnoreCase))
+            ? "../src/Streetcode.DAL/InitialData/audios.json" // Шлях у контейнері Docker
+            : "../Streetcode.DAL/InitialData/audios.json"; // Локальний шлях
+
         string audiosJson = await File.ReadAllTextAsync(initialDataAudioPath, Encoding.UTF8);
         var audiosfromJson = JsonConvert.DeserializeObject<List<Audio>>(audiosJson)
                              ?? throw new ArgumentException("Can not deserialize audio from json");
         
         foreach (var audio in audiosfromJson)
         {
-            string filePath = Path.Combine(blobPath, audio.BlobName!);
-            
-            if (File.Exists(filePath) || audio.Base64 is null) 
-                continue;
-            
-            var audioName = audio.BlobName!.Split('.')[0];
-            var audioExtension = audio.BlobName.Split('.')[1];
-            _blobService.SaveFileInStorageBase64(audio.Base64, audioName, audioExtension);
+            _blobAzureService.SaveFileInStorage(audio.Base64, audio.BlobName, string.Empty);
         }
         
         _dbContext.Audios!.AddRange(audiosfromJson);
@@ -1227,13 +1230,22 @@ public static class SeedingLocalExtension
             {
                 UserId = 2,
                 CommentContent = "Дякую за інформацію!",
-                StreetcodeId = 2
+                StreetcodeId = 2,
+                ParentCommentId = 1
             },
             new Comment
             {
                 UserId = 1,
                 CommentContent = "Дуже цікаво!",
-                StreetcodeId = 2
+                StreetcodeId = 2,
+                ParentCommentId = 1
+            },
+            new Comment
+            {
+                UserId = 1,
+                CommentContent = "Дуже цікаво!",
+                StreetcodeId = 2,
+                ParentCommentId = 2
             });
 
         await _dbContext.SaveChangesAsync();
@@ -1467,22 +1479,22 @@ public static class SeedingLocalExtension
             new StreetcodeImage
             {
                 ImageId = 1,
-                StreetcodeId = 1,
+                StreetcodeId = 1
             },
             new StreetcodeImage
             {
                 ImageId = 5,
-                StreetcodeId = 1,
+                StreetcodeId = 1
             },
             new StreetcodeImage
             {
                 ImageId = 1,
-                StreetcodeId = 2,
+                StreetcodeId = 2
             },
             new StreetcodeImage
             {
                 ImageId = 23,
-                StreetcodeId = 2,
+                StreetcodeId = 2
             });
 
         await _dbContext.SaveChangesAsync();

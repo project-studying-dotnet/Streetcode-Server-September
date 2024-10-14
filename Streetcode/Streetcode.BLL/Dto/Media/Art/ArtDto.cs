@@ -8,5 +8,5 @@ public class ArtDto
     public string? Description { get; set; }
     public string? Title { get; set; }
     public int ImageId { get; set; }
-    public ImageDto? Image { get; set; }
+    public ImageDto Image { get; set; } = null!;
 }

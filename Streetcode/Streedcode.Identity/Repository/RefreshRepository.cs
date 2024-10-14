@@ -35,7 +35,7 @@ public class RefreshRepository : IRefreshRepository
                                      !rt.IsRevoked);
     }
 
-    public async Task<IEnumerable<RefreshToken>> GetAllAsync(Expression<Func<RefreshToken, bool>> predicate = null)
+    public async Task<IEnumerable<RefreshToken>> GetAllAsync(Expression<Func<RefreshToken, bool>>? predicate = null)
     {
         if (predicate != null)
         {
