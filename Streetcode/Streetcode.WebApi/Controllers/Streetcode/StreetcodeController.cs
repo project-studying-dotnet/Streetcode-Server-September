@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.ExistWithUrl;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.AddToFavorite;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetFavouritesList;
 
 namespace Streetcode.WebApi.Controllers.Streetcode;
 
@@ -90,5 +91,11 @@ public class StreetcodeController : BaseApiController
     public async Task<IActionResult> AddToFavourites([FromBody] int streetcodeId)
     {
         return HandleResult(await Mediator.Send(new AddStreetcodeToFavouritesCommand(streetcodeId)));
+    }
+
+    [HttpGet("list")]
+    public async Task<IActionResult> GetFavouritesList()
+    {
+        return HandleResult(await Mediator.Send(new GetFavouritesListQuery()));
     }
 }
