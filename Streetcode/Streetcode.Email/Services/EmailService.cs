@@ -8,9 +8,9 @@ namespace Streetcode.Email.Services
     {
         private readonly SmtpSettings _smtpSettings;
 
-        public EmailService(SmtpSettings smtpSettings)
+        public EmailService(IConfiguration configuration)
         {
-            _smtpSettings = smtpSettings;
+            _smtpSettings = configuration.GetSection("SmtpSettings").Get<SmtpSettings>(); ;
         }
 
         public async Task<bool> SendEmailAsync(SendMailDto sendMailDto)
