@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.Dto.News;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl;
@@ -16,17 +18,15 @@ namespace Streetcode.XUnitTest.MediatRTests.News
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
-        private readonly Mock<IBlobService> _blobServiceMock;
+        private readonly Mock<IBlobAzureService> _blobAzureServiceMock;
         private readonly GetNewsAndLinksByUrlHandler _handler;
 
         public GetNewsAndLinksByUrlHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _blobServiceMock = new Mock<IBlobService>();
-            _handler = new GetNewsAndLinksByUrlHandler(_mapperMock.Object, _repositoryWrapperMock.Object, _blobServiceMock.Object, _loggerMock.Object);
+            _blobAzureServiceMock = new Mock<IBlobAzureService>();
+            _handler = new GetNewsAndLinksByUrlHandler(_mapperMock.Object, _repositoryWrapperMock.Object, _blobAzureServiceMock.Object);
         }
 
         [Fact]
@@ -42,13 +42,12 @@ namespace Streetcode.XUnitTest.MediatRTests.News
                 It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))
                 .ReturnsAsync((NewsEntity)null!);
 
-            // Act
-            var result = await _handler.Handle(request, CancellationToken.None);
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<CustomException>(async () =>
+                await _handler.Handle(request, CancellationToken.None));
 
-            // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(expectedErrorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(logger => logger.LogError(request, expectedErrorMsg), Times.Once);
+            Assert.Equal(StatusCodes.Status404NotFound, exception.StatusCode);
+            Assert.Equal(expectedErrorMsg, exception.Message);
         }
 
         [Fact]

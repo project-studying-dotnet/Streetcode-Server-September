@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Dto.Media.Art;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetById;
@@ -21,18 +22,16 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
-        private readonly Mock<IBlobService> _blobServiceMock;
+        private readonly Mock<IBlobAzureService> _blobAzureServiceMock;
         private readonly GetArtsByStreetcodeIdHandler _handler;
 
         public GetArtsByStreetcodeIdHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _blobServiceMock = new Mock<IBlobService>();
+            _blobAzureServiceMock = new Mock<IBlobAzureService>();
             _handler = new GetArtsByStreetcodeIdHandler(_repositoryWrapperMock.Object, _mapperMock.Object,
-                                                        _blobServiceMock.Object, _loggerMock.Object);
+                                                        _blobAzureServiceMock.Object);
         }
 
         [Fact]
@@ -68,25 +67,23 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
         }
 
         [Fact]
-        public async Task Handle_ReturnOkResult_WhenArtsDoNotExist()
+        public async Task Handle_ReturnsErrorMsg_WhenArtsDoNotExist()
         {
-            //Arrange
-            int streetcodeId = It.IsAny<int>(); 
-            var error = $"Cannot find any art with corresponding streetcode id: {streetcodeId}";
+            // Arrange
+            int streetcodeId = 1; 
+            var request = new GetArtsByStreetcodeIdQuery(streetcodeId);
+            string expectedErrorMsg = $"Cannot find any art with corresponding streetcode id: {streetcodeId}";
 
             _repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetAllAsync(
-                                        It.IsAny<Expression<Func<ArtEntity, bool>>>(),
+                           It.IsAny<Expression<Func<ArtEntity, bool>>>(),
                                         It.IsAny<Func<IQueryable<ArtEntity>, IIncludableQueryable<ArtEntity, object>>>()))!
                                  .ReturnsAsync((IEnumerable<ArtEntity>) null);
 
-            //Act
-            var result = await _handler.Handle(new GetArtsByStreetcodeIdQuery(It.IsAny<int>()), CancellationToken.None);
+            // Act
+            var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(request, CancellationToken.None));
 
-            //Assert
-            Assert.NotNull(result);
-            Assert.False(result.IsSuccess);
-            Assert.Equal(error, result.Errors.First().Message);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<GetArtsByStreetcodeIdQuery>(), error), Times.Once);
+            // Assert
+            Assert.Equal(expectedErrorMsg, exception.Message);
         }
     }
 }

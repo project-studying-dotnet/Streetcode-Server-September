@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Streetcode.BLL.Dto.Media.Images;
 using Streetcode.BLL.Dto.News;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Newss.SortedByDateTime;
 using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.DAL.Entities.News;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
 using Xunit;
@@ -18,17 +21,15 @@ namespace Streetcode.XUnitTest.MediatRTests.News
     {
         private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
         private readonly Mock<IMapper> _mapperMock;
-        private readonly Mock<ILoggerService> _loggerMock;
-        private readonly Mock<IBlobService> _blobServiceMock;
+        private readonly Mock<IBlobAzureService> _blobAzureServiceMock;
         private readonly SortedByDateTimeHandler _handler;
 
         public SortedByDateTimeHandlerTests()
         {
             _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
             _mapperMock = new Mock<IMapper>();
-            _loggerMock = new Mock<ILoggerService>();
-            _blobServiceMock = new Mock<IBlobService>();
-            _handler = new SortedByDateTimeHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _blobServiceMock.Object, _loggerMock.Object);
+            _blobAzureServiceMock = new Mock<IBlobAzureService>();
+            _handler = new SortedByDateTimeHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _blobAzureServiceMock.Object);
         }
 
         [Fact]
@@ -106,7 +107,7 @@ namespace Streetcode.XUnitTest.MediatRTests.News
             _mapperMock.Setup(mapper => mapper.Map<IEnumerable<NewsDto>>(news))
                 .Returns(newsDtos);
 
-            _blobServiceMock.Setup(blob => blob.FindFileInStorageAsBase64("image1"))
+            _blobAzureServiceMock.Setup(blob => blob.FindFileInStorageAsBase64("image1"))
                 .Returns("base64image");
 
             // Act
@@ -121,25 +122,25 @@ namespace Streetcode.XUnitTest.MediatRTests.News
 
 
         [Fact]
-        public async Task Handle_ReturnsFail_WhenNoNewsFound()
+        public async Task Handle_ThrowsCustomException_WhenNoNewsFound()
         {
             // Arrange
             var request = new SortedByDateTimeQuery();
             const string expectedErrorMsg = "There are no news in the database";
 
+            // Mock the repository to return null, simulating no news found in the database
             _repositoryWrapperMock.Setup(repo => repo.NewsRepository
                 .GetAllAsync(
                     It.IsAny<Expression<Func<NewsEntity, bool>>>(),
                     It.IsAny<Func<IQueryable<NewsEntity>, IIncludableQueryable<NewsEntity, object>>>()))!
                 .ReturnsAsync((IEnumerable<NewsEntity>)null);
 
-            // Act
-            var result = await _handler.Handle(request, CancellationToken.None);
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(request, CancellationToken.None));
 
-            // Assert
-            Assert.False(result.IsSuccess);
-            Assert.Equal(expectedErrorMsg, result.Errors.First().Message);
-            _loggerMock.Verify(logger => logger.LogError(request, expectedErrorMsg), Times.Once);
+            // Ensure the correct exception is thrown with the correct message and status code
+            Assert.Equal(StatusCodes.Status404NotFound, ex.StatusCode);
+            Assert.Equal(expectedErrorMsg, ex.Message);
         }
     }
 }

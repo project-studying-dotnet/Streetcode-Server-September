@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.News;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -10,11 +12,9 @@ namespace Streetcode.BLL.MediatR.Newss.Delete
     public class DeleteNewsHandler : IRequestHandler<DeleteNewsCommand, Result<Unit>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ILoggerService _logger;
-        public DeleteNewsHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+        public DeleteNewsHandler(IRepositoryWrapper repositoryWrapper)
         {
             _repositoryWrapper = repositoryWrapper;
-            _logger = logger;
         }
 
         public async Task<Result<Unit>> Handle(DeleteNewsCommand request, CancellationToken cancellationToken)
@@ -24,8 +24,7 @@ namespace Streetcode.BLL.MediatR.Newss.Delete
             if (news == null)
             {
                 string errorMsg = $"No news found by entered Id - {id}";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(errorMsg);
+                throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
             }
 
             if (news.Image is not null)
@@ -42,8 +41,7 @@ namespace Streetcode.BLL.MediatR.Newss.Delete
             else
             {
                 string errorMsg = "Failed to delete news";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
+                throw new CustomException(errorMsg, StatusCodes.Status500InternalServerError);
             }
         }
     }

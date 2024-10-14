@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
 
         services.AddScoped<IBlobService, BlobService>();
-        services.AddScoped<BlobAzureService>();
+        services.AddScoped<IBlobAzureService, BlobAzureService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
@@ -66,6 +66,12 @@ public static class ServiceCollectionExtensions
             ?? throw new InvalidOperationException("EmailConfiguration section is missing in the configuration.");
 
         services.AddSingleton(emailConfig);
+
+        services.AddSingleton(x =>
+        {
+            var azureBlobSettings = x.GetRequiredService<IOptions<BlobAzureVariables>>().Value;
+            return new BlobServiceClient(azureBlobSettings.ConnectionString);
+        });
 
         services.AddDbContext<StreetcodeDbContext>(options =>
         {

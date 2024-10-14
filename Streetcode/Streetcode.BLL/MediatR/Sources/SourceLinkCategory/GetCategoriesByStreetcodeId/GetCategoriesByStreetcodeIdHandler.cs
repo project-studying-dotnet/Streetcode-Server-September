@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
 using Streetcode.BLL.Dto.Sources;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -14,15 +16,13 @@ public class GetCategoriesByStreetcodeIdHandler : IRequestHandler<GetCategoriesB
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly IBlobService _blobService;
-    private readonly ILoggerService _logger;
+    private readonly IBlobAzureService _blobAzureService;
 
-    public GetCategoriesByStreetcodeIdHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IBlobService blobService, ILoggerService logger)
+    public GetCategoriesByStreetcodeIdHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IBlobAzureService blobAzureService)
     {
         _repositoryWrapper = repositoryWrapper;
         _mapper = mapper;
-        _blobService = blobService;
-        _logger = logger;
+        _blobAzureService = blobAzureService;
     }
 
     public async Task<Result<IEnumerable<SourceLinkCategoryDto>>> Handle(GetCategoriesByStreetcodeIdQuery request, CancellationToken cancellationToken)
@@ -36,15 +36,14 @@ public class GetCategoriesByStreetcodeIdHandler : IRequestHandler<GetCategoriesB
         if (srcCategories is null)
         {
             string errorMsg = $"Cant find any source category with the streetcode id {request.StreetcodeId}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
         }
 
         var mappedSrcCategories = _mapper.Map<IEnumerable<SourceLinkCategoryDto>>(srcCategories);
 
         var updatedCategories = mappedSrcCategories.Select(srcCategory =>
         {
-            srcCategory.Image!.Base64 = _blobService.FindFileInStorageAsBase64(srcCategory.Image.BlobName);
+            srcCategory.Image!.Base64 = _blobAzureService.FindFileInStorageAsBase64(srcCategory.Image.BlobName);
             return srcCategory;
         });
 

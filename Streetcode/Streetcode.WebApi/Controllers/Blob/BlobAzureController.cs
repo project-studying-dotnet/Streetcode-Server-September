@@ -23,7 +23,7 @@ public class BlobAzureController : ControllerBase
     [HttpPost("upload")]
     public IActionResult UploadFile([FromForm] string base64File, [FromForm] string fileName)
     {
-        var fileUrl = _blobServiceAzure.SaveFileInStorage(base64File, fileName);
+        var fileUrl = _blobServiceAzure.SaveFileInStorage(base64File, fileName, string.Empty);
         return Ok(new { fileUrl });
     }
 

@@ -3,11 +3,11 @@ using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Dto.Media.Audio;
-using Streetcode.BLL.Dto.Transactions;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.MediatR.ResultVariations;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 
 namespace Streetcode.BLL.MediatR.Media.Audio.GetByStreetcodeId;
 
@@ -15,15 +15,13 @@ public class GetAudioByStreetcodeIdQueryHandler : IRequestHandler<GetAudioByStre
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly IBlobService _blobService;
-    private readonly ILoggerService _logger;
+    private readonly IBlobAzureService _blobAzureService;
 
-    public GetAudioByStreetcodeIdQueryHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IBlobService blobService, ILoggerService logger)
+    public GetAudioByStreetcodeIdQueryHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IBlobAzureService blobAzureService)
     {
         _repositoryWrapper = repositoryWrapper;
         _mapper = mapper;
-        _blobService = blobService;
-        _logger = logger;
+        _blobAzureService = blobAzureService;
     }
 
     public async Task<Result<AudioDto>> Handle(GetAudioByStreetcodeIdQuery request, CancellationToken cancellationToken)
@@ -34,8 +32,7 @@ public class GetAudioByStreetcodeIdQueryHandler : IRequestHandler<GetAudioByStre
         if (streetcode == null)
         {
             string errorMsg = $"Cannot find an audio with the corresponding streetcode id: {request.StreetcodeId}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
         }
 
         NullResult<AudioDto> result = new NullResult<AudioDto>();
@@ -43,7 +40,7 @@ public class GetAudioByStreetcodeIdQueryHandler : IRequestHandler<GetAudioByStre
         if (streetcode.Audio != null)
         {
             AudioDto audioDto = _mapper.Map<AudioDto>(streetcode.Audio);
-            audioDto.Base64 = _blobService.FindFileInStorageAsBase64(audioDto.BlobName);
+            audioDto.Base64 = _blobAzureService.FindFileInStorageAsBase64(audioDto.BlobName);
             result.WithValue(audioDto);
         }
 
