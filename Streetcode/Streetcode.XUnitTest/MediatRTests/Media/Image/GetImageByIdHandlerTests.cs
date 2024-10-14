@@ -75,7 +75,7 @@ public class GetImageByIdHandlerTests
             .Setup(repo => repo.ImageRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<ImageEntity, bool>>>(),
                 null))
-            .ReturnsAsync((ImageEntity)null);
+            .ReturnsAsync((ImageEntity?)null);
 
         // Act
         var exception = await Assert.ThrowsAsync<CustomException>(

@@ -86,7 +86,7 @@ public static class SeedingLocalExtension
         
         foreach (var img in imageFromJson)
         {
-            _blobAzureService.SaveFileInStorage(img.Base64, img.BlobName);
+            _blobAzureService.SaveFileInStorage(img.Base64, img.BlobName, string.Empty);
         }
         
         _dbContext.Images!.AddRange(imageFromJson);
@@ -146,7 +146,7 @@ public static class SeedingLocalExtension
         
         foreach (var audio in audiosfromJson)
         {
-            _blobAzureService.SaveFileInStorage(audio.Base64, audio.BlobName);
+            _blobAzureService.SaveFileInStorage(audio.Base64, audio.BlobName, string.Empty);
         }
         
         _dbContext.Audios!.AddRange(audiosfromJson);

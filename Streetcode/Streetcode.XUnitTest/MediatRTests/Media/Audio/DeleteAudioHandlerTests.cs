@@ -62,7 +62,7 @@ public class DeleteAudioHandlerTests
             .Setup(repo => repo.AudioRepository.GetFirstOrDefaultAsync(
                  It.IsAny<Expression<Func<AudioEntity, bool>>>(),
                  It.IsAny<Func<IQueryable<AudioEntity>, IIncludableQueryable<AudioEntity, object>>>()))
-            .ReturnsAsync((AudioEntity)null);
+            .ReturnsAsync((AudioEntity?)null);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(command, CancellationToken.None));

@@ -74,7 +74,7 @@ public class GetAllImagesHandlerTests
         _repositoryWrapperMock
             .Setup(repo => repo.ImageRepository.GetAllAsync(It.IsAny<Expression<Func<ImageEntity, bool>>>(),
                 null))
-            .ReturnsAsync((IEnumerable<ImageEntity>)null);
+            .ReturnsAsync((IEnumerable<ImageEntity>?)null);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(new GetAllImagesQuery(),

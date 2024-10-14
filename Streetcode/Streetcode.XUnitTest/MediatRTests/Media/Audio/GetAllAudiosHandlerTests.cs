@@ -83,7 +83,7 @@ public class GetAllAudiosHandlerTests
             .GetAllAsync(
                 It.IsAny<Expression<Func<AudioEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<AudioEntity>, IIncludableQueryable<AudioEntity, object>>>()))
-            .ReturnsAsync((IEnumerable<AudioEntity>)null);
+            .ReturnsAsync((IEnumerable<AudioEntity>?)null);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(new GetAllAudiosQuery(), CancellationToken.None));

@@ -104,7 +104,7 @@ public class CreateImageHandlerTests
 
         _repositoryWrapperMock
             .Setup(repo => repo.ImageRepository.CreateAsync(It.IsAny<ImageEntity>()))
-            .ReturnsAsync((ImageEntity)null);
+            .ReturnsAsync((ImageEntity?)null);
 
         _repositoryWrapperMock
             .Setup(repo => repo.SaveChangesAsync())

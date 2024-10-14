@@ -77,7 +77,7 @@ public class GetAudioByStreetcodeIdQueryHandlerTests
         _repositoryWrapperMock
             .Setup(repo => repo.StreetcodeRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<StreetcodeContent, bool>>>(), 
             It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
-            .ReturnsAsync((StreetcodeContent)null);
+            .ReturnsAsync((StreetcodeContent?)null);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<CustomException>(() => _handler

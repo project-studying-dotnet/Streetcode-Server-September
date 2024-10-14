@@ -50,7 +50,7 @@ public class BlobAzureService : IBlobAzureService
         return memoryStream;
     }
 
-    public string SaveFileInStorage(string base64, string name, string mimeType = null!)
+    public string SaveFileInStorage(string base64, string name, string mimeType)
     {
         mimeType = GetMimeType(name);
 

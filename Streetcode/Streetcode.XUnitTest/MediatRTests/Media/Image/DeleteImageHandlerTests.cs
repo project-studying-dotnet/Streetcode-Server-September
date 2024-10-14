@@ -60,7 +60,7 @@ public class DeleteImageHandlerTests
             .Setup(repo => repo.ImageRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<ImageEntity, bool>>>(),
                 It.IsAny<Func<IQueryable<ImageEntity>, IIncludableQueryable<ImageEntity, object>>>()))
-            .ReturnsAsync((ImageEntity)null); 
+            .ReturnsAsync((ImageEntity?)null); 
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<CustomException>(() => _handler.Handle(new DeleteImageCommand(imageId), CancellationToken.None));
