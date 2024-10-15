@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Streetcode.Identity.Exceptions;
+using Streetcode.Identity.Enums;
 using Streetcode.Identity.Models;
+using Streetcode.Identity.Models.AzureBus;
 using Streetcode.Identity.Models.Dto;
 using Streetcode.Identity.Services.Interfaces;
 using System.Security.Claims;
@@ -15,17 +16,26 @@ namespace Streetcode.Identity.Services.Realizations
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IJwtService _jwtService;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
+        private readonly IAzureBusService _azureBusService;
+        private readonly string _emailMessageTopic;
 
         public AuthService(UserManager<ApplicationUser> userManager, 
                         SignInManager<ApplicationUser> signInManager, 
                         IJwtService jwtService, IMapper mapper,
-                        IHttpContextAccessor contextAccessor)
+                        IHttpContextAccessor contextAccessor,
+                        IConfiguration configuration,
+                        IAzureBusService azureBusService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtService = jwtService;
             _mapper = mapper;
             _httpContextAccessor = contextAccessor;
+            _configuration = configuration;
+            _azureBusService = azureBusService;
+
+            _emailMessageTopic = _configuration.GetValue<string>("ServiceBusSettings:EmailMessageTopic");
         }
 
         public async Task<LoginResultDto> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken)
@@ -124,6 +134,15 @@ namespace Streetcode.Identity.Services.Realizations
 
             var createdUserDto = _mapper.Map<UserDto>(user) ??
                 throw new ArgumentException("Failed to map");
+
+            var mailDto = new AzureRegisterMailDto()
+            {
+                EmailType = EmailType.Register,
+                To = createdUserDto.Email,
+                Subject = "Registered"
+            };
+
+            await _azureBusService.PublishMessage(mailDto, _emailMessageTopic);
 
             return createdUserDto;
         }

@@ -49,6 +49,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "Streetcode.Identity_";
 });
 
+builder.Services.AddSingleton<IAzureBusService, AzureBusService>();
+
 var app = builder.Build();
 var recurringJobManager = app.Services.GetRequiredService<IRecurringJobManager>();
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -25,6 +26,9 @@ public class AuthServiceTests
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private readonly Mock<IUserClaimsPrincipalFactory<ApplicationUser>> _claimsPrincipalFactoryMock;
+    private readonly Mock<IConfiguration> _configurationMock;
+    private readonly Mock<IConfigurationSection> _configurationSectionMock; 
+    private readonly string _emailMessageTopic = "email-topic-test";
     public AuthServiceTests()
     {
         _userManagerMock = new Mock<UserManager<ApplicationUser>>(
@@ -44,13 +48,21 @@ public class AuthServiceTests
 
         _jwtServiceMock = new Mock<IJwtService>();
         _mapperMock = new Mock<IMapper>();
+        _configurationMock = new Mock<IConfiguration>();
+        _configurationSectionMock = new Mock<IConfigurationSection>();
+
+        _configurationSectionMock.Setup(x => x.Value).Returns(_emailMessageTopic);
+        _configurationMock.Setup(config => config.GetSection("ServiceBusSettings:EmailMessageTopic"))
+                          .Returns(_configurationSectionMock.Object);
 
         _authService = new AuthServiceClass(
             _userManagerMock.Object,
             _signInManagerMock.Object,
             _jwtServiceMock.Object,
             _mapperMock.Object,
-            _httpContextAccessorMock.Object
+            _httpContextAccessorMock.Object,
+            _configurationMock.Object,
+            null
         );
     }
 
