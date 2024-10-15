@@ -76,11 +76,6 @@ public class StreetcodeController : BaseApiController
     {
         return HandleResult(await Mediator.Send(new GetStreetcodeByIdQuery(id)));
     }
-
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteHardStreetcode(int id)
-    {
-        return HandleResult(await Mediator.Send(new DeleteHardStreetcodeCommand(id)));
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] StreetcodeMainBlockCreateDto streetcodeMainBlockCreateDto)
@@ -111,4 +106,9 @@ public class StreetcodeController : BaseApiController
     {
         return HandleResult(await Mediator.Send(new RemoveStreetcodeFromFavouritesCommand(streetcodeId)));
     }
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteHardStreetcode(int id)
+    {
+        return HandleResult(await Mediator.Send(new DeleteHardStreetcodeCommand(id)));  
+    } 
 }

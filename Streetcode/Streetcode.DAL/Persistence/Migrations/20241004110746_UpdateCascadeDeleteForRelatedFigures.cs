@@ -21,7 +21,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                 principalSchema: "streetcode",
                 principalTable: "streetcodes",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.SetNull);
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

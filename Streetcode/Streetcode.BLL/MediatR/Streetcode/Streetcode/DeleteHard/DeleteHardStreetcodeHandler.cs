@@ -17,13 +17,6 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.DeleteHard
 
         public async Task<Result<Unit>> Handle(DeleteHardStreetcodeCommand request, CancellationToken cancellationToken)
         {
-            // Видалення пов'язаних записів
-            var relatedFigures = await _repositoryWrapper.RelatedFigureRepository
-                .GetAllAsync(rf => rf.ObserverId == request.Id || rf.TargetId == request.Id);
-
-            _repositoryWrapper.RelatedFigureRepository.DeleteRange(relatedFigures);
-
-            // Видалення самого streetcode
             var streetcode = await _repositoryWrapper.StreetcodeRepository
                 .GetFirstOrDefaultAsync(s => s.Id == request.Id);
 
