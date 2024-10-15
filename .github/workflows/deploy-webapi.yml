@@ -51,6 +51,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'app-streetcode-webapi-eu-prop-001'
-          slot-name: 'production'
           package: ./publish/webapi
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_WebApi }} #should be added to secrets
