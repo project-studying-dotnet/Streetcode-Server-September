@@ -40,7 +40,7 @@ public static class ConfigureHostBuilderExtensions
 
     public static void ConfigureAzureBlob(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        services.Configure<BlobAzureVariables>(builder.Configuration.GetSection("AzureBlobStorage"));
+        services.Configure<BlobAzureVariables>(builder.Configuration.GetSection("AzureBlobStorageCreds"));
     }
 
     public static void ConfigureSerilog(this IServiceCollection services, WebApplicationBuilder builder)
