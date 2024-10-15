@@ -1,5 +1,6 @@
 using AutoMapper;
 using FluentResults;
+using MailKit.Search;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MimeKit.Text;
@@ -28,34 +29,22 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
 
             var streetcodes = await _repositoryWrapper.StreetcodeRepository.GetAllAsync(
                  predicate: x =>
-        (x.Status == DAL.Enums.StreetcodeStatus.Published) &&
-        (x.Title.Contains(searchQuery) ||
-        (x.Alias != null && x.Alias.Contains(searchQuery)) ||
-        x.Teaser.Contains(searchQuery)));
+                (x.Status == DAL.Enums.StreetcodeStatus.Published) &&
+                (x.Title.Contains(searchQuery) ||
+                (x.Alias != null && x.Alias.Contains(searchQuery)) ||
+                x.Teaser.Contains(searchQuery)));
 
             foreach (var streetcode in streetcodes)
             {
-                if (streetcode.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                if(IsStreetcodeFound(streetcode, searchQuery))
                 {
-                    results.Add(CreateFilterResult(streetcode, streetcode.Title));
-                    continue;
-                }
+                    var matchedField = new[] { streetcode.Title, streetcode.Alias, streetcode.Teaser, streetcode.TransliterationUrl }
+                            .FirstOrDefault(field => !string.IsNullOrEmpty(field) && field.Contains(searchQuery, StringComparison.OrdinalIgnoreCase));
 
-                if (!string.IsNullOrEmpty(streetcode.Alias) && streetcode.Alias.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    results.Add(CreateFilterResult(streetcode, streetcode.Alias));
-                    continue;
-                }
-
-                if (streetcode.Teaser.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    results.Add(CreateFilterResult(streetcode, streetcode.Teaser));
-                    continue;
-                }
-
-                if (streetcode.TransliterationUrl.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    results.Add(CreateFilterResult(streetcode, streetcode.TransliterationUrl));
+                    if (matchedField != null)
+                    {
+                        results.Add(CreateFilterResult(streetcode, matchedField));
+                    }
                 }
             }
 
@@ -128,6 +117,15 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
                 Content = content,
                 SourceName = sourceName,
             };
+        }
+
+        private bool IsStreetcodeFound(StreetcodeContent streetcode, string searchQuery)
+        {
+            return streetcode.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrEmpty(streetcode.Alias) &&
+                    streetcode.Alias.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                    streetcode.Teaser.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                    streetcode.TransliterationUrl.Contains(searchQuery, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
