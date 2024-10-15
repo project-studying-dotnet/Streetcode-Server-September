@@ -100,7 +100,7 @@ public static class ServiceCollectionExtensions
         {
             opt.AddDefaultPolicy(policy =>
             {
-                policy.WithOrigins(corsConfig?.AllowedOrigins?.ToArray() ?? Array.Empty<string>())
+                policy.AllowAnyOrigin()
                     .WithHeaders(corsConfig?.AllowedHeaders?.ToArray() ?? Array.Empty<string>())
                     .WithMethods(corsConfig?.AllowedMethods?.ToArray() ?? Array.Empty<string>())
                     .SetPreflightMaxAge(TimeSpan.FromSeconds(corsConfig?.PreflightMaxAge ?? 86400));
