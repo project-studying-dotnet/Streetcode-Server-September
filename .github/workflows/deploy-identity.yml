@@ -51,6 +51,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'app-identity-eu-prod-001'
-          slot-name: 'production'
           package: ./publish/identity
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_Identity }} #should be added to secrets

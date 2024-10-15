@@ -1,4 +1,4 @@
-name: Deploy Web API
+name: Deploy Email microservice
 
 on:
   push:
@@ -19,19 +19,19 @@ jobs:
           dotnet-version: '6.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore ./Streetcode/Streetcode.WebApi/Streetcode.WebApi.csproj
+        run: dotnet restore ./Streetcode/Streetcode.Email/Streetcode.Email.csproj
 
       - name: Build
-        run: dotnet build ./Streetcode/Streetcode.WebApi/Streetcode.WebApi.csproj --configuration Release --no-restore
+        run: dotnet build ./Streetcode/Streetcode.Email/Streetcode.Email.csproj --configuration Release --no-restore
 
       - name: dotnet publish
-        run: dotnet publish ./Streetcode/Streetcode.WebApi/Streetcode.WebApi.csproj --configuration Release -o ./publish/webapi
+        run: dotnet publish ./Streetcode/Streetcode.Email/Streetcode.Email.csproj --configuration Release -o ./publish/email
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ./publish/webapi
+          path: ./publish/email
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,6 +50,6 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'app-streetcode-webapi-eu-prop-001'
-          package: ./publish/webapi
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_WebApi }} #should be added to secrets
+          app-name: 'app-emailservice-eu-prod-001'
+          package: ./publish/email
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_EmailService }}
