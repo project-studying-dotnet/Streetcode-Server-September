@@ -25,7 +25,7 @@ jobs:
         run: dotnet build ./Streetcode/Streetcode.Identity/Streetcode.Identity.csproj --configuration Release --no-restore
 
       - name: dotnet publish
-        run: dotnet publish ./Streetcode/Streetcode.Identity/Streetcode.Identity.csproj -configuration Release -o ./publish/identity
+        run: dotnet publish ./Streetcode/Streetcode.Identity/Streetcode.Identity.csproj --configuration Release -o ./publish/identity
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'app-identity-eu-prod-001'
           slot-name: 'production'
-          package: .
+          package: ./publish/identity
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_Identity }} #should be added to secrets
