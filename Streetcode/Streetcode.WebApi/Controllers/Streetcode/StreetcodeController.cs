@@ -10,12 +10,14 @@ using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter;
 using Streetcode.BLL.Dto.AdditionalContent.Filter;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetShortById;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllStreetcodesMainPage;
+using Streetcode.BLL.MediatR.Streetcode.Streetcode.DeleteHard;
 using Microsoft.AspNetCore.Authorization;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.Create;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.ExistWithUrl;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.AddToFavorite;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.GetFavouritesList;
 using Streetcode.BLL.MediatR.Streetcode.Streetcode.RemoveFromFavourites;
+
 
 namespace Streetcode.WebApi.Controllers.Streetcode;
 
@@ -74,7 +76,6 @@ public class StreetcodeController : BaseApiController
     {
         return HandleResult(await Mediator.Send(new GetStreetcodeByIdQuery(id)));
     }
-
     [HttpPost]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] StreetcodeMainBlockCreateDto streetcodeMainBlockCreateDto)
@@ -105,4 +106,9 @@ public class StreetcodeController : BaseApiController
     {
         return HandleResult(await Mediator.Send(new RemoveStreetcodeFromFavouritesCommand(streetcodeId)));
     }
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteHardStreetcode(int id)
+    {
+        return HandleResult(await Mediator.Send(new DeleteHardStreetcodeCommand(id)));  
+    } 
 }
