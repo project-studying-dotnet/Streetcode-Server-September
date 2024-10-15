@@ -53,4 +53,4 @@ jobs:
           app-name: 'app-streetcode-webapi-eu-prop-001'
           slot-name: 'production'
           package: ./publish/webapi
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_6d80182f9bcc42ef9b91e01b93e7c5b6 }} #should be added to secrets
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_WebApi }} #should be added to secrets
