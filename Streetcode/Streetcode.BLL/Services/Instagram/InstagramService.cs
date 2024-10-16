@@ -33,17 +33,17 @@ namespace Streetcode.BLL.Services.Instagram
             var jsonOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             };
 
             var postResponse = JsonSerializer.Deserialize<InstagramPostResponse>(jsonResponse, jsonOptions);
 
-            IEnumerable<InstagramPost> posts = RemoveVideoMediaType(postResponse.Data);
+            IEnumerable<InstagramPost> posts = RemoveVideoMediaType(postResponse!.Data);
 
             return posts;
         }
 
-        public IEnumerable<InstagramPost> RemoveVideoMediaType(IEnumerable<InstagramPost> posts)
+        public static IEnumerable<InstagramPost> RemoveVideoMediaType(IEnumerable<InstagramPost> posts)
         {
             return posts.Where(p => p.MediaType != "VIDEO").Take(postLimit);
         }

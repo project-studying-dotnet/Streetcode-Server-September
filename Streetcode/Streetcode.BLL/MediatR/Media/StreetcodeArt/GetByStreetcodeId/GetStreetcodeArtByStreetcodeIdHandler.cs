@@ -1,44 +1,34 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
-using Streetcode.BLL.DTO.Media.Art;
+using Streetcode.BLL.Dto.Media.Art;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.StreetcodeArt.GetByStreetcodeId
 {
-  public class GetStreetcodeArtByStreetcodeIdHandler : IRequestHandler<GetStreetcodeArtByStreetcodeIdQuery, Result<IEnumerable<StreetcodeArtDTO>>>
+  public class GetStreetcodeArtByStreetcodeIdHandler : IRequestHandler<GetStreetcodeArtByStreetcodeIdQuery, Result<IEnumerable<StreetcodeArtDto>>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly IBlobService _blobService;
-        private readonly ILoggerService _logger;
+        private readonly IBlobAzureService _blobAzureService;
 
         public GetStreetcodeArtByStreetcodeIdHandler(
             IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
-            IBlobService blobService,
-            ILoggerService logger)
+            IBlobAzureService blobAzureService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
-            _blobService = blobService;
-            _logger = logger;
+            _blobAzureService = blobAzureService;
         }
 
-        public async Task<Result<IEnumerable<StreetcodeArtDTO>>> Handle(GetStreetcodeArtByStreetcodeIdQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<StreetcodeArtDto>>> Handle(GetStreetcodeArtByStreetcodeIdQuery request, CancellationToken cancellationToken)
         {
-            /*
-            if ((await _repositoryWrapper.StreetcodeRepository.GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId)) is null)
-            {
-                return Result.Fail(
-                    new Error($"Cannot find a streetcode arts by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist"));
-            }
-            */
-
             var art = await _repositoryWrapper
             .StreetcodeArtRepository
             .GetAllAsync(
@@ -50,16 +40,17 @@ namespace Streetcode.BLL.MediatR.Media.StreetcodeArt.GetByStreetcodeId
             if (art is null)
             {
                 string errorMsg = $"Cannot find an art with corresponding streetcode id: {request.StreetcodeId}";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
+                throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
             }
 
-            var artsDto = _mapper.Map<IEnumerable<StreetcodeArtDTO>>(art);
+            var artsDto = _mapper.Map<IEnumerable<StreetcodeArtDto>>(art);
 
-            foreach (var artDto in artsDto)
-            {
-                artDto.Art.Image.Base64 = _blobService.FindFileInStorageAsBase64(artDto.Art.Image.BlobName);
-            }
+            artsDto
+                .Select(artDto => artDto.Art)
+                .Where(art => art?.Image?.BlobName != null)
+                .ToList()
+                .ForEach(art => art.Image.Base64 = _blobAzureService.FindFileInStorageAsBase64(art.Image.BlobName));
+
 
             return Result.Ok(artsDto);
         }

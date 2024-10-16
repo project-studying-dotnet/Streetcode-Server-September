@@ -2,31 +2,29 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.Media.Audio;
-using Streetcode.BLL.DTO.Transactions;
+using Streetcode.BLL.Dto.Media.Audio;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.MediatR.ResultVariations;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 
 namespace Streetcode.BLL.MediatR.Media.Audio.GetByStreetcodeId;
 
-public class GetAudioByStreetcodeIdQueryHandler : IRequestHandler<GetAudioByStreetcodeIdQuery, Result<AudioDTO>>
+public class GetAudioByStreetcodeIdQueryHandler : IRequestHandler<GetAudioByStreetcodeIdQuery, Result<AudioDto>>
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly IBlobService _blobService;
-    private readonly ILoggerService _logger;
+    private readonly IBlobAzureService _blobAzureService;
 
-    public GetAudioByStreetcodeIdQueryHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IBlobService blobService, ILoggerService logger)
+    public GetAudioByStreetcodeIdQueryHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IBlobAzureService blobAzureService)
     {
         _repositoryWrapper = repositoryWrapper;
         _mapper = mapper;
-        _blobService = blobService;
-        _logger = logger;
+        _blobAzureService = blobAzureService;
     }
 
-    public async Task<Result<AudioDTO>> Handle(GetAudioByStreetcodeIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<AudioDto>> Handle(GetAudioByStreetcodeIdQuery request, CancellationToken cancellationToken)
     {
         var streetcode = await _repositoryWrapper.StreetcodeRepository.GetFirstOrDefaultAsync(
             s => s.Id == request.StreetcodeId,
@@ -34,17 +32,15 @@ public class GetAudioByStreetcodeIdQueryHandler : IRequestHandler<GetAudioByStre
         if (streetcode == null)
         {
             string errorMsg = $"Cannot find an audio with the corresponding streetcode id: {request.StreetcodeId}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
         }
 
-        NullResult<AudioDTO> result = new NullResult<AudioDTO>();
+        NullResult<AudioDto> result = new NullResult<AudioDto>();
 
         if (streetcode.Audio != null)
         {
-            AudioDTO audioDto = _mapper.Map<AudioDTO>(streetcode.Audio);
-            audioDto = _mapper.Map<AudioDTO>(streetcode.Audio);
-            audioDto.Base64 = _blobService.FindFileInStorageAsBase64(audioDto.BlobName);
+            AudioDto audioDto = _mapper.Map<AudioDto>(streetcode.Audio);
+            audioDto.Base64 = _blobAzureService.FindFileInStorageAsBase64(audioDto.BlobName);
             result.WithValue(audioDto);
         }
 

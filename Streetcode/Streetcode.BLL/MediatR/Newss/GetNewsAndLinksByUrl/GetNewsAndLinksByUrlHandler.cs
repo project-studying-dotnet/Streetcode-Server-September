@@ -1,53 +1,50 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.News;
+using Streetcode.BLL.Dto.News;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.DAL.Entities.News;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.Interfaces.Logging;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 
 namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
 {
-    public class GetNewsAndLinksByUrlHandler : IRequestHandler<GetNewsAndLinksByUrlQuery, Result<NewsDTOWithURLs>>
+    public class GetNewsAndLinksByUrlHandler : IRequestHandler<GetNewsAndLinksByUrlQuery, Result<NewsWithURLsDto>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly IBlobService _blobService;
-        private readonly ILoggerService _logger;
-        public GetNewsAndLinksByUrlHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, IBlobService blobService, ILoggerService logger)
+        private readonly IBlobAzureService _blobAzureService;
+        public GetNewsAndLinksByUrlHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, IBlobAzureService blobAzureService)
         {
             _mapper = mapper;
             _repositoryWrapper = repositoryWrapper;
-            _blobService = blobService;
-            _logger = logger;
+            _blobAzureService = blobAzureService;
         }
 
-        public async Task<Result<NewsDTOWithURLs>> Handle(GetNewsAndLinksByUrlQuery request, CancellationToken cancellationToken)
+        public async Task<Result<NewsWithURLsDto>> Handle(GetNewsAndLinksByUrlQuery request, CancellationToken cancellationToken)
         {
             string url = request.url;
-            var newsDTO = _mapper.Map<NewsDTO>(await _repositoryWrapper.NewsRepository.GetFirstOrDefaultAsync(
+            var newsDto = _mapper.Map<NewsDto>(await _repositoryWrapper.NewsRepository.GetFirstOrDefaultAsync(
                 predicate: sc => sc.URL == url,
                 include: scl => scl
                     .Include(sc => sc.Image)));
 
-            if (newsDTO is null)
+            if (newsDto is null)
             {
                 string errorMsg = $"No news by entered Url - {url}";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(errorMsg);
+                throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
             }
 
-            if (newsDTO.Image is not null)
+            if (newsDto.Image is not null)
             {
-                newsDTO.Image.Base64 = _blobService.FindFileInStorageAsBase64(newsDTO.Image.BlobName);
+                newsDto.Image.Base64 = _blobAzureService.FindFileInStorageAsBase64(newsDto.Image.BlobName);
             }
 
             var news = (await _repositoryWrapper.NewsRepository.GetAllAsync()).ToList();
-            var newsIndex = news.FindIndex(x => x.Id == newsDTO.Id);
-            string prevNewsLink = null;
-            string nextNewsLink = null;
+            var newsIndex = news.FindIndex(x => x.Id == newsDto.Id);
+            string? prevNewsLink = null;
+            string? nextNewsLink = null;
 
             if(newsIndex != 0)
             {
@@ -59,7 +56,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
                 nextNewsLink = news[newsIndex + 1].URL;
             }
 
-            var randomNewsTitleAndLink = new RandomNewsDTO();
+            var randomNewsTitleAndLink = new RandomNewsDto();
 
             var arrCount = news.Count;
             if (arrCount > 3)
@@ -81,20 +78,15 @@ namespace Streetcode.BLL.MediatR.Newss.GetNewsAndLinksByUrl
                 randomNewsTitleAndLink.Title = news[newsIndex].Title;
             }
 
-            var newsDTOWithUrls = new NewsDTOWithURLs();
-            newsDTOWithUrls.RandomNews = randomNewsTitleAndLink;
-            newsDTOWithUrls.News = newsDTO;
-            newsDTOWithUrls.NextNewsUrl = nextNewsLink;
-            newsDTOWithUrls.PrevNewsUrl = prevNewsLink;
-
-            if (newsDTOWithUrls is null)
+            var newsDtoWithUrls = new NewsWithURLsDto
             {
-                string errorMsg = $"No news by entered Url - {url}";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(errorMsg);
-            }
+                RandomNews = randomNewsTitleAndLink,
+                News = newsDto,
+                NextNewsUrl = nextNewsLink,
+                PrevNewsUrl = prevNewsLink
+            };
 
-            return Result.Ok(newsDTOWithUrls);
+            return Result.Ok(newsDtoWithUrls);
         }
     }
 }

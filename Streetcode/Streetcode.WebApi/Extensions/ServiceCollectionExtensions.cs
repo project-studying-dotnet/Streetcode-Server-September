@@ -1,9 +1,6 @@
-using System.Text;
 using Hangfire;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Services.Logging;
@@ -15,7 +12,6 @@ using Streetcode.BLL.Services.Email;
 using Streetcode.DAL.Entities.AdditionalContent.Email;
 using Streetcode.BLL.Interfaces.BlobStorage;
 using Streetcode.BLL.Services.BlobStorageService;
-using Streetcode.BLL.Interfaces.Users;
 using Microsoft.FeatureManagement;
 using Streetcode.BLL.Interfaces.Payment;
 using Streetcode.BLL.Services.Payment;
@@ -23,7 +19,12 @@ using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Interfaces.Text;
 using Streetcode.BLL.Services.Text;
-using Serilog.Events;
+using Streetcode.BLL.ValidationBehavior;
+using System.Reflection;
+using FluentValidation;
+using Streetcode.BLL.Services.Cache;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Options;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -38,23 +39,39 @@ public static class ServiceCollectionExtensions
     {
         services.AddRepositoryServices();
         services.AddFeatureManagement();
+
         var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         services.AddAutoMapper(currentAssemblies);
         services.AddMediatR(currentAssemblies);
 
+        services.AddHttpContextAccessor();
+
         services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped<IBlobAzureService, BlobAzureService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddScoped<ICacheService, CacheService>();
+        services.AddModelValidationServices();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+        var connectionString = configuration.GetConnectionString("DefaultConnection") 
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is not found in the configuration.");
+
+        var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>()
+            ?? throw new InvalidOperationException("EmailConfiguration section is missing in the configuration.");
+
         services.AddSingleton(emailConfig);
+
+        services.AddSingleton(x =>
+        {
+            var azureBlobSettings = x.GetRequiredService<IOptions<BlobAzureVariables>>().Value;
+            return new BlobServiceClient(azureBlobSettings.ConnectionString);
+        });
 
         services.AddDbContext<StreetcodeDbContext>(options =>
         {
@@ -63,6 +80,12 @@ public static class ServiceCollectionExtensions
                 opt.MigrationsAssembly(typeof(StreetcodeDbContext).Assembly.GetName().Name);
                 opt.MigrationsHistoryTable("__EFMigrationsHistory", schema: "entity_framework");
             });
+        });
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+            options.InstanceName = "Streetcode.WebApi_";
         });
 
         services.AddHangfire(config =>
@@ -78,8 +101,9 @@ public static class ServiceCollectionExtensions
             opt.AddDefaultPolicy(policy =>
             {
                 policy.AllowAnyOrigin()
-                      .AllowAnyHeader()
-                      .AllowAnyMethod();
+                    .WithHeaders(corsConfig?.AllowedHeaders?.ToArray() ?? Array.Empty<string>())
+                    .WithMethods(corsConfig?.AllowedMethods?.ToArray() ?? Array.Empty<string>())
+                    .SetPreflightMaxAge(TimeSpan.FromSeconds(corsConfig?.PreflightMaxAge ?? 86400));
             });
         });
 
@@ -89,6 +113,8 @@ public static class ServiceCollectionExtensions
             opt.IncludeSubDomains = true;
             opt.MaxAge = TimeSpan.FromDays(30);
         });
+
+        services.AddLocalization();
 
         services.AddLogging();
         services.AddControllers();
@@ -101,14 +127,47 @@ public static class ServiceCollectionExtensions
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyApi", Version = "v1" });
             opt.CustomSchemaIds(x => x.FullName);
+            opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Description = "Please enter a valid token",
+                Name = "JWT Authentication",
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "Bearer"
+            });
+          
+            opt.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        },
+                        Scheme = "oauth2",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header
+                    },
+                    new List<string>()
+                }
+            });
         });
+    }
+
+    public static void AddModelValidationServices(this IServiceCollection services)
+    {
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+        services.AddValidatorsFromAssembly(Assembly.Load("Streetcode.BLL"));
     }
 
     public class CorsConfiguration
     {
-        public List<string> AllowedOrigins { get; set; }
-        public List<string> AllowedHeaders { get; set; }
-        public List<string> AllowedMethods { get; set; }
+        public List<string>? AllowedOrigins { get; set; }
+        public List<string>? AllowedHeaders { get; set; }
+        public List<string>? AllowedMethods { get; set; }
         public int PreflightMaxAge { get; set; }
     }
 }

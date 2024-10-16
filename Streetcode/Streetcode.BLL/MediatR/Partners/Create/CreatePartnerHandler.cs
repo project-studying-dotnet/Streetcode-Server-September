@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Partners;
+using Streetcode.BLL.Dto.Partners;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.Partners;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Partners.Create
 {
-    public class CreatePartnerHandler : IRequestHandler<CreatePartnerQuery, Result<PartnerDTO>>
+    public class CreatePartnerHandler : IRequestHandler<CreatePartnerQuery, Result<PartnerDto>>
     {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -21,21 +21,29 @@ namespace Streetcode.BLL.MediatR.Partners.Create
             _logger = logger;
         }
 
-        public async Task<Result<PartnerDTO>> Handle(CreatePartnerQuery request, CancellationToken cancellationToken)
+        public async Task<Result<PartnerDto>> Handle(CreatePartnerQuery request, CancellationToken cancellationToken)
         {
             var newPartner = _mapper.Map<Partner>(request.newPartner);
             try
             {
+                if (newPartner == null)
+                {
+                    var errorMsg = "Failed to create a partner";
+                    _logger.LogError(request, errorMsg);
+                    return Result.Fail(errorMsg);
+                }
                 newPartner.Streetcodes.Clear();
                 newPartner = await _repositoryWrapper.PartnersRepository.CreateAsync(newPartner);
-                _repositoryWrapper.SaveChanges();
+                await _repositoryWrapper.SaveChangesAsync();
+
                 var streetcodeIds = request.newPartner.Streetcodes.Select(s => s.Id).ToList();
                 newPartner.Streetcodes.AddRange(await _repositoryWrapper
                     .StreetcodeRepository
                     .GetAllAsync(s => streetcodeIds.Contains(s.Id)));
 
-                _repositoryWrapper.SaveChanges();
-                return Result.Ok(_mapper.Map<PartnerDTO>(newPartner));
+                await _repositoryWrapper.SaveChangesAsync();
+
+                return Result.Ok(_mapper.Map<PartnerDto>(newPartner));
             }
             catch(Exception ex)
             {

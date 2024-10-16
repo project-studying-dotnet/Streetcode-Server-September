@@ -1,7 +1,8 @@
 ﻿using DbUp;
 using Microsoft.Extensions.Configuration;
 
-public class Program
+namespace DbUpdate;
+public static class Program
 {
     static int Main(string[] args)
     {
@@ -22,10 +23,9 @@ public class Program
         string pathToScript = "";
 
         Console.WriteLine("Enter '-m' to MIGRATE or '-s' to SEED db:");
-        pathToScript = Console.ReadLine();
 
         pathToScript = migrationPath;
-        
+
         var upgrader =
             DeployChanges.To
                 .SqlDatabase(connectionString)

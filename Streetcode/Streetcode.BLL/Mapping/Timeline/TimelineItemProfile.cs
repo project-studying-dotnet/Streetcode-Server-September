@@ -1,5 +1,5 @@
 using AutoMapper;
-using Streetcode.BLL.DTO.Timeline;
+using Streetcode.BLL.Dto.Timeline;
 using Streetcode.DAL.Entities.Timeline;
 
 namespace Streetcode.BLL.Mapping.Timeline;
@@ -8,14 +8,20 @@ public class TimelineItemProfile : Profile
 {
     public TimelineItemProfile()
     {
-        CreateMap<TimelineItem, TimelineItemDTO>().ReverseMap();
+        CreateMap<TimelineItem, TimelineItemDto>().ReverseMap();
 
-        CreateMap<TimelineItem, TimelineItemDTO>()
+        CreateMap<TimelineItem, TimelineItemUpdateDto>().ReverseMap();
+
+        CreateMap<TimelineItem, TimelineItemUpdateDto>()
             .ForMember(dest => dest.HistoricalContexts, opt => opt.MapFrom(x => x.HistoricalContextTimelines
-                .Select(x => new HistoricalContextDTO
+                .Select(hct => new HistoricalContextDto
                 {
-                    Id = x.HistoricalContextId,
-                    Title = x.HistoricalContext.Title
-                }).ToList()));
+                    Id = hct.HistoricalContextId,
+                    Title = hct.HistoricalContext!.Title ?? string.Empty
+                }).ToList()))
+            .ReverseMap();
+
+        CreateMap<TimelineItem, TimelineItemCreateDto>().ReverseMap();
+        
     }
 }

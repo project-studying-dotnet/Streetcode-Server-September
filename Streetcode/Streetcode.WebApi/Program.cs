@@ -1,3 +1,5 @@
+using Azure.Storage.Blobs;
+using FluentValidation;
 using Hangfire;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.WebApi.Extensions;
@@ -10,9 +12,13 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddSwaggerServices();
 builder.Services.AddCustomServices();
 builder.Services.ConfigureBlob(builder);
+builder.Services.ConfigureJwt(builder);
 builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
+builder.Services.ConfigureAzureBlob(builder);
+builder.Services.AddJwtAuthentication(builder);
+
 var app = builder.Build();
 
 if (app.Environment.EnvironmentName == "Local")
@@ -37,6 +43,10 @@ app.UseAuthorization();
 
 app.UseHangfireDashboard("/dash");
 
+app.UseRequestLocalization();
+
+app.UseGlobalExceptionHandler();
+
 if (app.Environment.EnvironmentName != "Local")
 {
     BackgroundJob.Schedule<WebParsingUtils>(
@@ -49,7 +59,7 @@ if (app.Environment.EnvironmentName != "Local")
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
 public partial class Program
 {
 }

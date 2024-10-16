@@ -1,15 +1,16 @@
 using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
-using Streetcode.BLL.DTO.AdditionalContent.Tag;
+using Streetcode.BLL.Dto.AdditionalContent;
+using Streetcode.BLL.Dto.AdditionalContent.Subtitles;
+using Streetcode.BLL.Dto.AdditionalContent.Tag;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.DAL.Specification.AdditionalContent.TagSpecification;
 
 namespace Streetcode.BLL.MediatR.AdditionalContent.Tag.GetAll;
 
-public class GetAllTagsHandler : IRequestHandler<GetAllTagsQuery, Result<IEnumerable<TagDTO>>>
+public class GetAllTagsHandler : IRequestHandler<GetAllTagsQuery, Result<IEnumerable<TagDto>>>
 {
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
@@ -22,9 +23,9 @@ public class GetAllTagsHandler : IRequestHandler<GetAllTagsQuery, Result<IEnumer
         _logger = logger;
     }
 
-    public async Task<Result<IEnumerable<TagDTO>>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<TagDto>>> Handle(GetAllTagsQuery request, CancellationToken cancellationToken)
     {
-        var tags = await _repositoryWrapper.TagRepository.GetAllAsync();
+        var tags = await _repositoryWrapper.TagRepository.GetItemsBySpecAsync(new GetAllTagsSpec());
 
         if (tags is null)
         {
@@ -33,6 +34,6 @@ public class GetAllTagsHandler : IRequestHandler<GetAllTagsQuery, Result<IEnumer
             return Result.Fail(new Error(errorMsg));
         }
 
-        return Result.Ok(_mapper.Map<IEnumerable<TagDTO>>(tags));
+        return Result.Ok(_mapper.Map<IEnumerable<TagDto>>(tags));
     }
 }

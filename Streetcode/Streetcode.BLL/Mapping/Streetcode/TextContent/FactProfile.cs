@@ -1,5 +1,5 @@
 using AutoMapper;
-using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Dto.Streetcode.TextContent.Fact;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 
 namespace Streetcode.BLL.Mapping.Streetcode.TextContent;
@@ -10,5 +10,8 @@ public class FactProfile : Profile
     {
         CreateMap<Fact, FactDto>().ReverseMap();
         CreateMap<Fact, FactUpdateCreateDto>().ReverseMap();
+        CreateMap<Fact, FactCreateDto>().ReverseMap();
+        CreateMap<Fact, FactUpdateDto>().ReverseMap();
+        CreateMap<Fact, FactOrderUpdateDto>().ReverseMap();
     }
 }

@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Transactions;
+using Streetcode.BLL.Dto.Transactions;
 
 namespace Streetcode.BLL.MediatR.Transactions.TransactionLink.GetAll;
 
-public record GetAllTransactLinksQuery : IRequest<Result<IEnumerable<TransactLinkDTO>>>;
+public record GetAllTransactLinksQuery : IRequest<Result<IEnumerable<TransactLinkDto>>>;

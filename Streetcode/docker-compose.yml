@@ -1,0 +1,46 @@
+services:
+  streetcode.mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssql
+    ports:
+      - "4002:1433"
+    environment:
+      SA_PASSWORD: "DatabaseStrongPassword123"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  streetcode.identity:
+    image: ${DOCKER_REGISTRY-}streetcodeidentity
+    build:
+      context: .
+      dockerfile: Streedcode.Identity/Dockerfile
+    depends_on:
+      - streetcode.mssql
+
+  streetcode.webapi:
+    image: ${DOCKER_REGISTRY-}streetcodewebapi
+    build:
+      context: .
+      dockerfile: Streetcode.WebApi/Dockerfile
+    depends_on:
+      - streetcode.mssql
+
+  streetcode.email:
+    image: ${DOCKER_REGISTRY-}streetcodeemail
+    container_name: Email
+    build:
+      context: .
+      dockerfile: Streetcode.Email/Dockerfile
+
+  streetcode.redis:
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mssql-data:
+  redis-data:
+

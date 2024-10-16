@@ -1,22 +1,22 @@
 ﻿using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Audio.GetBaseAudio;
 
 public class GetBaseAudioHandler : IRequestHandler<GetBaseAudioQuery, Result<MemoryStream>>
 {
-    private readonly IBlobService _blobStorage;
-    private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly ILoggerService _logger;
 
-    public GetBaseAudioHandler(IBlobService blobService, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+    private readonly IRepositoryWrapper _repositoryWrapper;
+    private readonly IBlobAzureService _blobAzureService;
+
+    public GetBaseAudioHandler(IBlobAzureService blobAzureService, IRepositoryWrapper repositoryWrapper)
     {
-        _blobStorage = blobService;
+        _blobAzureService = blobAzureService;
         _repositoryWrapper = repositoryWrapper;
-        _logger = logger;
     }
 
     public async Task<Result<MemoryStream>> Handle(GetBaseAudioQuery request, CancellationToken cancellationToken)
@@ -26,10 +26,9 @@ public class GetBaseAudioHandler : IRequestHandler<GetBaseAudioQuery, Result<Mem
         if (audio is null)
         {
             string errorMsg = $"Cannot find an audio with corresponding id: {request.Id}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
         }
 
-        return _blobStorage.FindFileInStorageAsMemoryStream(audio.BlobName);
+        return _blobAzureService.FindFileInStorageAsMemoryStream(audio.BlobName);
     }
 }

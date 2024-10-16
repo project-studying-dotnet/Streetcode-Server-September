@@ -14,7 +14,6 @@ using Streetcode.DAL.Repositories.Interfaces.Team;
 using Streetcode.DAL.Repositories.Interfaces.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Toponyms;
 using Streetcode.DAL.Repositories.Interfaces.Transactions;
-using Streetcode.DAL.Repositories.Interfaces.Users;
 using Streetcode.DAL.Repositories.Realizations.AdditionalContent;
 using Streetcode.DAL.Repositories.Realizations.Analytics;
 using Streetcode.DAL.Repositories.Realizations.Media;
@@ -28,7 +27,6 @@ using Streetcode.DAL.Repositories.Realizations.Team;
 using Streetcode.DAL.Repositories.Realizations.Timeline;
 using Streetcode.DAL.Repositories.Realizations.Toponyms;
 using Streetcode.DAL.Repositories.Realizations.Transactions;
-using Streetcode.DAL.Repositories.Realizations.Users;
 
 namespace Streetcode.DAL.Repositories.Realizations.Base;
 
@@ -36,75 +34,75 @@ public class RepositoryWrapper : IRepositoryWrapper
 {
     private readonly StreetcodeDbContext _streetcodeDbContext;
 
-    private IVideoRepository _videoRepository;
+    private IVideoRepository? _videoRepository;
 
-    private IAudioRepository _audioRepository;
+    private IAudioRepository? _audioRepository;
 
-    private IStreetcodeCoordinateRepository _streetcodeCoordinateRepository;
+    private IStreetcodeCoordinateRepository? _streetcodeCoordinateRepository;
 
-    private IImageRepository _imageRepository;
+    private IImageRepository? _imageRepository;
 
-    private IImageDetailsRepository _imageDetailsRepository;
+    private IImageDetailsRepository? _imageDetailsRepository;
 
-    private IArtRepository _artRepository;
+    private IArtRepository? _artRepository;
 
-    private IStreetcodeArtRepository _streetcodeArtRepository;
+    private IStreetcodeArtRepository? _streetcodeArtRepository;
 
-    private IFactRepository _factRepository;
+    private IFactRepository? _factRepository;
 
-    private IPartnersRepository _partnersRepository;
+    private IPartnersRepository? _partnersRepository;
 
-    private ISourceCategoryRepository _sourceCategoryRepository;
+    private ISourceCategoryRepository? _sourceCategoryRepository;
 
-    private IStreetcodeCategoryContentRepository _streetcodeCategoryContentRepository;
+    private IStreetcodeCategoryContentRepository? _streetcodeCategoryContentRepository;
 
-    private IRelatedFigureRepository _relatedFigureRepository;
+    private IRelatedFigureRepository? _relatedFigureRepository;
 
-    private IRelatedTermRepository _relatedTermRepository;
+    private IRelatedTermRepository? _relatedTermRepository;
 
-    private IStreetcodeRepository _streetcodeRepository;
+    private IStreetcodeRepository? _streetcodeRepository;
 
-    private ISubtitleRepository _subtitleRepository;
+    private ISubtitleRepository? _subtitleRepository;
 
-    private IStatisticRecordRepository _statisticRecordRepository;
+    private IStatisticRecordRepository? _statisticRecordRepository;
 
-    private ITagRepository _tagRepository;
+    private ITagRepository? _tagRepository;
 
-    private ITermRepository _termRepository;
+    private ITermRepository? _termRepository;
 
-    private ITeamRepository _teamRepository;
+    private ITeamRepository? _teamRepository;
 
-    private IPositionRepository _positionRepository;
+    private IPositionRepository? _positionRepository;
 
-    private ITextRepository _textRepository;
+    private ITextRepository? _textRepository;
 
-    private ITimelineRepository _timelineRepository;
+    private ITimelineRepository? _timelineRepository;
 
-    private IToponymRepository _toponymRepository;
+    private IToponymRepository? _toponymRepository;
 
-    private ITransactLinksRepository _transactLinksRepository;
+    private ITransactLinksRepository? _transactLinksRepository;
 
-    private IHistoricalContextRepository _historyContextRepository;
+    private IHistoricalContextRepository? _historyContextRepository;
 
-    private IPartnerSourceLinkRepository _partnerSourceLinkRepository;
+    private IPartnerSourceLinkRepository? _partnerSourceLinkRepository;
 
-    private IUserRepository _userRepository;
+    private IStreetcodeTagIndexRepository? _streetcodeTagIndexRepository;
 
-    private IStreetcodeTagIndexRepository _streetcodeTagIndexRepository;
+    private IPartnerStreetcodeRepository? _partnerStreetcodeRepository;
 
-    private IPartnerStreetcodeRepository _partnerStreetcodeRepository;
+    private INewsRepository? _newsRepository;
 
-    private INewsRepository _newsRepository;
+    private ITeamLinkRepository? _teamLinkRepository;
 
-    private ITeamLinkRepository _teamLinkRepository;
+    private ITeamPositionRepository? _teamPositionRepository;
 
-    private ITeamPositionRepository _teamPositionRepository;
+    private IHistoricalContextTimelineRepository? _historicalContextTimelineRepository;
 
-    private IHistoricalContextTimelineRepository _historicalContextTimelineRepository;
+    private IStreetcodeToponymRepository? _streetcodeToponymRepository;
 
-    private IStreetcodeToponymRepository _streetcodeToponymRepository;
+    private IStreetcodeImageRepository? _streetcodeImageRepository;
 
-    private IStreetcodeImageRepository _streetcodeImageRepository;
+    private ICommentRepository? _commentRepository;
 
     public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
@@ -449,19 +447,6 @@ public class RepositoryWrapper : IRepositoryWrapper
         }
     }
 
-    public IUserRepository UserRepository
-    {
-        get
-        {
-            if (_userRepository is null)
-            {
-                _userRepository = new UserRepository(_streetcodeDbContext);
-            }
-
-            return _userRepository;
-        }
-    }
-
     public IStreetcodeTagIndexRepository StreetcodeTagIndexRepository
     {
         get
@@ -554,6 +539,19 @@ public class RepositoryWrapper : IRepositoryWrapper
 			return _streetcodeImageRepository;
 		}
 	}
+
+    public ICommentRepository CommentRepository
+    {
+        get
+        {
+            if (_commentRepository is null)
+            {
+                _commentRepository = new CommentRepository(_streetcodeDbContext);
+            }
+
+            return _commentRepository;
+        }
+    }
 
     public int SaveChanges()
     {

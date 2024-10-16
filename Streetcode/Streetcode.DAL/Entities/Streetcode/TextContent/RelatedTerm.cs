@@ -10,11 +10,13 @@ namespace Streetcode.DAL.Entities.Streetcode.TextContent
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string? Word { get; set; }
+        [Required] 
+        [MaxLength(50)] 
+        public string Word { get; set; } = null!;
+        
         [Required]
         public int TermId { get; set; }
-        public Term? Term { get; set; }
+
+        public Term Term { get; set; } = null!;
     }
 }

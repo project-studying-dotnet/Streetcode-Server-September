@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Streetcode.BLL.DTO.Team;
+using Streetcode.BLL.Dto.Team;
 using Streetcode.DAL.Entities.Team;
 
 namespace Streetcode.BLL.Mapping.Team
@@ -8,7 +8,7 @@ namespace Streetcode.BLL.Mapping.Team
     {
         public PositionProfile()
         {
-            CreateMap<Positions, PositionDTO>().ReverseMap();
+            CreateMap<Positions, PositionDto>().ReverseMap();
         }
     }
 }

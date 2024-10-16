@@ -1,9 +1,9 @@
 ﻿using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Streetcode.BLL.Exceptions.CustomExceptions;
 using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Media.Audio.Delete;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Media.Image.Delete;
@@ -11,14 +11,12 @@ namespace Streetcode.BLL.MediatR.Media.Image.Delete;
 public class DeleteImageHandler : IRequestHandler<DeleteImageCommand, Result<Unit>>
 {
     private readonly IRepositoryWrapper _repositoryWrapper;
-    private readonly IBlobService _blobService;
-    private readonly ILoggerService _logger;
+    private readonly IBlobAzureService _blobAzureService;
 
-    public DeleteImageHandler(IRepositoryWrapper repositoryWrapper, IBlobService blobService, ILoggerService logger)
+    public DeleteImageHandler(IRepositoryWrapper repositoryWrapper, IBlobAzureService blobAzureService)
     {
         _repositoryWrapper = repositoryWrapper;
-        _blobService = blobService;
-        _logger = logger;
+        _blobAzureService = blobAzureService;
     }
 
     public async Task<Result<Unit>> Handle(DeleteImageCommand request, CancellationToken cancellationToken)
@@ -31,8 +29,7 @@ public class DeleteImageHandler : IRequestHandler<DeleteImageCommand, Result<Uni
         if (image is null)
         {
             string errorMsg = $"Cannot find an image with corresponding categoryId: {request.Id}";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
         }
 
         _repositoryWrapper.ImageRepository.Delete(image);
@@ -41,7 +38,7 @@ public class DeleteImageHandler : IRequestHandler<DeleteImageCommand, Result<Uni
 
         if (resultIsSuccess)
         {
-            _blobService.DeleteFileInStorage(image.BlobName);
+            _blobAzureService.DeleteFileInStorage(image.BlobName);
         }
 
         if(resultIsSuccess)
@@ -51,8 +48,7 @@ public class DeleteImageHandler : IRequestHandler<DeleteImageCommand, Result<Uni
         else
         {
             const string errorMsg = $"Failed to delete an image";
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
+            throw new CustomException(errorMsg, StatusCodes.Status500InternalServerError);
         }
     }
 }

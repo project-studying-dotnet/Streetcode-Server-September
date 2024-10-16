@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.DTO.Media.Audio;
+using Streetcode.BLL.Dto.Media.Audio;
 using Streetcode.BLL.MediatR.Media.Audio.Create;
 using Streetcode.BLL.MediatR.Media.Audio.Delete;
 using Streetcode.BLL.MediatR.Media.Audio.GetAll;
@@ -36,7 +36,7 @@ public class AudioController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] AudioFileBaseCreateDTO audio)
+    public async Task<IActionResult> Create([FromBody] AudioFileBaseCreateDto audio)
     {
         return HandleResult(await Mediator.Send(new CreateAudioCommand(audio)));
     }

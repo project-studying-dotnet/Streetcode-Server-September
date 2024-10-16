@@ -43,9 +43,9 @@ namespace Streetcode.BLL.Services.Payment
                     Body: await response.Content.ReadAsStringAsync());
         }
 
-        private T JsonToObject<T>(string body)
+        private static T JsonToObject<T>(string body)
         {
-            return JsonConvert.DeserializeObject<T>(body);
+            return JsonConvert.DeserializeObject<T>(body)!;
         }
 
         private static class Api
@@ -64,12 +64,6 @@ namespace Streetcode.BLL.Services.Payment
         private static class RequestHeaders
         {
             public const string XToken = "X-Token";
-        }
-
-        private static class Validation
-        {
-            public const int MaxStatementTimeSpanInSeconds = 2682000;
-            public const int StatementTimeoutBetweenCallsInSeconds = 60;
         }
     }
 }

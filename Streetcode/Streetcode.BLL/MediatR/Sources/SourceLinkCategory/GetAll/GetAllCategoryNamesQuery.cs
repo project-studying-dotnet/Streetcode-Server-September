@@ -1,9 +1,9 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Partners;
-using Streetcode.BLL.DTO.Sources;
+using Streetcode.BLL.Dto.Partners;
+using Streetcode.BLL.Dto.Sources;
 
 namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.GetAll
 {
-    public record GetAllCategoryNamesQuery : IRequest<Result<IEnumerable<CategoryWithNameDTO>>>;
+    public record GetAllCategoryNamesQuery : IRequest<Result<IEnumerable<CategoryWithNameDto>>>;
 }
