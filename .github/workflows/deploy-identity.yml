@@ -19,13 +19,13 @@ jobs:
           dotnet-version: '6.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore ./Streetcode/Streetcode.Identity/Streetcode.Identity.csproj
+        run: dotnet restore ./Streetcode/Streedcode.Identity/Streetcode.Identity.csproj
 
       - name: Build
-        run: dotnet build ./Streetcode/Streetcode.Identity/Streetcode.Identity.csproj --configuration Release --no-restore
+        run: dotnet build ./Streetcode/Streedcode.Identity/Streetcode.Identity.csproj --configuration Release --no-restore
 
       - name: dotnet publish
-        run: dotnet publish ./Streetcode/Streetcode.Identity/Streetcode.Identity.csproj --configuration Release -o ./publish/identity
+        run: dotnet publish ./Streetcode/Streedcode.Identity/Streetcode.Identity.csproj --configuration Release -o ./publish/identity
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
